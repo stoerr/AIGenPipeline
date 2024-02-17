@@ -1,0 +1,22 @@
+# Prompts that have been used in the project
+
+This is a record for myself for some interesting prompts that I have used in the project - usually for
+ChatGPT with the [Co-Developer GPT engine](https://CoDeveloperGPTengine.stoerr.net/) .
+
+## General introductory prompt (.chatgpt.intro.md)
+
+Read the .chatgpt.codeRules.md and observe the rules that
+are laid out there during this whole chat, but you don't need to repeat them.
+
+List all files.
+
+Use the grep operation to search for comments starting with `ChatGPTTask:` and execute them. The comment should be
+replaced by the new code or deleted when it's completely done.
+
+## Generate first version
+
+Read the README.md and the Implementation.md, list all files in the project, determine what needs to be done to
+generate a rough frame for the project. Do not generate any code except the main class for the command line,
+it should for now just print the usage. Do generate the maven modules and run the build action to make sure it works.
+
+Before doing anything list the files to make sure it hasn't been done already, and continue from there.
