@@ -7,7 +7,7 @@ public class AIGenPipeline {
 
     private boolean help, verbose, dryRun, check, force;
     private String output, ask, url, key;
-    private String extension = "";
+    private String extension = "md";
     private List<String> inputFiles = new ArrayList<>();
     private List<String> promptFiles = new ArrayList<>();
 
