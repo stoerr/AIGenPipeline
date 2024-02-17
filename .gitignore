@@ -4,12 +4,6 @@
 # Log file
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -22,3 +16,29 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# IntelliJ
+.idea
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings
+.metadata
+
+# Maven
+target
+
+# Mac OS X
+._*
+.DS_*
+
+# Other stuff
+*.orig
+/tags
+
+.cgptcodeveloper/llmsearch.db
+.linklint
+.lycheecache
+build.log
