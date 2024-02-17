@@ -15,8 +15,17 @@ replaced by the new code or deleted when it's completely done.
 
 ## Generate first version
 
+Read the .chatgpt.codeRules.md and observe the rules that
+are laid out there during this whole chat, but you don't need to repeat them.
+
 Read the README.md and the Implementation.md, list all files in the project, determine what needs to be done to
 generate a rough frame for the project. Do not generate any code except the main class for the command line,
 it should for now just print the usage. Do generate the maven modules and run the build action to make sure it works.
 
-Before doing anything list the files to make sure it hasn't been done already, and continue from there.
+Before doing anything list the files to make sure it hasn't been done already, and continue from there writing the
+necessary files yourself and execute the build action afterwards.
+
+## Fix / build loop
+
+Diagnose the problems, re-read the problematic files, fix the problems and execute the build action, until the build works.
+You do not need to ask me whether to continue - just do what's necessary yourself.
