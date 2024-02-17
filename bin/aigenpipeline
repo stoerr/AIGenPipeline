@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# locate the directory of the script resolving symlinks
+scriptdir="$(dirname $(readlink -f $0))"
+
+# find the jar file. Try first according to project layout, then in scriptdir itself.
+jarFile="$(ls -1 $scriptdir/../aigenpipeline-commandline/target/aigenpipeline-commandline*.jar | tail -n 1)"
+if [ -z "$jarFile" ]; then
+  jarFile="$(ls -1 $scriptdir/aigenpipeline-commandline*.jar | tail -n 1)"
+fi
+
+if [ -z "$jarFile" ]; then
+  echo "Cannot execute: no jar file found in $scriptdir/../aigenpipeline-commandline/target" >&2
+  exit 1
+fi
+
+# execute the jar file with the given command line arguments
+exec java -jar $jarFile "$@"
