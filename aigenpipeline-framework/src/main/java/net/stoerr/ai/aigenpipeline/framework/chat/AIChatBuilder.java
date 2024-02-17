@@ -41,6 +41,12 @@ public interface AIChatBuilder {
     AIChatBuilder assistantMsg(String text);
 
     /**
+     * Converts the chat completion request to a JSON string.
+     * @return The JSON string.
+     */
+    String toJson();
+
+    /**
      * Executes the chat completion request and returns the response.
      * @return The chat completion response.
      */

@@ -88,7 +88,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         }
     }
 
-    String toJson() {
+    public String toJson() {
         ChatCompletionRequest request = new ChatCompletionRequest(model, messages, 0, maxTokens);
         return gson.toJson(request);
     }
