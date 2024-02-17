@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    <groupId>net.stoerr.ai.aigenpipeline</groupId>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.stoerr.ai.aigenpipeline</groupId>
+        <artifactId>aigenpipeline</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
     <artifactId>aigenpipeline-commandline</artifactId>
-    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AIGenPipeline Command Line Tool</name>
     <description>A command line tool and framework for generating code and documentation with AI.</description>
@@ -14,7 +20,24 @@
         <dependency>
             <groupId>net.stoerr.ai.aigenpipeline</groupId>
             <artifactId>aigenpipeline-framework</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>net.stoerr.ai.aigenpipeline.commandline.AIGenPipeline</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
