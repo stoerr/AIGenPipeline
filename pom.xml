@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.stoerr.ai.aigenpipeline</groupId>
+    <artifactId>aigenpipeline</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>aigenpipeline-commandline</module>
+        <module>aigenpipeline-framework</module>
+    </modules>
+    <name>AIGenPipeline Project</name>
+    <description>A command line tool and framework for generating code and documentation with AI.</description>
+    <url>https://aigenpipeline.stoerr.net</url>
+    <scm>
+        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+    </scm>
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+</project>

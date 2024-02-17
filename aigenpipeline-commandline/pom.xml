@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    <groupId>net.stoerr.ai.aigenpipeline</groupId>
+    <artifactId>aigenpipeline-commandline</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>AIGenPipeline Command Line Tool</name>
+    <description>A command line tool and framework for generating code and documentation with AI.</description>
+    <url>https://aigenpipeline.stoerr.net</url>
+    <scm>
+        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>net.stoerr.ai.aigenpipeline</groupId>
+            <artifactId>aigenpipeline-framework</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
