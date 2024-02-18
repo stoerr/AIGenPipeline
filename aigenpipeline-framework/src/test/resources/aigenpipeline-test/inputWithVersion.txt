@@ -1,0 +1,4 @@
+--
+version: AIGenVersion(1.1)
+--
+This is a test input file for AIGenerationTask.

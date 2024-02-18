@@ -315,7 +315,7 @@ public class AIGenerationTask implements Cloneable {
         }
         inputFiles.forEach(file -> {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
-            chat.userMsg("Please retrieve and print the content of " + relativePath(file, rootDirectory));
+            chat.userMsg("Print the content of " + relativePath(file, rootDirectory));
             chat.assistantMsg(unclutter(getFileContent(file)));
         });
         chat.userMsg(prompt);

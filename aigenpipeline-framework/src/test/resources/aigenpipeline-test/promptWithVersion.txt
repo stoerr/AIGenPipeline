@@ -1,0 +1,2 @@
+This is a test prompt for AIGenerationTask.
+// AIGenVersion(17)

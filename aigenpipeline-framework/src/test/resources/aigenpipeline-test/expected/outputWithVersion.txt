@@ -1,0 +1,30 @@
+/* AIGenVersion(43fa99d6, promptWithVersion.txt-17, input.txt-7e10dd2a, inputWithVersion.txt-1.1) */
+
+Response to:
+{
+  "model": "gpt-4-turbo-preview",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Print the content of /src/test/resources/aigenpipeline-test/input.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "This is a test input file for AIGenerationTask."
+    },
+    {
+      "role": "user",
+      "content": "Print the content of /src/test/resources/aigenpipeline-test/inputWithVersion.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "--\nversion: \n--\nThis is a test input file for AIGenerationTask.\n"
+    },
+    {
+      "role": "user",
+      "content": "This is a test prompt for AIGenerationTask.\n// \n"
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 1000
+}

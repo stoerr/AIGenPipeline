@@ -1,4 +1,4 @@
-/* AIGenVersion(3f7c570d, prompt.txt-45366fcf, input.txt-7e10dd2a) */
+/* AIGenVersion(4c68c74e, prompt.txt-45366fcf, input.txt-7e10dd2a) */
 
 Response to:
 {
@@ -6,7 +6,7 @@ Response to:
   "messages": [
     {
       "role": "user",
-      "content": "Please retrieve and print the content of /src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Print the content of /src/test/resources/aigenpipeline-test/input.txt"
     },
     {
       "role": "assistant",
