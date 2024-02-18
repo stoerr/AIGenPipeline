@@ -93,7 +93,7 @@ public class AIGenerationTask implements Cloneable {
 
     public AIGenerationTask addInputFile(File file) {
         if (!file.exists()) {
-            throw new RuntimeException("File " + file + " does not exist");
+            throw new IllegalArgumentException("File " + file + " does not exist");
         }
         inputFiles.add(file);
         return this;
@@ -106,19 +106,24 @@ public class AIGenerationTask implements Cloneable {
     }
 
     protected String embedComment(String content, String comment) {
+        String result;
         if (outputFile.getName().endsWith(".java")) {
-            return "// " + comment + "\n\n" + content;
+            result = "// " + comment + "\n\n" + content;
         } else if (outputFile.getName().endsWith(".html")) {
-            return content + "\n\n<!-- " + comment + " -->\n";
+            result = content + "\n\n<!-- " + comment + " -->\n";
         } else if (outputFile.getName().endsWith(".css")) {
-            return "/* " + comment + " */\n\n" + content;
+            result = "/* " + comment + " */\n\n" + content;
         } else if (outputFile.getName().endsWith(".md")) {
-            return "<!-- " + comment + " -->\n\n" + content;
+            result = "<!-- " + comment + " -->\n\n" + content;
         } else if (outputFile.getName().endsWith(".sh")) {
-            return "# " + comment + "\n" + content;
+            result = "# " + comment + "\n" + content;
         } else {
-            return "/* " + comment + " */\n\n" + content;
+            result = "/* " + comment + " */\n\n" + content;
         }
+        if (!result.endsWith("\n")) {
+            result += "\n";
+        }
+        return result;
     }
 
     public boolean hasToBeRun() {
@@ -131,7 +136,7 @@ public class AIGenerationTask implements Cloneable {
         }
         List<String> inputVersions = calculateAllInputsMarkers();
         List<String> oldInputVersions = outputVersionMarker.getInputVersions();
-        return !new HashSet(inputVersions).equals(new HashSet(oldInputVersions));
+        return !new HashSet<Object>(inputVersions).equals(new HashSet<Object>(oldInputVersions));
     }
 
     @Nonnull
@@ -171,10 +176,11 @@ public class AIGenerationTask implements Cloneable {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(condensedWhitespace.getBytes(StandardCharsets.UTF_8));
             // turn first 4 bytes into hex number
-            long hashNumber = (hash[0] & 0xFF) << 16 | (hash[1] & 0xFF) << 8 | (hash[2] & 0xFF) | (hash[3] & 0xFF) << 24;
-            return Long.toHexString(hashNumber);
+            long hashNumber = ((hash[3] * 256L + hash[2]) * 256L + hash[1]) * 256L + hash[0];
+            String hexString = "00000000" + Long.toHexString(Math.abs(hashNumber));
+            return hexString.substring(hexString.length() - 8);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA256 not available", e);
+            throw new IllegalStateException("SHA256 not available", e);
         }
     }
 
@@ -191,7 +197,7 @@ public class AIGenerationTask implements Cloneable {
         }
         AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
         if (aiVersionMarker == null) {
-            throw new RuntimeException("Could not find version marker in " + outputFile);
+            throw new IllegalStateException("Could not find version marker in " + outputFile);
         }
         return aiVersionMarker;
     }
@@ -202,15 +208,15 @@ public class AIGenerationTask implements Cloneable {
      * @return
      */
     public AIGenerationTask setPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
-        String prompt = unclutter(getFileContent(promptFile));
-        requireNonNull(prompt, "Could not read prompt file " + promptFile);
+        String newPrompt = unclutter(getFileContent(promptFile));
+        requireNonNull(newPrompt, "Could not read prompt file " + promptFile);
         if (placeholdersAndValues.length % 2 != 0) {
-            throw new RuntimeException("Odd number of placeholdersAndValues");
+            throw new IllegalArgumentException("Odd number of placeholdersAndValues");
         }
         for (int i = 0; i < placeholdersAndValues.length; i += 2) {
-            prompt = prompt.replace(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
+            newPrompt = newPrompt.replace(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
         }
-        this.prompt = prompt;
+        this.prompt = newPrompt;
         this.promptFile = promptFile;
         return this;
     }
@@ -222,7 +228,7 @@ public class AIGenerationTask implements Cloneable {
         try {
             return Files.readString(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException("Error reading file " + file, e);
+            throw new IllegalArgumentException("Error reading file " + file, e);
         }
     }
 
@@ -240,9 +246,9 @@ public class AIGenerationTask implements Cloneable {
     }
 
     public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
-        String systemMessage = unclutter(getFileContent(systemMessageFile));
-        requireNonNull(systemMessage, "Could not read system message file " + systemMessageFile);
-        this.systemMessage = systemMessage;
+        String newSystemMessage = unclutter(getFileContent(systemMessageFile));
+        requireNonNull(newSystemMessage, "Could not read system message file " + systemMessageFile);
+        this.systemMessage = newSystemMessage;
         this.systemMessageFile = systemMessageFile;
         return this;
     }
@@ -257,11 +263,11 @@ public class AIGenerationTask implements Cloneable {
             rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
             String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
             if (!filePath.startsWith(rootPath)) {
-                throw new RuntimeException("File " + file + " is not in root directory " + rootDirectory);
+                throw new IllegalArgumentException("File " + file + " is not in root directory " + rootDirectory);
             }
             return filePath.substring(rootPath.length());
         } catch (IOException e) {
-            throw new RuntimeException("Error getting canonical path for " + rootDirectory + " or " + file, e);
+            throw new IllegalArgumentException("Error getting canonical path for " + rootDirectory + " or " + file, e);
         }
     }
 
@@ -278,7 +284,7 @@ public class AIGenerationTask implements Cloneable {
         String result = chat.execute();
         LOG.fine("Result for task execution for: " + outputRelPath + "\n" + result);
         if (result.contains(FIXME)) {
-            throw new RuntimeException("AI returned FIXME for " + outputRelPath + " :\n" + result);
+            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
         }
         String outputVersion = shaHash(result);
         String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();
@@ -287,7 +293,7 @@ public class AIGenerationTask implements Cloneable {
         try {
             Files.write(outputFile.toPath(), withVersionComment.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException("Error writing file " + outputFile, e);
+            throw new IllegalStateException("Error writing file " + outputFile, e);
         }
         LOG.info("Wrote file file://" + outputFile.getAbsolutePath());
         return this;
@@ -298,10 +304,10 @@ public class AIGenerationTask implements Cloneable {
         requireNonNull(outputFile, "No writeable output file given! " + outputFile);
         outputFile.getParentFile().mkdirs();
         if (outputFile.exists() && !outputFile.canWrite()) {
-            throw new RuntimeException("No writeable output file given! " + outputFile);
+            throw new IllegalArgumentException("No writeable output file given! " + outputFile);
         }
         if (prompt == null || prompt.isBlank()) {
-            throw new RuntimeException("No prompt given!");
+            throw new IllegalArgumentException("No prompt given!");
         }
         AIChatBuilder chat = chatBuilderFactory.get();
         if (systemMessage != null && !systemMessage.isBlank()) {
@@ -327,7 +333,7 @@ public class AIGenerationTask implements Cloneable {
     public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
         if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake
-            throw new RuntimeException("Task has to be already run for: " + outputRelPath);
+            throw new IllegalStateException("Task has to be already run for: " + outputRelPath);
         }
         AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
         String previousOutput = unclutter(getFileContent(outputFile));
@@ -337,7 +343,7 @@ public class AIGenerationTask implements Cloneable {
         String result = chat.execute();
         LOG.info("Explanation result for " + outputRelPath + " with question " + question + " is:\n" + result);
         if (result.contains(FIXME)) {
-            throw new RuntimeException("AI returned FIXME for " + outputRelPath + " :\n" + result);
+            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
         }
         return result;
     }

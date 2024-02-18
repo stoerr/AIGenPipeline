@@ -1,0 +1,22 @@
+/* AIGenVersion(3f7c570d, prompt.txt-45366fcf, input.txt-7e10dd2a) */
+
+Response to:
+{
+  "model": "gpt-4-turbo-preview",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Please retrieve and print the content of /src/test/resources/aigenpipeline-test/input.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "This is a test input file for AIGenerationTask."
+    },
+    {
+      "role": "user",
+      "content": "This is a test prompt for AIGenerationTask."
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 1000
+}
