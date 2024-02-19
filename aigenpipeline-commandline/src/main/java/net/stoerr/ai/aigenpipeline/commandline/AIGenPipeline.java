@@ -3,10 +3,10 @@ package net.stoerr.ai.aigenpipeline.commandline;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
@@ -15,14 +15,13 @@ import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
 
 public class AIGenPipeline {
 
-    private boolean help, verbose, dryRun, check, force;
+    private boolean help, verbose, dryRun, check, force, version;
     private String output, explain;
     private String url;
     private String key;
     private List<String> inputFiles = new ArrayList<>();
-    private List<String> promptFiles = new ArrayList<>();
+    private String promptFile;
     private String model = "gpt-4-turbo-preview";
-    private AIChatBuilder chatBuilder;
     private AIGenerationTask task;
     private File rootDir = new File(".");
     private PrintStream logStream;
@@ -34,15 +33,20 @@ public class AIGenPipeline {
 
     protected void run(String[] args) throws IOException {
         parseArguments(args);
+        if (version) {
+            System.out.println(getVersion());
+        }
         if (help) {
             printHelpAndExit(false);
+        }
+        if (version || help) {
+            System.exit(0);
         }
         run();
     }
 
-    protected void run() throws IOException {
-        this.logStream = output == null || output.isBlank() ? System.out : System.err;
-        chatBuilder = new OpenAIChatBuilderImpl();
+    public AIChatBuilder makeChatBuilder() {
+        AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
         if (null != url) {
             chatBuilder.url(url);
         }
@@ -52,17 +56,18 @@ public class AIGenPipeline {
         if (null != model) {
             chatBuilder.model(model);
         }
+        return chatBuilder;
+    }
+
+    protected void run() throws IOException {
+        this.logStream = output == null || output.isBlank() ? System.out : System.err;
         task = new AIGenerationTask();
         inputFiles.stream().map(this::toFile).forEach(task::addInputFile);
-        task.setOutputFile(toFile(output));
-        StringBuilder prompt = new StringBuilder();
-        for (String promptFilePath : promptFiles) {
-            File promptFile = toFile(promptFilePath);
-            prompt.append(Files.readString(promptFile.toPath())).append("\n\n");
-        }
+        task.setOutputFile(toFile(Objects.requireNonNull(output, "No output file given.")));
+        task.setPrompt(toFile(Objects.requireNonNull(promptFile, "No prompt file given.")));
         task.force(force);
         if (verbose) {
-            logStream.println(task);
+            logStream.println(task.toJson(this::makeChatBuilder, rootDir));
         }
         if (check) {
             boolean hasToBeRun = task.hasToBeRun();
@@ -76,10 +81,10 @@ public class AIGenPipeline {
             return;
         }
         if (explain != null && !explain.isBlank()) {
-            String explanation = task.explain(() -> chatBuilder, rootDir, explain);
+            String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
             System.out.println(explanation);
         } else {
-            task.execute(() -> chatBuilder, rootDir);
+            task.execute(this::makeChatBuilder, rootDir);
         }
     }
 
@@ -96,8 +101,8 @@ public class AIGenPipeline {
                 "  -h, --help               Show this help message and exit.\n" +
                 "  --version                Show the version of the AIGenPipeline tool and exit.\n" +
                 "  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
-                "  -p, --prompt <file>      Reads a prompt from the given file. At least one needs to be given.\n" +
-                "  -s, --sysmsg <file>      Optional: Reads a system message from the given file. \n" +
+                "  -p, --prompt <file>      Reads a prompt from the given file. Exactly one needs to be given.\n" +
+                "  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
                 "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
                 "  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
                 "                           actually calling the AI or writing any files.\n" +
@@ -144,13 +149,19 @@ public class AIGenPipeline {
                 case "--help":
                     help = true;
                     break;
+                case "--version":
+                    version = true;
+                    break;
                 case "-o":
                 case "--output":
                     output = args[++i];
                     break;
                 case "-p":
                 case "--prompt":
-                    promptFiles.add(args[++i]);
+                    if (promptFile != null) {
+                        System.err.println("Exactly one prompt file has to be given.");
+                    }
+                    promptFile = args[++i];
                     break;
                 case "-v":
                 case "--verbose":
@@ -183,10 +194,6 @@ public class AIGenPipeline {
                 case "-m":
                 case "--model":
                     model = args[++i];
-                    break;
-                case "--version":
-                    System.out.println(getVersion());
-                    System.exit(0);
                     break;
                 default:
                     inputFiles.add(args[i]);

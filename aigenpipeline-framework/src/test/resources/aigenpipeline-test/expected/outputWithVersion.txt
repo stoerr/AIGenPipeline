@@ -1,12 +1,16 @@
-/* AIGenVersion(43fa99d6, promptWithVersion.txt-17, input.txt-7e10dd2a, inputWithVersion.txt-1.1) */
+/* AIGenVersion(68ce9969, promptWithVersion.txt-17, input.txt-7e10dd2a, inputWithVersion.txt-1.1) */
 
 Response to:
 {
   "model": "gpt-4-turbo-preview",
   "messages": [
     {
+      "role": "system",
+      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nComments matching `AIGenVersion(1.0)` that have some version declarations in parentheses can be ignored.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`EMCIF(AI) ` and a description of that problem.\n"
+    },
+    {
       "role": "user",
-      "content": "Print the content of /src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
     },
     {
       "role": "assistant",
@@ -14,7 +18,7 @@ Response to:
     },
     {
       "role": "user",
-      "content": "Print the content of /src/test/resources/aigenpipeline-test/inputWithVersion.txt"
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/inputWithVersion.txt"
     },
     {
       "role": "assistant",

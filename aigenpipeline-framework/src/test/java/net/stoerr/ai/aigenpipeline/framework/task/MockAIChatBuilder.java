@@ -10,7 +10,8 @@ public class MockAIChatBuilder extends OpenAIChatBuilderImpl {
 
     @Override
     public String execute() {
-        return "Response to:\n" + toJson();
+        // FIXME must not appear there since that'd simulate an error message of the AI.
+        return "Response to:\n" + toJson().replaceAll("FIXME", "EMCIF");
     }
 
 }

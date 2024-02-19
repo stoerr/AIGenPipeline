@@ -65,6 +65,7 @@ public class AIGenerationTaskTest {
         task.setPrompt(inputDir.resolve("prompt.txt").toFile());
         task.addInputFile(inputDir.resolve("input.txt").toFile());
         Path outFile = tempDir.resolve("output.txt");
+        task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
         task.setOutputFile(outFile.toFile());
 
         Assert.assertTrue(task.hasToBeRun());

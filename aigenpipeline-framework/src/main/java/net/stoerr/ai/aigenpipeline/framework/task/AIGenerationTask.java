@@ -76,7 +76,9 @@ public class AIGenerationTask implements Cloneable {
         return (AIGenerationTask) super.clone();
     }
 
-    /** Creates a deep copy of the task. */
+    /**
+     * Creates a deep copy of the task.
+     */
     public AIGenerationTask copy() {
         try {
             AIGenerationTask copy = (AIGenerationTask) super.clone();
@@ -277,7 +279,7 @@ public class AIGenerationTask implements Cloneable {
             if (!filePath.startsWith(rootPath)) {
                 throw new IllegalArgumentException("File " + file + " is not in root directory " + rootDirectory);
             }
-            return filePath.substring(rootPath.length());
+            return filePath.substring(rootPath.length() + 1);
         } catch (IOException e) {
             throw new IllegalArgumentException("Error getting canonical path for " + rootDirectory + " or " + file, e);
         }
@@ -295,9 +297,6 @@ public class AIGenerationTask implements Cloneable {
         AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
         String result = chat.execute();
         LOG.fine("Result for task execution for: " + outputRelPath + "\n" + result);
-        if (result.contains(FIXME)) {
-            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
-        }
         String outputVersion = shaHash(result);
         String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();
         String withVersionComment = embedComment(result, versionComment);
@@ -308,10 +307,16 @@ public class AIGenerationTask implements Cloneable {
             throw new IllegalStateException("Error writing file " + outputFile, e);
         }
         LOG.info("Wrote file file://" + outputFile.getAbsolutePath());
+        // We check that after writing since that likely makes it easier to check.
+        if (result.contains(FIXME)) {
+            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
+        }
         return this;
     }
 
-    /** For debugging purposes: returns the JSON that would be sent to the AI. */
+    /**
+     * For debugging purposes: returns the JSON that would be sent to the AI.
+     */
     public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
         return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();
@@ -330,10 +335,17 @@ public class AIGenerationTask implements Cloneable {
         AIChatBuilder chat = chatBuilderFactory.get();
         if (systemMessage != null && !systemMessage.isBlank()) {
             chat.systemMsg(systemMessage);
+        } else {
+            try {
+                String defaultSysPrompt = new String(AIGenerationTask.class.getResourceAsStream("/defaultsystemprompt.txt").readAllBytes(), StandardCharsets.UTF_8);
+                chat.systemMsg(defaultSysPrompt);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error reading default system message", e);
+            }
         }
         inputFiles.forEach(file -> {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
-            chat.userMsg("Print the content of " + relativePath(file, rootDirectory));
+            chat.userMsg("Retrieve the content of the input file " + relativePath(file, rootDirectory));
             chat.assistantMsg(unclutter(getFileContent(file)));
         });
         chat.userMsg(prompt);

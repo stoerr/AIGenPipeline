@@ -3,8 +3,12 @@ Response to:
   "model": "gpt-4-turbo-preview",
   "messages": [
     {
+      "role": "system",
+      "content": "Follow the users instructions to the letter.\n"
+    },
+    {
       "role": "user",
-      "content": "Print the content of /src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
     },
     {
       "role": "assistant",
@@ -16,7 +20,7 @@ Response to:
     },
     {
       "role": "assistant",
-      "content": "/*  */\n\nResponse to:\n{\n  \"model\": \"gpt-4-turbo-preview\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Print the content of /src/test/resources/aigenpipeline-test/input.txt\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"This is a test input file for AIGenerationTask.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"This is a test prompt for AIGenerationTask.\"\n    }\n  ],\n  \"temperature\": 0.0,\n  \"max_tokens\": 1000\n}\n"
+      "content": "/*  */\n\nResponse to:\n{\n  \"model\": \"gpt-4-turbo-preview\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Follow the users instructions to the letter.\\n\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"This is a test input file for AIGenerationTask.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"This is a test prompt for AIGenerationTask.\"\n    }\n  ],\n  \"temperature\": 0.0,\n  \"max_tokens\": 1000\n}\n"
     },
     {
       "role": "user",

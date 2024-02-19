@@ -1,12 +1,16 @@
-/* AIGenVersion(4c68c74e, prompt.txt-45366fcf, input.txt-7e10dd2a) */
+/* AIGenVersion(4c07e3b5, sysmsg.txt-2c4ed9f2, prompt.txt-45366fcf, input.txt-7e10dd2a) */
 
 Response to:
 {
   "model": "gpt-4-turbo-preview",
   "messages": [
     {
+      "role": "system",
+      "content": "Follow the users instructions to the letter.\n"
+    },
+    {
       "role": "user",
-      "content": "Print the content of /src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
     },
     {
       "role": "assistant",
