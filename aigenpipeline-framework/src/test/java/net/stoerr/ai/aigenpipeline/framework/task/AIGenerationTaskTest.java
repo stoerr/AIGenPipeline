@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,17 +35,19 @@ public class AIGenerationTaskTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Assert.assertTrue(Files.exists(inputDir));
         Assert.assertTrue(Files.exists(expectsDir));
     }
 
     protected static void deleteDirectory(Path dir) throws IOException {
         if (Files.exists(dir)) {
-            List<Path> children = Files.walk(dir, 1).collect(Collectors.toList());
-            Collections.reverse(children);
-            for (Path child : children) {
-                Files.delete(child);
+            try (Stream<Path> walk = Files.walk(dir, 1)) {
+                List<Path> children = walk.collect(Collectors.toList());
+                Collections.reverse(children);
+                for (Path child : children) {
+                    Files.delete(child);
+                }
             }
         }
     }
@@ -70,6 +73,9 @@ public class AIGenerationTaskTest {
         checkOutputExistsAndIsAsExpected(outFile);
 
         Assert.assertFalse(task.hasToBeRun());
+
+        String result = task.explain(MockAIChatBuilder::new, new File("."), "Why oh why oh why?");
+        assertEquals(result, Files.readString(expectsDir.resolve("explanation.txt")));
     }
 
     @Test

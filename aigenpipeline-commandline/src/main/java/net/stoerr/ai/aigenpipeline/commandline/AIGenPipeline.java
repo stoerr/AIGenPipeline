@@ -3,6 +3,9 @@ package net.stoerr.ai.aigenpipeline.commandline;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
+import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
+
 public class AIGenPipeline {
 
     private boolean help, verbose, dryRun, check, force;
@@ -10,6 +13,7 @@ public class AIGenPipeline {
     private String extension = "md";
     private List<String> inputFiles = new ArrayList<>();
     private List<String> promptFiles = new ArrayList<>();
+    private AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
 
     public static void main(String[] args) {
         new AIGenPipeline().run(args);
@@ -133,7 +137,7 @@ public class AIGenPipeline {
     }
 
     protected void run() {
-        // FIXME(hps,17.02.24) implement
+        // ChatGPTTask: implement this.
     }
 
 }
