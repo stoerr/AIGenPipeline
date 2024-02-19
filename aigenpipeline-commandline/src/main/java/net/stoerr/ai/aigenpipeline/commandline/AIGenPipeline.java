@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
@@ -93,13 +94,13 @@ public class AIGenPipeline {
                 "\n" +
                 "Options:\n" +
                 "  -h, --help               Show this help message and exit.\n" +
+                "  --version                Show the version of the AIGenPipeline tool and exit.\n" +
                 "  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
                 "  -p, --prompt <file>      Reads a prompt from the given file. At least one needs to be given.\n" +
                 "  -s, --sysmsg <file>      Optional: Reads a system message from the given file. \n" +
                 "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
                 "  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
                 "                           actually calling the AI or writing any files.\n" +
-                "  --version                Show the version of the AIGenPipeline tool.\n" +
                 "  -c, --check              Only check if the output needs to be regenerated based on input versions without actually \n" +
                 "                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
                 "                           regenerated.\n" +
@@ -136,7 +137,7 @@ public class AIGenPipeline {
         System.exit(onerror ? 1 : 0);
     }
 
-    protected void parseArguments(String[] args) {
+    protected void parseArguments(String[] args) throws IOException {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-h":
@@ -183,11 +184,22 @@ public class AIGenPipeline {
                 case "--model":
                     model = args[++i];
                     break;
+                case "--version":
+                    System.out.println(getVersion());
+                    System.exit(0);
+                    break;
                 default:
                     inputFiles.add(args[i]);
                     break;
             }
         }
+    }
+
+    protected String getVersion() throws IOException {
+        Properties properties = new Properties();
+        properties.load(AIGenPipeline.class.getResourceAsStream("/git.properties"));
+        return "AIGenPipeline Version " + properties.get("git.build.version") + "-" +
+                properties.getProperty("git.commit.id.describe") + " from " + properties.getProperty("git.build.time");
     }
 
 }
