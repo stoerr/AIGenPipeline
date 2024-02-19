@@ -1,5 +1,6 @@
 package net.stoerr.ai.aigenpipeline.framework.chat;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,10 +24,23 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     private final List<Message> messages = new ArrayList<>();
     private String openAiApiKey;
     private int maxTokens = 1000;
+    private String url = CHAT_COMPLETION_URL;
 
     public OpenAIChatBuilderImpl() {
         openAiApiKey = System.getenv("OPENAI_API_KEY");
         Objects.requireNonNull(openAiApiKey, "openAiApiKey needed - not found in environment variable OPENAI_API_KEY");
+    }
+
+    @Override
+    public AIChatBuilder url(String url) {
+        this.url = url;
+        return this;
+    }
+
+    @Override
+    public AIChatBuilder key(String key) {
+        this.openAiApiKey = key;
+        return this;
     }
 
     @Override
@@ -69,7 +83,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     public String execute() {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(CHAT_COMPLETION_URL))
+                .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + openAiApiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(toJson()))
@@ -82,9 +96,11 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
             return extractResponse(response.body());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while waiting for chat completion response", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to execute chat completion request", e);
+            throw new IllegalStateException("Interrupted while waiting for chat completion response", e);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to execute chat completion request", e);
         }
     }
 

@@ -61,50 +61,45 @@ chat continuation.
 ## Command Usage
 
 ```
+Usage:
 aigenpipeline [options] [<input_files>...]
 
 Options:
   -h, --help               Show this help message and exit.
-  -o, --output <file>      Specify the output file where the generated content will be written. stdout if not given.
-  -p <prompt_file>         Explicitly declares the file to be a prompt (instruction) file. This is necessary if the 
-                           file extension is not recognized as a prompt file. 
-  -i <input_file>          Explicitly declares the file to be an input file (e.g. even if it contains '.prompt').
+  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
+  -p, --prompt <file>      Reads a prompt from the given file. At least one needs to be given.
+  -s, --sysmsg <file>      Optional: Reads a system message from the given file.
   -v, --verbose            Enable verbose output to stderr, providing more details about the process.
-  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
+  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without
                            actually calling the AI or writing any files.
   --version                Show the version of the AIGenPipeline tool.
-  -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
-                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
+  -c, --check              Only check if the output needs to be regenerated based on input versions without actually
+                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be
                            regenerated.
   -f, --force              Force regeneration of output files, ignoring any version checks.
-  -e extension             Specify the file type as extension (md,java,css,html,xml) used for determining comment 
-                           syntax to use for version comments in the output file. If -o is given, it's auto detected.
-                           Default to put a /* */ comment at the start of the file.
   --ask <question>         Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
                            that was given to generate the output file, and the additional --ask <question> option.
-                           It recreates the conversation that lead to the output file and asks the AI for a 
+                           It recreates the conversation that lead to the output file and asks the AI for a
                            clarification. The output file is not written, but read to recreate the conversation.
-  -u <url>                 The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
-                           In the case of OpenAI the API key is expected to be in the environment variable 
+  -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
+                           In the case of OpenAI the API key is expected to be in the environment variable
                            OPENAI_API_KEY, or given as -k option.
-  -k <key>                 The API key for the AI server. If not given, it's expected to be in the environment variable 
+  -k, --key <key>          The API key for the AI server. If not given, it's expected to be in the environment variable
                            OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
                            an API key. Used in "Authorization: Bearer <key>" header.
+  -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
 
 Arguments:
-  [<input_files>...]       Optional paths to additional input files to be processed. If it contains '.prompt' it'll be
-                           treated as prompt file, otherwise as source file. There has to be at least one prompt file,
-                           possibly declared with -p if it hasn't .prompt extension (or e.g. .prompt.txt or 
-                           .prompt.md). 
+  [<input_files>...]       Input files to be processed.
 
 Examples:
   Generate documentation from a prompt file:
-    aigenpipeline prompts/documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java
+    aigenpipeline -p prompts/documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java
 
   Force regenerate an interface from an OpenAPI document, ignoring version checks:
-    aigenpipeline -f -o specs/openapi.yaml prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java
+    aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
-  Ask how to improve a prompt after viewing the initial generation:
+  Ask how to improve a prompt after viewing the initial generation of openapi.yaml:
     aigenpipeline -o PreviousOutput.java prompts/promptGenertaion.txt specs/openapi.yaml --ask "Why did you not use annotations?"  
 
 Note:

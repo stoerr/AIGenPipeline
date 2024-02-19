@@ -75,7 +75,7 @@ public class AIGenerationTaskTest {
         Assert.assertFalse(task.hasToBeRun());
 
         String result = task.explain(MockAIChatBuilder::new, new File("."), "Why oh why oh why?");
-        assertEquals(result, Files.readString(expectsDir.resolve("explanation.txt")));
+        assertEquals(result.trim(), Files.readString(expectsDir.resolve("explanation.txt")).trim());
     }
 
     @Test

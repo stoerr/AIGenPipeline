@@ -63,16 +63,28 @@ public class AIGenerationTask implements Cloneable {
             Pattern.compile("\\A<!--(?s).*?Copyright.*?Adobe.*?Licensed under.*?-->");
 
 
-    private final List<File> inputFiles = new ArrayList<>();
+    private List<File> inputFiles = new ArrayList<>();
     private File outputFile;
     private String prompt;
     private File promptFile;
     private String systemMessage;
     private File systemMessageFile;
+    private boolean force;
 
     @Override
     public AIGenerationTask clone() throws CloneNotSupportedException {
         return (AIGenerationTask) super.clone();
+    }
+
+    /** Creates a deep copy of the task. */
+    public AIGenerationTask copy() {
+        try {
+            AIGenerationTask copy = (AIGenerationTask) super.clone();
+            copy.inputFiles = new ArrayList<>(inputFiles);
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("Bug - impossible.", e);
+        }
     }
 
     public AIGenerationTask addOptionalInputFile(@Nullable File file) {
@@ -276,7 +288,7 @@ public class AIGenerationTask implements Cloneable {
      */
     public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
-        if (!hasToBeRun()) {
+        if (!force && !hasToBeRun()) {
             LOG.info("Task does not have to be run for: " + outputRelPath);
             return this;
         }
@@ -297,6 +309,12 @@ public class AIGenerationTask implements Cloneable {
         }
         LOG.info("Wrote file file://" + outputFile.getAbsolutePath());
         return this;
+    }
+
+    /** For debugging purposes: returns the JSON that would be sent to the AI. */
+    public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
+        String outputRelPath = relativePath(this.outputFile, rootDirectory);
+        return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();
     }
 
     @Nonnull
@@ -359,4 +377,10 @@ public class AIGenerationTask implements Cloneable {
                 '}';
     }
 
+    /**
+     * If true the generation will be run even if not {@link #hasToBeRun()}.
+     */
+    public void force(boolean force) {
+        this.force = force;
+    }
 }
