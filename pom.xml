@@ -27,14 +27,16 @@
             <id>site</id>
             <url>file://${project.build.directory}/site</url>
         </site>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>github</id>
+            <name>Github Packages for stoerr/AIGenPipeline</name>
+            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
         </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>Github Packages for stoerr/AIGenPipeline</name>
+            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
+        </snapshotRepository>
     </distributionManagement>
     <licenses>
         <license>
