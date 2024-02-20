@@ -7,7 +7,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,7 +27,6 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     public OpenAIChatBuilderImpl() {
         openAiApiKey = System.getenv("OPENAI_API_KEY");
-        Objects.requireNonNull(openAiApiKey, "openAiApiKey needed - not found in environment variable OPENAI_API_KEY");
     }
 
     @Override
