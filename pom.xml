@@ -66,21 +66,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>4.0.0-M13</version>
-                <configuration>
-                    <markdownToHtml>
-                        <doxiaModuleNames>
-                            <doxiaModuleName>markdown</doxiaModuleName>
-                        </doxiaModuleNames>
-                    </markdownToHtml>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>io.github.devacfr.maven.skins</groupId>
-                        <artifactId>reflow-velocity-tools</artifactId>
-                        <version>2.3.4</version>
-                    </dependency>
-                </dependencies>
+                <version>3.12.1</version>
             </plugin>
 
             <plugin>
