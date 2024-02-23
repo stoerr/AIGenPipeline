@@ -12,9 +12,9 @@
     <packaging>jar</packaging>
     <name>AIGenPipeline Framework</name>
     <description>A command line tool and framework for generating code and documentation with AI.</description>
-    <url>https://aigenpipeline.stoerr.net</url>
+    <url>${siteurl}</url>
     <scm>
-        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+        <url>${giturl}</url>
     </scm>
     <dependencies>
         <dependency>

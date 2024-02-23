@@ -12,9 +12,9 @@
     <packaging>jar</packaging>
     <name>AIGenPipeline Command Line Tool</name>
     <description>A command line tool and framework for generating code and documentation with AI.</description>
-    <url>https://aigenpipeline.stoerr.net</url>
+    <url>${siteurl}</url>
     <scm>
-        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+        <url>${giturl}</url>
     </scm>
     <dependencies>
         <dependency>
@@ -61,6 +61,24 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

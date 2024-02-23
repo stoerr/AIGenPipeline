@@ -3,9 +3,6 @@
 # or whether there is no target/site/index.html at all.
 # If so, it runs mvn -N clean site
 
-mvn -N clean install javadoc:aggregate site site:stage
-exit 0
-
 while true;
 do
     if [ ! -f target/site/index.html ]; then

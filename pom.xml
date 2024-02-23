@@ -13,19 +13,33 @@
     </modules>
     <name>AIGenPipeline Project</name>
     <description>A command line tool and framework for generating code and documentation with AI.</description>
-    <url>https://aigenpipeline.stoerr.net</url>
+    <url>${siteurl}</url>
+
     <scm>
-        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+        <url>${giturl}</url>
+        <connection>scm:git:${giturl}</connection>
+        <developerConnection>scm:git:${giturl}</developerConnection>
+        <tag>HEAD</tag>
     </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/stoerr/AIGenPipeline/issues/</url>
+    </issueManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <siteurl>https://stoerr.github.io/AIGenPipeline/</siteurl>
+        <giturl>https://github.com/ist-dresden/composum-AI.git</giturl>
+        <mainClass>net.stoerr.ai.aigenpipeline.commandline.AIGenPipeline</mainClass>
     </properties>
+
     <distributionManagement>
         <site>
             <id>site</id>
-            <url>file://${project.build.directory}/site</url>
+            <url>${siteurl}</url>
         </site>
         <repository>
             <id>github</id>
@@ -38,10 +52,11 @@
             <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
         </snapshotRepository>
     </distributionManagement>
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -61,14 +76,69 @@
             </resource>
         </resources>
 
-        <plugins>
-            <!-- Reports -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.1</version>
-            </plugin>
+        <pluginManagement>
+            <plugins>
+                <!-- === For generating the site === -->
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-site-plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>4.0.0-M13</version>
+                    <configuration>
+                        <markdownToHtml>
+                            <doxiaModuleNames>
+                                <doxiaModuleName>markdown</doxiaModuleName>
+                            </doxiaModuleNames>
+                        </markdownToHtml>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>io.github.devacfr.maven.skins</groupId>
+                            <artifactId>reflow-velocity-tools</artifactId>
+                            <version>2.3.4</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- Reports -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.11</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.6.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.16.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.4.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -114,30 +184,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Reports -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.2.5</version>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.16.2</version>
-                <configuration>
-                    <failOnMissingVersions>true</failOnMissingVersions>
-                </configuration>
-            </plugin>
             <!-- https://mvnrepository.com/artifact/pl.project13.maven/git-commit-id-plugin -->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
@@ -172,22 +218,27 @@
     </build>
     <reporting>
         <plugins>
-            <!-- Surefire Report -->
+            <!-- Reports -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
             </plugin>
-            <!-- JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-            <!-- Javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
-            <!-- Dependency Updates -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
