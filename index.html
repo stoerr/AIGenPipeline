@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="generator" content="#generatedBy()" />
+    <title>AIGenPipeline - command line tool and framework for generating code and documentation with AI</title>
+    <link rel="icon" href="./img/favicons/favicon.ico">
+    <!-- CSS Stylesheets, site.css is included so downstream projects can override them as appropriate. -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/bootstrap-icons.css" />
+    <link rel="stylesheet" href="./css/maven-base.css" />
+    <link rel="stylesheet" href="./css/prettify.css" />
+    <link rel="stylesheet" href="https://bootswatch.com/5/cerulean/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/maven-theme.css" />
+    <link rel="stylesheet" href="./css/site.css" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SL01MYCNDC"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-SL01MYCNDC');
+            </script>
+<meta name="description" content="A command line tool to generate files using an AI - either ChatGPT or a model with a similar chat completion interface." /><meta name="keywords" content="AI,ChatGPT,Software Development,Productivity" />  </head>
+  <body class="d-flex flex-column h-100">
+
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+        <div id="projectBarContainer" class="container-fluid justify-content-center">
+<a href="#" id="navbarIconLink" title="Navbar Brand Icon" class="navbar-brand text-wrap ps-2"> AIGenPipeline Project
+</a>          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div id="navbarCollapse" class="collapse navbar-collapse flex-grow-0">
+            <ul id="navbarList" class="navbar-nav">
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="OverviewMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Overview <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="OverviewMenuDropdown">
+                 <li class="nav-item dropdown-item" id="IntroductionDropdown">
+                   <a title="Introduction" class="dropdown-item">Introduction</a>                 </li>
+               </ul>
+             </li>
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="ModulesMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Modules <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="ModulesMenuDropdown">
+                 <li class="nav-item dropdown-item" id="AIGenPipeline Command Line ToolDropdown">
+                   <a href="aigenpipeline-commandline/index.html" id="AIGenPipeline Command Line ToolDropdownLink" title="AIGenPipeline Command Line Tool"  class="dropdown-item" >AIGenPipeline Command Line Tool</a>                 </li>
+                 <li class="nav-item dropdown-item" id="AIGenPipeline FrameworkDropdown">
+                   <a href="aigenpipeline-framework/index.html" id="AIGenPipeline FrameworkDropdownLink" title="AIGenPipeline Framework"  class="dropdown-item" >AIGenPipeline Framework</a>                 </li>
+               </ul>
+             </li>
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="Project DocumentationMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Project Documentation <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="Project DocumentationMenuDropdown">
+                 <li class="nav-item dropdown-item dropdown-submenu">
+                   <a href="project-info.html" id="Project InformationDropdownLink" title="Project Information"  class="dropdown-item" >Project Information</a>
+                   <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-convergence.html" id="Dependency ConvergenceDropdownLink" title="Dependency Convergence"  class="dropdown-item" >Dependency Convergence</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-info.html" id="Dependency InformationDropdownLink" title="Dependency Information"  class="dropdown-item" >Dependency Information</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="distribution-management.html" id="Distribution ManagementDropdownLink" title="Distribution Management"  class="dropdown-item" >Distribution Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a title="About" class="dropdown-item">About</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="issue-management.html" id="Issue ManagementDropdownLink" title="Issue Management"  class="dropdown-item" >Issue Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="licenses.html" id="LicensesDropdownLink" title="Licenses"  class="dropdown-item" >Licenses</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="modules.html" id="Project ModulesDropdownLink" title="Project Modules"  class="dropdown-item" >Project Modules</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-management.html" id="Plugin ManagementDropdownLink" title="Plugin Management"  class="dropdown-item" >Plugin Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugins.html" id="PluginsDropdownLink" title="Plugins"  class="dropdown-item" >Plugins</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="scm.html" id="Source Code ManagementDropdownLink" title="Source Code Management"  class="dropdown-item" >Source Code Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="summary.html" id="SummaryDropdownLink" title="Summary"  class="dropdown-item" >Summary</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="team.html" id="TeamDropdownLink" title="Team"  class="dropdown-item" >Team</a>                     </li>
+                   </ul>
+                 </li>
+                 <li class="nav-item dropdown-item dropdown-submenu">
+                   <a href="project-reports.html" id="Project ReportsDropdownLink" title="Project Reports"  class="dropdown-item" >Project Reports</a>
+                   <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
+                     <li class="nav-item dropdown-item">
+                       <a href="surefire-report.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="jacoco-aggregate/index.html" id="JaCoCo AggregateDropdownLink" title="JaCoCo Aggregate"  class="dropdown-item" >JaCoCo Aggregate</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="apidocs/index.html" id="JavadocDropdownLink" title="Javadoc"  class="dropdown-item" >Javadoc</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="testapidocs/index.html" id="Test JavadocDropdownLink" title="Test Javadoc"  class="dropdown-item" >Test Javadoc</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-updates-aggregate-report.html" id="Dependency Updates Aggregate ReportDropdownLink" title="Dependency Updates Aggregate Report"  class="dropdown-item" >Dependency Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-updates-report.html" id="Dependency Updates ReportDropdownLink" title="Dependency Updates Report"  class="dropdown-item" >Dependency Updates Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-updates-aggregate-report.html" id="Plugin Updates Aggregate ReportDropdownLink" title="Plugin Updates Aggregate Report"  class="dropdown-item" >Plugin Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-updates-report.html" id="Plugin Updates ReportDropdownLink" title="Plugin Updates Report"  class="dropdown-item" >Plugin Updates Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="property-updates-aggregate-report.html" id="Property Updates Aggregate ReportDropdownLink" title="Property Updates Aggregate Report"  class="dropdown-item" >Property Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="property-updates-report.html" id="Property Updates ReportDropdownLink" title="Property Updates Report"  class="dropdown-item" >Property Updates Report</a>                     </li>
+                   </ul>
+                 </li>
+               </ul>
+             </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <nav id="projectBar" class="navbar py-0 navbar-dark bg-primary" aria-label="projectBarList">
+        <div id="projectBarContainer" class="container-fluid">
+
+          <div id="projectBaDateVersionContainer" class="justify-content-start">
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-02-23</span>
+            <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 0.1-SNAPSHOT</span>
+          </div>
+          <div id="breadcrumbSpacer" ></div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-shrink-0" role="main">
+      <div class="container mt-3 rounded">
+<!-- https://github.blog/2008-12-19-github-ribbons/ -->
+<a href="https://github.com/stoerr/AIGenPipeline" style=" position: absolute; top: 0px; right: 0px; " class="externalLink">
+  <img src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" width="149" height="149" class="attachment-full size-full" alt="Fork me on GitHub" /></img>
+</a>
+<section>
+<h1>Command line tool AIGenPipeline</h1>
+<blockquote>
+
+<p>In silence, code weaves,<br />
+Through prompts, AI breathes life anew,<br />
+Scripts bloom, knowledge leaves.</p>
+<p>Git guards every step,<br />
+In the dance of creation,<br />
+Change blooms, watched and kept.<br />
+&#x2013; ChatGPT</p>
+</blockquote><section>
+<h2>Basic idea</h2>
+<p>This is a command line tool to generate files using an AI - either ChatGPT or a model with a similar chat completion
+interface. It can be used to generate code, documentation, or other text files. Each run of the command line tool takes
+at least one prompt file with instructions what to generate as argument, but can also take other source files to be
+processed as further input. The output is written to a text file.</p>
+<p>It can be used to solve complex tasks with several steps by chaining several runs of the tool -
+e.g. create an OpenAPI document from a specification, then generate an interface from
+that, a test and an implementation class. Of course, manual inspection and editing of the generated files will usually
+be necessary.</p>
+<p>I suggest to inspect the intermediate and final results and committing them into a version control system like Git.
+That ensures manual checks when they are regenerated, and minimizes regeneration.</p></section><section>
+<h2>Some example usages</h2>
+<ol style="list-style-type: decimal;">
+
+<li>
+<p><strong>Basic Generation</strong>: Generating an OpenAPI document interface, tests, and implementation class could be achieved by
+chaining runs of <code>AIGenPipeline</code>, each with the appropriate prompt and input files. For example:</p>
+
+<div class="verbatim">
+<pre><code class="language-shell">aigenpipeline -p openapi_prompt.txt -o generated_openapi.yaml
+aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java
+aigenpipeline -p test_prompt.txt -i generated_interface.java -o generated_test.java
+</code></pre></div></li>
+<li>
+<p><strong>Explanation / Query</strong>: After generating an output, if there are questions or the need for clarification on how to
+improve it:</p>
+
+<div class="verbatim">
+<pre><code class="language-shell">aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --ask \
+     &quot;Why wasn't a @GET annotation used in method foo? How would I have to change the prompt to make sure it's 
+used?&quot;
+</code></pre></div></li>
+<li>
+<p><strong>Force Regeneration</strong>: Normally a versioning mechanism (see below) ensures the result is not regenerated unless the
+input changes. The <code>-f</code> flag disables this checking:</p>
+
+<div class="verbatim">
+<pre><code class="language-shell">aigenpipeline -f -o specs/openapi.yaml api_interface_prompt.txt src/main/java/foo/MyInterface.java
+</code></pre></div>
+<p>Alternatively, the output files could just be removed before running the tool, or the version comments in suitable
+input files or prompt file(s) could be changed.</p></li>
+</ol></section><section>
+<h2>Caching and versioning</h2>
+<p>Since generation takes time, costs a little and the results have to be manually checked, the tool takes precaution
+not to regenerate the output files unless the input changes.</p>
+<p>In the simplest case it can just do nothing when the output file is already there. If input files are changed,
+the output file would have to be removed to enforce regeneration.</p>
+<p>Another work mode is checking whether the output file is newer than the input files (e.g. Makefile style usage)
+But this has the problem that that does not sensibly work if the output files are checked in with a version control
+system with Git, and would also regenerate files in case of minor changes in the input files.</p>
+<p>The main suggested work mode (which is also the default) is to provide the input and prompt files with version comments
+that declare the version of the input file, and only generate the output file if it is not present, or regenerate the
+output file if the versions have changed. A version comment in the output file will be generated, which declares a
+version for the output file (a hash of it's content) and the versions of the used input files. The version comment
+in input and prompt files can be manually changed to force regeneration of the output file.</p><section>
+<h3>Structure of version comments</h3>
+<p>A version comment can e.g. look like this:</p>
+
+<div class="verbatim">
+<pre><code>/* AIGenVersion(ourversion, inputfile1@version1, inputfile2@version2, ...) */
+</code></pre></div>
+<p>To declare a version for a manually created prompt / source file you can just put in a version comment like
+<code>AIGenVersion(1.0)</code> and change the version number each time you want to force regeneration.</p>
+<p>The comment syntax (in this case /* */) is ignored - we just look for the AIGenVersion via regular expression.
+A version comment will be written at the start or end of the output file; that and the used comment syntax is
+determined by the file extension.</p></section></section><section>
+<h2>Other features</h2>
+<p>If you are not satisfied with the result, the tool can also be used to ask the AI for clarification: ask a question
+about the result or have it make suggestions how to improve the prompt. This mode will not write the output file, but
+recreate the conversation that lead to the output file and ask the AI for a clarification or suggestion in form of a
+chat continuation.</p></section><section>
+<h2>Limitations and additional ideas (not implemented yet)</h2>
+<ul>
+
+<li>This means the resulting file is always completely regenerated or not at all. How to make differential changes? One
+idea would be to give the previous file to the AI and ask it to make minimal changes.</li>
+</ul></section><section>
+<h2>Command Usage</h2>
+
+<div class="verbatim">
+<pre><code>Usage:
+aigenpipeline [options] [&lt;input_files&gt;...]
+
+Options:
+  -h, --help               Show this help message and exit.
+  --version                Show the version of the AIGenPipeline tool and exit.
+  -o, --output &lt;file&gt;      Specify the output file where the generated content will be written. Mandatory.
+  -p, --prompt &lt;file&gt;      Reads a prompt from the given file. Exactly one needs to be given.
+  -s, --sysmsg &lt;file&gt;      Optional: Reads a system message from the given file instead of using the default. 
+  -v, --verbose            Enable verbose output to stderr, providing more details about the process.
+  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
+                           actually calling the AI or writing any files.
+  -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
+                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
+                           regenerated.
+  -f, --force              Force regeneration of output files, ignoring any version checks.
+  --ask &lt;question&gt;         Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
+                           that was given to generate the output file, and the additional --ask &lt;question&gt; option.
+                           It recreates the conversation that lead to the output file and asks the AI for a 
+                           clarification. The output file is not written, but read to recreate the conversation.
+  -u, --url &lt;url&gt;          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
+                           In the case of OpenAI the API key is expected to be in the environment variable 
+                           OPENAI_API_KEY, or given as -k option.
+  -k, --key &lt;key&gt;          The API key for the AI server. If not given, it's expected to be in the environment variable 
+                           OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
+                           an API key. Used in &quot;Authorization: Bearer &lt;key&gt;&quot; header.
+  -m, --model &lt;model&gt;      The model to use for the AI. Default is gpt-4-turbo-preview .
+
+Arguments:
+  [&lt;input_files&gt;...]       Input files to be processed. 
+
+Examples:
+  Generate documentation from a prompt file:
+    aigenpipeline -p documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java
+
+  Force regenerate an interface from an OpenAPI document, ignoring version checks:
+    aigenpipeline -f -o specs/openapi.yaml -p api_interface_prompt.txt src/main/java/foo/MyInterface.java
+
+  Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
+    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --ask &quot;Why did you not use annotations?&quot;  
+
+Note:
+  It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
+  More detailed instructions and explanations can be found in the README at https://github.com/stoerr/AIGenPipeline .
+</code></pre></div></section></section>
+      </div>
+    </main>
+
+  <footer class="footer mt-auto py-4 bg-light text-dark">
+    <div class="container-fluid text-md-left">
+        <div class="row">
+          <div id="socialMediaDiv" class="col-md-5 col-lg-4 col-xl-4 mx-auto mb-md-0">
+
+            <div id="copyrightDiv" class="pt-3">
+              <p>&#169;
+      2024
+Dr. Hans-Peter Störr
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./js/jquery.slim.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/prettify.js"></script>
+
+    <!-- Used to enable the code-prettify running on the view. -->
+    <script>
+        addEventListener('load', function(event) { PR.prettyPrint(); }, false);
+    </script>
+  </body>

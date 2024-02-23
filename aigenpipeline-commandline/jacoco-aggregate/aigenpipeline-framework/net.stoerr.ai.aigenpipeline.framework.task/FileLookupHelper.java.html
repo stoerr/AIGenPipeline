@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>FileLookupHelper.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">FileLookupHelper.java</span></div><h1>FileLookupHelper.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+/**
+ * Makes it easy to find files to process with {@link AIGenerationTask} etc.
+ */
+public class FileLookupHelper {
+
+<span class="nc" id="L26">    private static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());</span>
+
+    public static final String HTML_PATTERN = &quot;.*\\.html&quot;;
+    private final File directory;
+
+<span class="nc" id="L31">    private FileLookupHelper(String path) {</span>
+<span class="nc" id="L32">        sanityCheck();</span>
+        try {
+<span class="nc" id="L34">            directory = new File(path).getAbsoluteFile().getCanonicalFile();</span>
+<span class="nc" id="L35">        } catch (IOException e) {</span>
+<span class="nc" id="L36">            throw new IllegalStateException(&quot;Path &quot; + path + &quot; does not exist&quot;, e);</span>
+<span class="nc" id="L37">        }</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (!directory.isDirectory()) {</span>
+<span class="nc" id="L39">            throw new IllegalStateException(&quot;Directory &quot; + directory + &quot; does not exist&quot;);</span>
+        }
+<span class="nc" id="L41">    }</span>
+
+    private static void sanityCheck() {
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        if (!new File(&quot;src/main/java&quot;).isDirectory() || !new File(&quot;pom.xml&quot;).isFile()) {</span>
+            // This might be actually OK, but seems more likely to be a mistake. Let's see.
+<span class="nc" id="L46">            throw new IllegalStateException(&quot;Something is wrong - we are not started in the maven project, but &quot; + new File(&quot;.&quot;).getAbsolutePath());</span>
+        }
+<span class="nc" id="L48">    }</span>
+
+    public static FileLookupHelper fromPath(String... relativePaths) {
+<span class="nc" id="L51">        StringBuilder path = new StringBuilder();</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        for (String relativePath : relativePaths) {</span>
+<span class="nc" id="L53">            path.append(relativePath).append(&quot;/&quot;);</span>
+        }
+<span class="nc" id="L55">        return new FileLookupHelper(path.toString());</span>
+    }
+
+    /**
+     * Make repository from environment variable.
+     */
+    public static FileLookupHelper fromEnv(@Nonnull String envVar, @Nullable String relativePath) {
+<span class="nc" id="L62">        String path = System.getenv(envVar);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (path == null) {</span>
+<span class="nc" id="L64">            throw new IllegalStateException(&quot;Environment variable &quot; + envVar + &quot; not set&quot;);</span>
+        }
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (relativePath != null) {</span>
+<span class="nc" id="L67">            path = path + &quot;/&quot; + relativePath;</span>
+        }
+<span class="nc" id="L69">        return new FileLookupHelper(path);</span>
+    }
+
+    /**
+     * File relative to repository root - that doesn't need to exist (might be output file).
+     */
+    public File file(String relpath) {
+<span class="nc" id="L76">        return new File(directory, relpath);</span>
+    }
+
+    /**
+     * Files in a directory, matching a regex.
+     */
+    public List&lt;File&gt; files(@Nonnull String relpathDirectory, @Nullable String filePathRegex, boolean recursive) {
+<span class="nc" id="L83">        File dir = new File(directory, relpathDirectory);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (!dir.isDirectory()) {</span>
+<span class="nc" id="L85">            throw new IllegalStateException(&quot;Directory &quot; + dir + &quot; does not exist&quot;);</span>
+        }
+<span class="nc" id="L87">        List&lt;File&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        Pattern filePathPattern = filePathRegex != null ? Pattern.compile(filePathRegex) : Pattern.compile(&quot;.*&quot;);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!recursive) {</span>
+<span class="nc" id="L90">            File[] files = dir.listFiles((dir1, name) -&gt; filePathPattern.matcher(dir1 + &quot;/&quot; + name).matches());</span>
+<span class="nc" id="L91">            Arrays.stream(Objects.requireNonNull(files, dir.toString()))</span>
+<span class="nc" id="L92">                    .filter(File::isFile).forEach(result::add);</span>
+<span class="nc" id="L93">        } else {</span>
+            try {
+<span class="nc" id="L95">                Files.walkFileTree(dir.toPath(), new SimpleFileVisitor&lt;&gt;() {</span>
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">                        if (filePathPattern.matcher(file.getFileName().toString()).matches()) {</span>
+<span class="nc" id="L99">                            result.add(file.toFile());</span>
+                        }
+<span class="nc" id="L101">                        return super.visitFile(file, attrs);</span>
+                    }
+                });
+<span class="nc" id="L104">            } catch (IOException e) {</span>
+<span class="nc" id="L105">                LOG.severe(&quot;for &quot; + dir + &quot;:&quot; + e);</span>
+<span class="nc" id="L106">            }</span>
+        }
+<span class="nc" id="L108">        return result;</span>
+    }
+
+    /**
+     * All files matching a filePathRegex that contain a pattern.
+     */
+    public List&lt;File&gt; filesContaining(@Nonnull String relpathDirectory, @Nonnull String filePathRegex, @Nonnull String pattern, boolean recursive) {
+<span class="nc" id="L115">        List&lt;File&gt; candidates = files(relpathDirectory, filePathRegex, recursive);</span>
+<span class="nc" id="L116">        List&lt;File&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L117">        Pattern patternPattern = Pattern.compile(pattern);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (File file : candidates) {</span>
+            try {
+<span class="nc" id="L120">                String content = Files.readString(file.toPath());</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                if (patternPattern.matcher(content).find()) {</span>
+<span class="nc" id="L122">                    result.add(file);</span>
+                }
+<span class="nc" id="L124">            } catch (IOException e) {</span>
+<span class="nc" id="L125">                LOG.severe(&quot;for &quot; + file + &quot;:&quot; + e);</span>
+<span class="nc" id="L126">            }</span>
+<span class="nc" id="L127">        }</span>
+<span class="nc" id="L128">        return result;</span>
+    }
+
+    /**
+     * File from full java class name.
+     */
+    @Nonnull
+    public File javaFile(@Nonnull String fullName) {
+<span class="nc" id="L136">        return new File(directory, fullName.replaceAll(&quot;[.]&quot;, &quot;/&quot;) + &quot;.java&quot;);</span>
+    }
+
+    /**
+     * File for documenting a full java class name.
+     */
+    @Nonnull
+    public File javaMdFile(@Nonnull String fullName) {
+<span class="nc" id="L144">        return new File(directory, fullName.replaceAll(&quot;[.]&quot;, &quot;/&quot;) + &quot;.md&quot;);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

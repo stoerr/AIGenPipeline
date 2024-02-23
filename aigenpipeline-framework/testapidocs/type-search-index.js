@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"net.stoerr.ai.aigenpipeline.framework.task","l":"AIGenerationTaskTest"},{"p":"net.stoerr.ai.aigenpipeline.framework.task","l":"AIVersionMarkerTest"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"net.stoerr.ai.aigenpipeline.framework.task","l":"MockAIChatBuilder"},{"p":"net.stoerr.ai.aigenpipeline.framework.chat","l":"OpenAIChatBuilderImplTest"}]

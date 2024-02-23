@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper,265,0,22,0,53,0,22,0,11,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIGenerationTask,816,0,76,0,177,0,64,0,26,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIVersionMarker,170,0,20,0,32,0,19,0,9,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper.new SimpleFileVisitor() {...},31,0,2,0,4,0,3,0,2,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.Message,9,0,0,0,4,0,1,0,1,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.Choice,3,0,0,0,1,0,1,0,1,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl,216,0,18,0,52,0,21,0,12,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionRequest,15,0,0,0,6,0,1,0,1,0

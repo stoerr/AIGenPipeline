@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AIGenerationTask.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">AIGenerationTask.java</span></div><h1>AIGenerationTask.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
+
+import static java.util.Objects.requireNonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
+
+/**
+ * We support the generation of files using an AI, specifically ChatGPT. A generation task can have several input files.
+ * Some of them can be prompt files with task descriptions, and some of them source files to be processed. The output
+ * of each task is one text file. A complex task can have several steps leading to several intermediate files.
+ * &lt;p&gt;
+ * Since ChatGPT is not particularily fast not free and the generation results have to be manually checked, this is
+ * heavily cached.
+ * Into each output file we write the versions of all the input files from which it was generated into a comment.
+ * When the tasks are run, we compare the
+ * versions of all the input files with the versions recorded in the comment, and only regenerate the output file if
+ * the versions have changed. An input file can have a version comment that explicitly states the version, or we take the
+ * an abbreviated SHA256 hash of the input file as version. It is possible to explicitly state the versions in
+ * version comments in the input files to avoid regenerating all files if minor details e.g. in a prompt file are
+ * changed - only when the prompt file version comment is changed everything is regenerated.
+ * &lt;p&gt;
+ * A version comment can e.g. look like this:
+ * &lt;p&gt;
+ * // AIGenVersion(ourversion, inputfile1@version1, inputfile2@version2, ...)
+ * &lt;p&gt;
+ * where ourversion and version1 and version2 are hashes. ourversion is the hash of the original output of the AI.
+ * The comment syntax (in this case //) is ignored - we just look for the AIGenVersion via regex.
+ * &lt;p&gt;
+ * Normally the intermediate and final results should be checked in with Git. That ensures manual checks when
+ * they are regenerated, and minimizes regeneration.
+ */
+<span class="nc" id="L49">public class AIGenerationTask implements Cloneable {</span>
+
+<span class="nc" id="L51">    private static final Logger LOG = Logger.getLogger(AIGenerationTask.class.getName());</span>
+
+    /**
+     * A marker that can be inserted by the AI when something is wrong / unclear. We will make sure the user
+     * sees that by aborting.
+     */
+    public static final String FIXME = &quot;FIXME&quot;;
+
+    /**
+     * A pattern that matches the license header, which we want to remove to avoid clutter.
+     */
+<span class="nc" id="L62">    protected static final Pattern PATTERN_LICENCE =</span>
+<span class="nc" id="L63">            Pattern.compile(&quot;\\A&lt;!--(?s).*?Copyright.*?Adobe.*?Licensed under.*?--&gt;&quot;);</span>
+
+
+<span class="nc" id="L66">    private List&lt;File&gt; inputFiles = new ArrayList&lt;&gt;();</span>
+    private File outputFile;
+    private String prompt;
+    private File promptFile;
+    private String systemMessage;
+    private File systemMessageFile;
+    private boolean force;
+
+    @Override
+    public AIGenerationTask clone() throws CloneNotSupportedException {
+<span class="nc" id="L76">        return (AIGenerationTask) super.clone();</span>
+    }
+
+    /**
+     * Creates a deep copy of the task.
+     */
+    public AIGenerationTask copy() {
+        try {
+<span class="nc" id="L84">            AIGenerationTask copy = (AIGenerationTask) super.clone();</span>
+<span class="nc" id="L85">            copy.inputFiles = new ArrayList&lt;&gt;(inputFiles);</span>
+<span class="nc" id="L86">            return copy;</span>
+<span class="nc" id="L87">        } catch (CloneNotSupportedException e) {</span>
+<span class="nc" id="L88">            throw new IllegalStateException(&quot;Bug - impossible.&quot;, e);</span>
+        }
+    }
+
+    public AIGenerationTask addOptionalInputFile(@Nullable File file) {
+<span class="nc bnc" id="L93" title="All 4 branches missed.">        if (file != null &amp;&amp; file.exists()) {</span>
+<span class="nc" id="L94">            inputFiles.add(file);</span>
+        } else {
+<span class="nc" id="L96">            LOG.fine(&quot;Optional file not there: &quot; + file);</span>
+        }
+<span class="nc" id="L98">        return this;</span>
+    }
+
+    public AIGenerationTask addInputFiles(List&lt;File&gt; files) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (File file : files) {</span>
+<span class="nc" id="L103">            addInputFile(file);</span>
+<span class="nc" id="L104">        }</span>
+<span class="nc" id="L105">        return this;</span>
+    }
+
+    public AIGenerationTask addInputFile(File file) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (!file.exists()) {</span>
+<span class="nc" id="L110">            throw new IllegalArgumentException(&quot;File &quot; + file + &quot; does not exist&quot;);</span>
+        }
+<span class="nc" id="L112">        inputFiles.add(file);</span>
+<span class="nc" id="L113">        return this;</span>
+    }
+
+    public AIGenerationTask setOutputFile(@Nonnull File file) {
+<span class="nc" id="L117">        requireNonNull(file, &quot;File must not be null&quot;);</span>
+<span class="nc" id="L118">        outputFile = file;</span>
+<span class="nc" id="L119">        return this;</span>
+    }
+
+    protected String embedComment(String content, String comment) {
+        String result;
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        if (outputFile.getName().endsWith(&quot;.java&quot;)) {</span>
+<span class="nc" id="L125">            result = &quot;// &quot; + comment + &quot;\n\n&quot; + content;</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        } else if (outputFile.getName().endsWith(&quot;.html&quot;)) {</span>
+<span class="nc" id="L127">            result = content + &quot;\n\n&lt;!-- &quot; + comment + &quot; --&gt;\n&quot;;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        } else if (outputFile.getName().endsWith(&quot;.css&quot;)) {</span>
+<span class="nc" id="L129">            result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        } else if (outputFile.getName().endsWith(&quot;.md&quot;)) {</span>
+<span class="nc" id="L131">            result = &quot;&lt;!-- &quot; + comment + &quot; --&gt;\n\n&quot; + content;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        } else if (outputFile.getName().endsWith(&quot;.sh&quot;)) {</span>
+<span class="nc" id="L133">            result = &quot;# &quot; + comment + &quot;\n&quot; + content;</span>
+        } else {
+<span class="nc" id="L135">            result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+        }
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (!result.endsWith(&quot;\n&quot;)) {</span>
+<span class="nc" id="L138">            result += &quot;\n&quot;;</span>
+        }
+<span class="nc" id="L140">        return result;</span>
+    }
+
+    public boolean hasToBeRun() {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (!outputFile.exists()) {</span>
+<span class="nc" id="L145">            return true;</span>
+        }
+<span class="nc" id="L147">        AIVersionMarker outputVersionMarker = getRecordedOutputVersionMarker();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (outputVersionMarker == null) {</span>
+<span class="nc" id="L149">            return true;</span>
+        }
+<span class="nc" id="L151">        List&lt;String&gt; inputVersions = calculateAllInputsMarkers();</span>
+<span class="nc" id="L152">        List&lt;String&gt; oldInputVersions = outputVersionMarker.getInputVersions();</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        return !new HashSet&lt;Object&gt;(inputVersions).equals(new HashSet&lt;Object&gt;(oldInputVersions));</span>
+    }
+
+    @Nonnull
+    private List&lt;String&gt; calculateAllInputsMarkers() {
+<span class="nc" id="L158">        List&lt;String&gt; allInputsMarkers = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        if (systemMessageFile != null) {</span>
+<span class="nc" id="L160">            allInputsMarkers.add(determineFileVersionMarker(systemMessageFile));</span>
+        }
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (promptFile != null) {</span>
+<span class="nc" id="L163">            allInputsMarkers.add(determineFileVersionMarker(promptFile));</span>
+        } else {
+<span class="nc" id="L165">            allInputsMarkers.add(prompt);</span>
+        }
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        for (File inputFile : inputFiles) {</span>
+<span class="nc" id="L168">            String version = determineFileVersionMarker(inputFile);</span>
+<span class="nc" id="L169">            allInputsMarkers.add(version);</span>
+<span class="nc" id="L170">        }</span>
+<span class="nc" id="L171">        return allInputsMarkers;</span>
+    }
+
+    protected String determineFileVersionMarker(@Nonnull File file) {
+<span class="nc" id="L175">        String content = getFileContent(file);</span>
+<span class="nc" id="L176">        requireNonNull(content, &quot;Could not read file &quot; + file);</span>
+<span class="nc" id="L177">        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
+        String version;
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if (aiVersionMarker != null) {</span>
+<span class="nc" id="L180">            version = aiVersionMarker.getOurVersion();</span>
+        } else {
+<span class="nc" id="L182">            version = shaHash(content);</span>
+        }
+<span class="nc" id="L184">        return file.getName() + &quot;-&quot; + version;</span>
+    }
+
+    protected String shaHash(String content) {
+<span class="nc" id="L188">        String condensedWhitespace = content.replaceAll(&quot;\\s+&quot;, &quot; &quot;);</span>
+        try {
+<span class="nc" id="L190">            MessageDigest digest = MessageDigest.getInstance(&quot;SHA-256&quot;);</span>
+<span class="nc" id="L191">            byte[] hash = digest.digest(condensedWhitespace.getBytes(StandardCharsets.UTF_8));</span>
+            // turn first 4 bytes into hex number
+<span class="nc" id="L193">            long hashNumber = ((hash[3] * 256L + hash[2]) * 256L + hash[1]) * 256L + hash[0];</span>
+<span class="nc" id="L194">            String hexString = &quot;00000000&quot; + Long.toHexString(Math.abs(hashNumber));</span>
+<span class="nc" id="L195">            return hexString.substring(hexString.length() - 8);</span>
+<span class="nc" id="L196">        } catch (NoSuchAlgorithmException e) {</span>
+<span class="nc" id="L197">            throw new IllegalStateException(&quot;SHA256 not available&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Version of current output file.
+     */
+    protected AIVersionMarker getRecordedOutputVersionMarker() {
+<span class="nc bnc" id="L205" title="All 2 branches missed.">        if (!outputFile.exists()) {</span>
+<span class="nc" id="L206">            return null;</span>
+        }
+<span class="nc" id="L208">        String content = getFileContent(outputFile);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (content == null) {</span>
+<span class="nc" id="L210">            return null;</span>
+        }
+<span class="nc" id="L212">        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">        if (aiVersionMarker == null) {</span>
+<span class="nc" id="L214">            throw new IllegalStateException(&quot;Could not find version marker in &quot; + outputFile);</span>
+        }
+<span class="nc" id="L216">        return aiVersionMarker;</span>
+    }
+
+    /**
+     * The actual prompt to be executed. The prompt file content can contain placeholders that are replaced by the values given: placeholdersAndValues contain alternatingly placeholder names and values for them.
+     *
+     * @return
+     */
+    public AIGenerationTask setPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
+<span class="nc" id="L225">        String newPrompt = unclutter(getFileContent(promptFile));</span>
+<span class="nc" id="L226">        requireNonNull(newPrompt, &quot;Could not read prompt file &quot; + promptFile);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (placeholdersAndValues.length % 2 != 0) {</span>
+<span class="nc" id="L228">            throw new IllegalArgumentException(&quot;Odd number of placeholdersAndValues&quot;);</span>
+        }
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        for (int i = 0; i &lt; placeholdersAndValues.length; i += 2) {</span>
+<span class="nc" id="L231">            newPrompt = newPrompt.replace(placeholdersAndValues[i], placeholdersAndValues[i + 1]);</span>
+        }
+<span class="nc" id="L233">        this.prompt = newPrompt;</span>
+<span class="nc" id="L234">        this.promptFile = promptFile;</span>
+<span class="nc" id="L235">        return this;</span>
+    }
+
+    protected String getFileContent(@Nonnull File file) {
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (!file.exists()) {</span>
+<span class="nc" id="L240">            return null;</span>
+        }
+        try {
+<span class="nc" id="L243">            return Files.readString(file.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L244">        } catch (IOException e) {</span>
+<span class="nc" id="L245">            throw new IllegalArgumentException(&quot;Error reading file &quot; + file, e);</span>
+        }
+    }
+
+    /* Remove some clutter that is not relevant and might even confuse the AI */
+    protected static String unclutter(String content) {
+<span class="nc" id="L251">        Matcher matcher = PATTERN_LICENCE.matcher(content);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L253">            content = matcher.replaceFirst(&quot;&quot;);</span>
+        }
+<span class="nc" id="L255">        matcher = AIVersionMarker.VERSION_MARKER_PATTERN.matcher(content);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L257">            content = matcher.replaceFirst(&quot;&quot;);</span>
+        }
+<span class="nc" id="L259">        return content;</span>
+    }
+
+    public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
+<span class="nc" id="L263">        String newSystemMessage = unclutter(getFileContent(systemMessageFile));</span>
+<span class="nc" id="L264">        requireNonNull(newSystemMessage, &quot;Could not read system message file &quot; + systemMessageFile);</span>
+<span class="nc" id="L265">        this.systemMessage = newSystemMessage;</span>
+<span class="nc" id="L266">        this.systemMessageFile = systemMessageFile;</span>
+<span class="nc" id="L267">        return this;</span>
+    }
+
+    protected String relativePath(@Nullable File file, @Nonnull File rootDirectory) {
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if (file == null) {</span>
+<span class="nc" id="L272">            return null;</span>
+        }
+<span class="nc" id="L274">        requireNonNull(rootDirectory, &quot;Root directory must not be null&quot;);</span>
+<span class="nc" id="L275">        String rootPath = null;</span>
+        try {
+<span class="nc" id="L277">            rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
+<span class="nc" id="L278">            String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">            if (!filePath.startsWith(rootPath)) {</span>
+<span class="nc" id="L280">                throw new IllegalArgumentException(&quot;File &quot; + file + &quot; is not in root directory &quot; + rootDirectory);</span>
+            }
+<span class="nc" id="L282">            return filePath.substring(rootPath.length() + 1);</span>
+<span class="nc" id="L283">        } catch (IOException e) {</span>
+<span class="nc" id="L284">            throw new IllegalArgumentException(&quot;Error getting canonical path for &quot; + rootDirectory + &quot; or &quot; + file, e);</span>
+        }
+    }
+
+    /**
+     * Execute the task if necessary. If the output file is already there and up to date, nothing is done.
+     */
+    public AIGenerationTask execute(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory) {
+<span class="nc" id="L292">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc bnc" id="L293" title="All 4 branches missed.">        if (!force &amp;&amp; !hasToBeRun()) {</span>
+<span class="nc" id="L294">            LOG.info(&quot;Task does not have to be run for: &quot; + outputRelPath);</span>
+<span class="nc" id="L295">            return this;</span>
+        }
+<span class="nc" id="L297">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
+<span class="nc" id="L298">        String result = chat.execute();</span>
+<span class="nc" id="L299">        LOG.fine(&quot;Result for task execution for: &quot; + outputRelPath + &quot;\n&quot; + result);</span>
+<span class="nc" id="L300">        String outputVersion = shaHash(result);</span>
+<span class="nc" id="L301">        String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();</span>
+<span class="nc" id="L302">        String withVersionComment = embedComment(result, versionComment);</span>
+
+        try {
+<span class="nc" id="L305">            Files.write(outputFile.toPath(), withVersionComment.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L306">        } catch (IOException e) {</span>
+<span class="nc" id="L307">            throw new IllegalStateException(&quot;Error writing file &quot; + outputFile, e);</span>
+<span class="nc" id="L308">        }</span>
+<span class="nc" id="L309">        LOG.info(&quot;Wrote file file://&quot; + outputFile.getAbsolutePath());</span>
+        // We check that after writing since that likely makes it easier to check.
+<span class="nc bnc" id="L311" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
+<span class="nc" id="L312">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
+        }
+<span class="nc" id="L314">        return this;</span>
+    }
+
+    /**
+     * For debugging purposes: returns the JSON that would be sent to the AI.
+     */
+    public String toJson(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory) {
+<span class="nc" id="L321">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc" id="L322">        return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();</span>
+    }
+
+    @Nonnull
+    protected AIChatBuilder makeChatBuilder(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory, String outputRelPath) {
+<span class="nc" id="L327">        requireNonNull(outputFile, &quot;No writeable output file given! &quot; + outputFile);</span>
+<span class="nc" id="L328">        outputFile.getParentFile().mkdirs();</span>
+<span class="nc bnc" id="L329" title="All 4 branches missed.">        if (outputFile.exists() &amp;&amp; !outputFile.canWrite()) {</span>
+<span class="nc" id="L330">            throw new IllegalArgumentException(&quot;No writeable output file given! &quot; + outputFile);</span>
+        }
+<span class="nc bnc" id="L332" title="All 4 branches missed.">        if (prompt == null || prompt.isBlank()) {</span>
+<span class="nc" id="L333">            throw new IllegalArgumentException(&quot;No prompt given!&quot;);</span>
+        }
+<span class="nc" id="L335">        AIChatBuilder chat = chatBuilderFactory.get();</span>
+<span class="nc bnc" id="L336" title="All 4 branches missed.">        if (systemMessage != null &amp;&amp; !systemMessage.isBlank()) {</span>
+<span class="nc" id="L337">            chat.systemMsg(systemMessage);</span>
+        } else {
+            try {
+<span class="nc" id="L340">                String defaultSysPrompt = new String(AIGenerationTask.class.getResourceAsStream(&quot;/defaultsystemprompt.txt&quot;).readAllBytes(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L341">                chat.systemMsg(defaultSysPrompt);</span>
+<span class="nc" id="L342">            } catch (IOException e) {</span>
+<span class="nc" id="L343">                throw new IllegalStateException(&quot;Error reading default system message&quot;, e);</span>
+<span class="nc" id="L344">            }</span>
+        }
+<span class="nc" id="L346">        inputFiles.forEach(file -&gt; {</span>
+            // &quot;Put it into the AI's mouth&quot; pattern https://www.stoerr.net/blog/aimouth
+<span class="nc" id="L348">            chat.userMsg(&quot;Retrieve the content of the input file &quot; + relativePath(file, rootDirectory));</span>
+<span class="nc" id="L349">            chat.assistantMsg(unclutter(getFileContent(file)));</span>
+<span class="nc" id="L350">        });</span>
+<span class="nc" id="L351">        chat.userMsg(prompt);</span>
+<span class="nc" id="L352">        LOG.fine(&quot;Executing chat for: &quot; + outputRelPath + &quot;\n&quot; + chat.toJson());</span>
+<span class="nc" id="L353">        return chat;</span>
+    }
+
+    /**
+     * Ask a question about the previous task execution. We assume it was previously run ({@link #hasToBeRun()} == false),
+     * add the result of the previous execution to the chat, and ask the AI the given question about it.
+     * This can be used e.g. to see why the AI did something, or in the process of improving the prompt, etc.
+     *
+     * @return the answer of the AI - not written to a file!
+     */
+    public String explain(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) {
+<span class="nc" id="L364">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake</span>
+<span class="nc" id="L366">            throw new IllegalStateException(&quot;Task has to be already run for: &quot; + outputRelPath);</span>
+        }
+<span class="nc" id="L368">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
+<span class="nc" id="L369">        String previousOutput = unclutter(getFileContent(outputFile));</span>
+<span class="nc" id="L370">        requireNonNull(previousOutput, &quot;Could not read any content from file &quot; + outputFile);</span>
+<span class="nc" id="L371">        chat.assistantMsg(previousOutput);</span>
+<span class="nc" id="L372">        chat.userMsg(question);</span>
+<span class="nc" id="L373">        String result = chat.execute();</span>
+<span class="nc" id="L374">        LOG.info(&quot;Explanation result for &quot; + outputRelPath + &quot; with question &quot; + question + &quot; is:\n&quot; + result);</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
+<span class="nc" id="L376">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
+        }
+<span class="nc" id="L378">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L383">        return &quot;AIGenerationTask{&quot; + &quot;inputFiles=&quot; + inputFiles +</span>
+                &quot;, outputFile=&quot; + outputFile +
+                &quot;, systemMessageFile=&quot; + systemMessageFile +
+                &quot;, systemMessage='&quot; + systemMessage + '\'' +
+                &quot;, promptFile=&quot; + promptFile +
+                &quot;, prompt='&quot; + prompt + '\'' +
+                '}';
+    }
+
+    /**
+     * If true the generation will be run even if not {@link #hasToBeRun()}.
+     */
+    public void force(boolean force) {
+<span class="nc" id="L396">        this.force = force;</span>
+<span class="nc" id="L397">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
