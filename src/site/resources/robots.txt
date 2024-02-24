@@ -1,4 +1,8 @@
 # Allow everything.
 User-agent: *
+Disallow: /aigenpipeline-*/
+Disallow: /dependency-*/
+Disallow: /plugin-*/
+Disallow: /property-*/
 Allow: /
 SiteMap: https://AIGenPipeline.stoerr.net/sitemap.xml
