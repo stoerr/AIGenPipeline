@@ -1,0 +1,4 @@
+# Allow everything.
+User-agent: *
+Allow: /
+SiteMap: https://AIGenPipeline.stoerr.net/sitemap.xml
