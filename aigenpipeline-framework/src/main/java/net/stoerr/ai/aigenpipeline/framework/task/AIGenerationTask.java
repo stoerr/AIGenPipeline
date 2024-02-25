@@ -244,17 +244,26 @@ public class AIGenerationTask implements Cloneable {
     /**
      * The actual prompt to be executed. The prompt file content can contain placeholders that are replaced by the values given: placeholdersAndValues contain alternatingly placeholder names and values for them.
      *
-     * @return
+     * @return this
      */
     public AIGenerationTask addPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (int i = 0; i < placeholdersAndValues.length; i += 2) {
+            map.put(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
+        }
+        return addPrompt(promptFile, map);
+    }
+
+    /**
+     * The actual prompt to be executed. The prompt file content can contain placeholders that are replaced by the values given.
+     *
+     * @return this
+     */
+    public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues) {
         String newPrompt = unclutter(getFileContent(promptFile));
         requireNonNull(newPrompt, "Could not read prompt file " + promptFile);
-        if (placeholdersAndValues.length % 2 != 0) {
-            throw new IllegalArgumentException("Odd number of placeholdersAndValues");
-        }
-        for (int i = 0; i < placeholdersAndValues.length; i += 2) {
-            newPrompt = newPrompt.replace(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
-            this.placeholdersAndValues.put(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
+        for (Map.Entry<String, String> entry : placeholdersAndValues.entrySet()) {
+            newPrompt = newPrompt.replace(entry.getKey(), entry.getValue());
         }
         if (this.prompt == null) {
             this.prompt = newPrompt;
@@ -262,6 +271,7 @@ public class AIGenerationTask implements Cloneable {
             this.prompt += "\n\n" + newPrompt;
         }
         this.promptFiles.add(promptFile);
+        this.placeholdersAndValues.putAll(placeholdersAndValues);
         return this;
     }
 
