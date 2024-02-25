@@ -10,7 +10,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -65,8 +67,14 @@ public class AIGenerationTask implements Cloneable {
 
     protected List<File> inputFiles = new ArrayList<>();
     protected File outputFile;
+
+    /**
+     * The actual prompt created from prompt files and parameters.
+     */
     protected String prompt;
-    protected File promptFile;
+    protected List<File> promptFiles = new ArrayList<>();
+    protected Map<String, String> placeholdersAndValues = new LinkedHashMap<>();
+
     protected String systemMessage;
     protected File systemMessageFile;
     protected boolean force;
@@ -128,7 +136,7 @@ public class AIGenerationTask implements Cloneable {
     protected String embedComment(String content, String comment) {
         String result;
         String extension = outputFile.getName().substring(outputFile.getName().lastIndexOf('.') + 1);
-        switch(extension) {
+        switch (extension) {
             case "java":
             case "txt": // there is no real comment syntax for txt, but that might be obvious to a human reader
                 result = "// " + comment + "\n\n" + content;
@@ -180,14 +188,10 @@ public class AIGenerationTask implements Cloneable {
         if (systemMessageFile != null) {
             allInputsMarkers.add(determineFileVersionMarker(systemMessageFile));
         }
-        if (promptFile != null) {
-            allInputsMarkers.add(determineFileVersionMarker(promptFile));
-        } else {
-            allInputsMarkers.add(prompt);
-        }
-        for (File inputFile : inputFiles) {
-            String version = determineFileVersionMarker(inputFile);
-            allInputsMarkers.add(version);
+        promptFiles.forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
+        inputFiles.forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
+        if (!placeholdersAndValues.isEmpty()) {
+            allInputsMarkers.add("parms-" + shaHash(placeholdersAndValues.toString()));
         }
         return allInputsMarkers;
     }
@@ -242,7 +246,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return
      */
-    public AIGenerationTask setPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
+    public AIGenerationTask addPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
         String newPrompt = unclutter(getFileContent(promptFile));
         requireNonNull(newPrompt, "Could not read prompt file " + promptFile);
         if (placeholdersAndValues.length % 2 != 0) {
@@ -250,9 +254,14 @@ public class AIGenerationTask implements Cloneable {
         }
         for (int i = 0; i < placeholdersAndValues.length; i += 2) {
             newPrompt = newPrompt.replace(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
+            this.placeholdersAndValues.put(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
         }
-        this.prompt = newPrompt;
-        this.promptFile = promptFile;
+        if (this.prompt == null) {
+            this.prompt = newPrompt;
+        } else {
+            this.prompt += "\n\n" + newPrompt;
+        }
+        this.promptFiles.add(promptFile);
         return this;
     }
 
@@ -410,7 +419,8 @@ public class AIGenerationTask implements Cloneable {
                 ", outputFile=" + outputFile +
                 ", systemMessageFile=" + systemMessageFile +
                 ", systemMessage='" + systemMessage + '\'' +
-                ", promptFile=" + promptFile +
+                ", promptFiles=" + promptFiles +
+                ", placeholdersAndValues=" + placeholdersAndValues +
                 ", prompt='" + prompt + '\'' +
                 '}';
     }

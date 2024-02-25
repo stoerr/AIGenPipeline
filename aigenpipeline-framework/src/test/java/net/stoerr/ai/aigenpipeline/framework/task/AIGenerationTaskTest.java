@@ -62,7 +62,7 @@ public class AIGenerationTaskTest {
     public void testCompleteAIGenerationProcess() throws Exception {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.setPrompt(inputDir.resolve("prompt.txt").toFile());
+        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
         task.addInputFile(inputDir.resolve("input.txt").toFile());
         Path outFile = tempDir.resolve("output.txt");
         task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
@@ -84,7 +84,7 @@ public class AIGenerationTaskTest {
     public void testVersionExtraction() throws Exception {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.setPrompt(inputDir.resolve("promptWithVersion.txt").toFile());
+        task.addPrompt(inputDir.resolve("promptWithVersion.txt").toFile());
         task.addInputFile(inputDir.resolve("input.txt").toFile());
         task.addInputFile(inputDir.resolve("inputWithVersion.txt").toFile());
         Path outFile = tempDir.resolve("outputWithVersion.txt");

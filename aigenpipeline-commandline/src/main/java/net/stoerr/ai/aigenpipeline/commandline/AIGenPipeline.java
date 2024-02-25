@@ -20,7 +20,7 @@ public class AIGenPipeline {
     protected String url;
     protected String key;
     protected List<String> inputFiles = new ArrayList<>();
-    protected String promptFile;
+    protected List<String> promptFiles = new ArrayList<>();
     protected String model = "gpt-4-turbo-preview";
     protected AIGenerationTask task;
     protected File rootDir = new File(".");
@@ -68,7 +68,10 @@ public class AIGenPipeline {
         task = new AIGenerationTask();
         inputFiles.stream().map(this::toFile).forEach(task::addInputFile);
         task.setOutputFile(toFile(Objects.requireNonNull(output, "No output file given.")));
-        task.setPrompt(toFile(Objects.requireNonNull(promptFile, "No prompt file given.")));
+        if (promptFiles.isEmpty()) {
+            throw new IllegalArgumentException("At least one prompt file has to be given.");
+        }
+        promptFiles.stream().map(this::toFile).forEach(task::addPrompt);
         task.force(force);
         if (verbose) {
             logStream.println(task.toJson(this::makeChatBuilder, rootDir));
@@ -105,7 +108,7 @@ public class AIGenPipeline {
                 "  -h, --help               Show this help message and exit.\n" +
                 "  --version                Show the version of the AIGenPipeline tool and exit.\n" +
                 "  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
-                "  -p, --prompt <file>      Reads a prompt from the given file. Exactly one needs to be given.\n" +
+                "  -p, --prompt <file>      Reads a prompt from the given file.\n" +
                 "  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
                 "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
                 "  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
@@ -163,10 +166,7 @@ public class AIGenPipeline {
                     break;
                 case "-p":
                 case "--prompt":
-                    if (promptFile != null) {
-                        System.err.println("Exactly one prompt file has to be given.");
-                    }
-                    promptFile = args[++i];
+                    promptFiles.add(args[++i]);
                     break;
                 case "-s":
                 case "--sysmsg":
