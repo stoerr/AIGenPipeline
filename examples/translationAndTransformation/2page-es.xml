@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wknd/components/page"
+            cq:template="/conf/wknd/settings/wcm/templates/content-page-template"
+            jcr:language="es"
+            jcr:title="Biblioteca de Prompts"
+            hideInNav="true">
+        <root
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container"
+                layout="responsiveGrid">
+            <container
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/container"
+                    layout="responsiveGrid">
+                <teaser_Resumir
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Resumir"
+                        jcr:description="Por favor, escribe un resumen elocuente del texto. El resumen debe capturar sus ideas principales en el estilo en que está escrito el texto, como si pudiera colocarse al frente del texto. Asegúrate de que sea mucho más corto que el original. Asegúrate de que el resumen cumpla con el propósito y objetivo del texto y los puntos clave de todas las secciones temáticas. Escribe de manera clara y sencilla, asegurando precisión y completitud. Solo usa la información proporcionada en el texto; NO uses ninguna información que sepas sobre el mundo."
+                />
+                <teaser_Introducción
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Introducción"
+                        jcr:description="Por favor, escribe una introducción elocuente para el texto, en el estilo en que está escrito el texto, como si pudiera colocarse al frente del texto."
+                />
+                <teaser_Conclusión
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Conclusión"
+                        jcr:description="Por favor, escribe una conclusión elocuente para el texto, en el estilo en que está escrito el texto, como si pudiera colocarse después del texto."
+                />
+                <teaser_Expandir
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Expandir"
+                        jcr:description="Usando las notas proporcionadas como inspiración, escribe un texto que exprese las ideas principales y temas que están presentes. Usa un estilo informativo y profesional."
+                />
+                <teaser_Extender
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Extender"
+                        jcr:description="Por favor, extiende el texto con más detalles y elaboración mientras mantienes el tono y estilo actuales."
+                />
+                <teaser_Resumen
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Resumen"
+                        jcr:description="Por favor, escribe un resumen para el texto que proporcione una visión concisa de los puntos clave y temas principales del texto, como si pudiera colocarse al frente del texto."
+                />
+                <teaser_Titular
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Titular"
+                        jcr:description="Por favor, escribe un titular para el texto. Imprime solo el titular crudo, sin explicaciones y sin comillas. Usa un estilo informativo y profesional."
+                />
+                <teaser_10_sugerencias_de_titular
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="10 sugerencias de titular"
+                        jcr:description="Por favor, escribe 10 sugerencias para un titular para el texto. Imprime solo el titular crudo, sin explicaciones y sin comillas. Usa un estilo informativo y profesional."
+                />
+                <teaser_10_sugerencias_de_titular_subtitular
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="10 sugerencias de titular + subtitular"
+                        jcr:description="Por favor, escribe 10 sugerencias para un titular y un subtítulo para el texto. Para cada sugerencia imprime solo el titular crudo y en la siguiente línea un subtítulo. Por favor, sin explicaciones y sin rodeos con comillas. Usa un estilo informativo y profesional."
+                />
+                <teaser_Pregunta
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Pregunta"
+                        jcr:description="Por favor, responde a la siguiente pregunta basada en el texto dado:"
+                />
+                <teaser_Mejorar
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Mejorar"
+                        jcr:description="Imprime una versión mejorada del texto en un estilo informativo y profesional. También corrige errores ortográficos y gramaticales."
+                />
+                <teaser_Descripción_SEO
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Descripción SEO"
+                        jcr:description="Por favor, crea una descripción para una página web con el siguiente texto, utilizable para la optimización de motores de búsqueda (SEO)."
+                />
+                <teaser_Adelanto
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Adelanto"
+                        jcr:description="Por favor, escribe un adelanto breve y atractivo para el texto, como si pudiera usarse para un enlace al texto. Debería despertar el interés del lector y animarlo a leer el contenido completo."
+                />
+                <teaser_Reescribir_para_Diferente_Audiencia
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Reescribir para Diferente Audiencia"
+                        jcr:description="Por favor, reescribe el texto para adaptarlo a una audiencia diferente:"
+                />
+                <teaser_Resumen_en_Puntos
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Resumen en Puntos"
+                        jcr:description="Por favor, resume los puntos principales del texto como una lista de puntos, como si pudiera colocarse al frente del texto"
+                />
+                <teaser_Texto_Marco_BAB
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Texto Marco BAB"
+                        jcr:description="Por favor, escribe un texto completo usando el marco Antes-Después-Puente (BAB). Comienza describiendo el problema, luego visualiza las mejoras y finalmente introduce la solución que hace posible esta transformación."
+                />
+                <teaser_Texto_Marco_AIDA
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Texto Marco AIDA"
+                        jcr:description="Por favor, escribe un texto completo usando el marco AIDA. Comienza capturando la atención, luego genera interés, induce deseo y finalmente, llama a la acción."
+                />
+                <teaser_Eslogan
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Eslogan"
+                        jcr:description="Basado en el texto dado, por favor crea un eslogan pegajoso y memorable que capture su tema principal. Sácalo como si pudiera colocarse al frente del texto."
+                />
+                <teaser_CTA
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="CTA"
+                        jcr:description="Basado en el texto, crea un llamado a la acción que anime al lector a dar el siguiente paso, y que transmita claramente la propuesta de valor única al lector."
+                />
+                <teaser_Markdown_a_HTML
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Markdown a HTML"
+                        jcr:description="Convierte el siguiente texto de Markdown a HTML:"
+                />
+                <teaser_Describir_imagen
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Describir imagen"
+                        jcr:description="Por favor, describe la siguiente imagen de manera que una persona ciega pueda entenderla."
+                />
+            </container>
+        </root>
+    </jcr:content>
+</jcr:root>
+
+<!-- AIGenVersion(5fc20787, 1transformToPage.prompt-381163b1, 1prompts-es.json-73dad555) -->

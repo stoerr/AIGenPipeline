@@ -1,0 +1,26 @@
+/* AIGenVersion(5425cbd5, 0translate.prompt-44e46177, 0predefinedprompts.json-339a1201, parms-29ae5af2) */
+
+{
+  "---": "",
+  "Résumer": "Veuillez écrire un résumé éloquent du texte. Le résumé doit capturer ses idées principales dans le style dans lequel le texte est écrit, comme s'il pouvait être placé devant le texte. Assurez-vous qu'il soit beaucoup plus court que l'original. Veillez à ce que le résumé réponde au but et à l'objectif du texte et aux points clés de toutes les sections thématiques. Écrivez de manière claire et simple, en garantissant l'exactitude et l'exhaustivité. Utilisez uniquement les informations fournies dans le texte ; NE PAS utiliser d'informations que vous connaissez sur le monde.",
+  "Introduction": "Veuillez écrire une introduction éloquente pour le texte, dans le style dans lequel le texte est écrit, comme si elle pouvait être placée devant le texte.",
+  "Conclusion": "Veuillez écrire une conclusion éloquente pour le texte, dans le style dans lequel le texte est écrit, comme si elle pouvait être placée après le texte.",
+  "Développer": "En utilisant les notes fournies comme inspiration, écrivez un texte qui exprime les idées principales et les thèmes présents. Utilisez un style informatif professionnel.",
+  "Étendre": "Veuillez étendre le texte avec plus de détails et d'élaborations tout en maintenant le ton et le style actuels.",
+  "Résumé": "Veuillez écrire un résumé pour le texte qui fournit un aperçu concis des points clés et des thèmes principaux du texte, comme s'il pouvait être placé devant le texte.",
+  "Titre": "Veuillez écrire un titre pour le texte. Imprimez juste le titre brut, sans explications et sans guillemets. Utilisez un style informatif professionnel.",
+  "10 suggestions de titres": "Veuillez écrire 10 suggestions de titres pour le texte. Imprimez juste le titre brut, sans explications et sans guillemets. Utilisez un style informatif professionnel.",
+  "10 suggestions de titres + sous-titres": "Veuillez écrire 10 suggestions de titres et de sous-titres pour le texte. Pour chaque suggestion, imprimez juste le titre brut et à la ligne suivante un sous-titre. Veuillez ne pas ajouter d'explications et ne pas entourer de guillemets. Utilisez un style informatif professionnel.",
+  "Question": "Veuillez répondre à la question suivante en vous basant sur le texte donné :\n",
+  "Améliorer": "Imprimez une version améliorée du texte dans un style informatif professionnel.\nCorrigez également les erreurs orthographiques et grammaticales.",
+  "Description SEO": "Veuillez créer une description pour une page web avec le texte suivant, utilisable pour l'optimisation des moteurs de recherche (SEO).",
+  "Teaser": "Veuillez écrire un teaser bref et engageant pour le texte, comme il pourrait être utilisé pour un lien vers le texte. Il devrait susciter l'intérêt du lecteur et l'encourager à lire le contenu complet.",
+  "Réécrire pour un public différent": "Veuillez réécrire le texte pour qu'il convienne à un public différent : \n",
+  "Résumé en points": "Veuillez résumer les points principaux du texte sous forme de liste à puces, comme s'il pouvait être placé devant le texte",
+  "Texte Cadre BAB": "Veuillez écrire un texte complet en utilisant le cadre Avant-Après-Pont (BAB). Commencez par décrire le problème, puis envisagez les améliorations, et enfin, introduisez la solution qui rend cette transformation possible.",
+  "Texte Cadre AIDA": "Veuillez écrire un texte complet en utilisant le cadre AIDA. Commencez par capter l'attention, puis générez de l'intérêt, induisez le désir, et enfin, appelez à l'action.",
+  "Slogan": "Sur la base du texte donné, veuillez créer un slogan accrocheur et mémorable qui capture son thème principal. Sortez-le comme s'il pouvait être placé devant le texte.",
+  "CTA": "Sur la base du texte, créez un appel à l'action qui encourage le lecteur à franchir l'étape suivante, et qui transmet clairement la proposition de valeur unique au lecteur.",
+  "Markdown en HTML": "Convertissez le texte suivant du Markdown en HTML :\n\n",
+  "Décrire l'image": "Veuillez décrire l'image suivante de manière à ce qu'une personne aveugle puisse la comprendre."
+}

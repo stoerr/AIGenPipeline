@@ -1,1 +1,2 @@
-Translate the file into German and output it as json again.
+Translate the file into the language with key ${lang} and output it as json again.
+Both the keys and values in the json should be translated.

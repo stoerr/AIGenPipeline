@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wknd/components/page"
+            cq:template="/conf/wknd/settings/wcm/templates/content-page-template"
+            jcr:language="de"
+            jcr:title="Prompt-Bibliothek"
+            hideInNav="true">
+        <root
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container"
+                layout="responsiveGrid">
+            <container
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/container"
+                    layout="responsiveGrid">
+                <teaser_Zusammenfassen
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Zusammenfassen"
+                        jcr:description="Bitte fassen Sie den Text eloquent zusammen. Die Zusammenfassung sollte die Hauptideen des Textes im Stil des Textes einfangen, als könnte sie vor dem Text gestellt werden. Stellen Sie sicher, dass sie viel kürzer als das Original ist. Stellen Sie sicher, dass die Zusammenfassung dem Zweck und Ziel des Textes sowie den Schlüsselpunkten aller thematischen Abschnitte entspricht. Schreiben Sie klar und einfach und stellen Sie Genauigkeit und Vollständigkeit sicher. Verwenden Sie nur die im Text bereitgestellten Informationen; VERWENDEN SIE KEINE Informationen, die Sie über die Welt wissen."
+                />
+                <teaser_Einleitung
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Einleitung"
+                        jcr:description="Bitte schreiben Sie eine eloquente Einleitung für den Text, im Stil des Textes, als könnte sie vor dem Text gestellt werden."
+                />
+                <teaser_Schlussfolgerung
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Schlussfolgerung"
+                        jcr:description="Bitte schreiben Sie eine eloquente Schlussfolgerung für den Text, im Stil des Textes, als könnte sie nach dem Text gestellt werden."
+                />
+                <teaser_Erweitern
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Erweitern"
+                        jcr:description="Schreiben Sie unter Verwendung der bereitgestellten Notizen als Inspiration einen Text, der die Hauptideen und Themen ausdrückt, die vorhanden sind. Verwenden Sie einen geschäftsmäßig informativen Stil."
+                />
+                <teaser_Ausdehnen
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Ausdehnen"
+                        jcr:description="Bitte erweitern Sie den Text mit mehr Details und Ausführungen, während Sie den aktuellen Ton und Stil beibehalten."
+                />
+                <teaser_Abstrakt
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Abstrakt"
+                        jcr:description="Bitte schreiben Sie ein Abstract für den Text, das einen prägnanten Überblick über die Schlüsselpunkte und Hauptthemen des Textes bietet, als könnte es vor dem Text gestellt werden."
+                />
+                <teaser_Schlagzeile
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Schlagzeile"
+                        jcr:description="Bitte schreiben Sie eine Schlagzeile für den Text. Drucken Sie nur die rohe Schlagzeile, keine Erklärungen und keine Zitate. Verwenden Sie einen geschäftsmäßig informativen Stil."
+                />
+                <teaser_10Schlagzeilenvorschlaege
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="10 Schlagzeilenvorschläge"
+                        jcr:description="Bitte schreiben Sie 10 Vorschläge für eine Schlagzeile für den Text. Drucken Sie nur die rohe Schlagzeile, keine Erklärungen und keine Zitate. Verwenden Sie einen geschäftsmäßig informativen Stil."
+                />
+                <teaser_10SchlagzeilenUnterzeilenvorschlaege
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="10 Schlagzeilen- + Unterzeilenvorschläge"
+                        jcr:description="Bitte schreiben Sie 10 Vorschläge für eine Schlagzeile und eine Unterzeile für den Text. Für jeden Vorschlag drucken Sie nur die rohe Schlagzeile und in der nächsten Zeile eine Unterzeile. Bitte keine Erklärungen und kein Umgeben mit Zitaten. Verwenden Sie einen geschäftsmäßig informativen Stil."
+                />
+                <teaser_Frage
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Frage"
+                        jcr:description="Bitte beantworten Sie die folgende Frage basierend auf dem gegebenen Text:"
+                />
+                <teaser_Verbessern
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Verbessern"
+                        jcr:description="Drucken Sie eine verbesserte Version des Textes in einem geschäftsmäßig informativen Stil. Korrigieren Sie auch orthografische und grammatikalische Fehler."
+                />
+                <teaser_SEOBeschreibung
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="SEO-Beschreibung"
+                        jcr:description="Bitte erstellen Sie eine Beschreibung für eine Webseite mit dem folgenden Text, nutzbar für die Suchmaschinenoptimierung (SEO)."
+                />
+                <teaser_Teaser
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Teaser"
+                        jcr:description="Bitte schreiben Sie einen kurzen, ansprechenden Teaser für den Text, wie er für einen Link zum Text verwendet werden könnte. Er sollte das Interesse des Lesers wecken und ihn ermutigen, den vollständigen Inhalt zu lesen."
+                />
+                <teaser_UmschreibenFuerUnterschiedlichesPublikum
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Umschreiben für unterschiedliches Publikum"
+                        jcr:description="Bitte schreiben Sie den Text um, um einem anderen Publikum zu entsprechen:"
+                />
+                <teaser_AufzaehlungspunktZusammenfassung
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Aufzählungspunkt-Zusammenfassung"
+                        jcr:description="Bitte fassen Sie die Hauptpunkte des Textes als Liste von Aufzählungspunkten zusammen, als könnte sie vor dem Text gestellt werden"
+                />
+                <teaser_BABFrameworkText
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="BAB-Framework-Text"
+                        jcr:description="Bitte schreiben Sie einen vollständigen Text unter Verwendung des Before-After-Bridge (BAB)-Frameworks. Beginnen Sie mit der Beschreibung des Problems, stellen Sie sich dann die Verbesserungen vor und führen Sie schließlich die Lösung ein, die diese Transformation möglich macht."
+                />
+                <teaser_AIDAFrameworkText
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="AIDA-Framework-Text"
+                        jcr:description="Bitte schreiben Sie einen vollständigen Text unter Verwendung des AIDA-Frameworks. Beginnen Sie damit, Aufmerksamkeit zu erregen, dann Interesse zu wecken, den Wunsch zu induzieren und schließlich zum Handeln aufzurufen."
+                />
+                <teaser_Slogan
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Slogan"
+                        jcr:description="Bitte erstellen Sie basierend auf dem gegebenen Text einen eingängigen und denkwürdigen Slogan, der sein Hauptthema einfängt. Geben Sie ihn aus, als könnte er vor dem Text gestellt werden."
+                />
+                <teaser_CTA
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="CTA"
+                        jcr:description="Erstellen Sie basierend auf dem Text einen Call to Action, der den Leser ermutigt, den nächsten Schritt zu tun, und der den einzigartigen Wertvorschlag für den Leser klar vermittelt."
+                />
+                <teaser_MarkdownInHTMLUmwandeln
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Markdown in HTML umwandeln"
+                        jcr:description="Konvertieren Sie den folgenden Text von Markdown in HTML:"
+                />
+                <teaser_BildBeschreiben
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="Bild beschreiben"
+                        jcr:description="Bitte beschreiben Sie das folgende Bild so, dass es eine blinde Person verstehen kann."
+                />
+            </container>
+        </root>
+    </jcr:content>
+</jcr:root>
+
+<!-- AIGenVersion(01a91cf6, 1transformToPage.prompt-381163b1, 1prompts-de.json-35ef4983) -->

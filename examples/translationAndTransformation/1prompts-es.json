@@ -1,0 +1,26 @@
+/* AIGenVersion(73dad555, 0translate.prompt-44e46177, 0predefinedprompts.json-339a1201, parms-0e02f4ff) */
+
+{
+  "---": "",
+  "Resumir": "Por favor, escribe un resumen elocuente del texto. El resumen debe capturar sus ideas principales en el estilo en que está escrito el texto, como si pudiera colocarse al frente del texto. Asegúrate de que sea mucho más corto que el original. Asegúrate de que el resumen cumpla con el propósito y objetivo del texto y los puntos clave de todas las secciones temáticas. Escribe de manera clara y sencilla, asegurando precisión y completitud. Solo usa la información proporcionada en el texto; NO uses ninguna información que sepas sobre el mundo.",
+  "Introducción": "Por favor, escribe una introducción elocuente para el texto, en el estilo en que está escrito el texto, como si pudiera colocarse al frente del texto.",
+  "Conclusión": "Por favor, escribe una conclusión elocuente para el texto, en el estilo en que está escrito el texto, como si pudiera colocarse después del texto.",
+  "Expandir": "Usando las notas proporcionadas como inspiración, escribe un texto que exprese las ideas principales y temas que están presentes. Usa un estilo informativo y profesional.",
+  "Extender": "Por favor, extiende el texto con más detalles y elaboración mientras mantienes el tono y estilo actuales.",
+  "Resumen": "Por favor, escribe un resumen para el texto que proporcione una visión concisa de los puntos clave y temas principales del texto, como si pudiera colocarse al frente del texto.",
+  "Titular": "Por favor, escribe un titular para el texto. Imprime solo el titular crudo, sin explicaciones y sin comillas. Usa un estilo informativo y profesional.",
+  "10 sugerencias de titular": "Por favor, escribe 10 sugerencias para un titular para el texto. Imprime solo el titular crudo, sin explicaciones y sin comillas. Usa un estilo informativo y profesional.",
+  "10 sugerencias de titular + subtitular": "Por favor, escribe 10 sugerencias para un titular y un subtítulo para el texto. Para cada sugerencia imprime solo el titular crudo y en la siguiente línea un subtítulo. Por favor, sin explicaciones y sin rodeos con comillas. Usa un estilo informativo y profesional.",
+  "Pregunta": "Por favor, responde a la siguiente pregunta basada en el texto dado:\n",
+  "Mejorar": "Imprime una versión mejorada del texto en un estilo informativo y profesional.\nTambién corrige errores ortográficos y gramaticales.",
+  "Descripción SEO": "Por favor, crea una descripción para una página web con el siguiente texto, utilizable para la optimización de motores de búsqueda (SEO).",
+  "Adelanto": "Por favor, escribe un adelanto breve y atractivo para el texto, como si pudiera usarse para un enlace al texto. Debería despertar el interés del lector y animarlo a leer el contenido completo.",
+  "Reescribir para Diferente Audiencia": "Por favor, reescribe el texto para adaptarlo a una audiencia diferente: \n",
+  "Resumen en Puntos": "Por favor, resume los puntos principales del texto como una lista de puntos, como si pudiera colocarse al frente del texto",
+  "Texto Marco BAB": "Por favor, escribe un texto completo usando el marco Antes-Después-Puente (BAB). Comienza describiendo el problema, luego visualiza las mejoras y finalmente introduce la solución que hace posible esta transformación.",
+  "Texto Marco AIDA": "Por favor, escribe un texto completo usando el marco AIDA. Comienza capturando la atención, luego genera interés, induce deseo y finalmente, llama a la acción.",
+  "Eslogan": "Basado en el texto dado, por favor crea un eslogan pegajoso y memorable que capture su tema principal. Sácalo como si pudiera colocarse al frente del texto.",
+  "CTA": "Basado en el texto, crea un llamado a la acción que anime al lector a dar el siguiente paso, y que transmita claramente la propuesta de valor única al lector.",
+  "Markdown a HTML": "Convierte el siguiente texto de Markdown a HTML:\n\n",
+  "Describir imagen": "Por favor, describe la siguiente imagen de manera que una persona ciega pueda entenderla."
+}

@@ -1,0 +1,26 @@
+/* AIGenVersion(35ef4983, 0translate.prompt-44e46177, 0predefinedprompts.json-339a1201, parms-6ba43d45) */
+
+{
+  "---": "",
+  "Zusammenfassen": "Bitte fassen Sie den Text eloquent zusammen. Die Zusammenfassung sollte die Hauptideen des Textes im Stil des Textes einfangen, als könnte sie vor dem Text gestellt werden. Stellen Sie sicher, dass sie viel kürzer als das Original ist. Stellen Sie sicher, dass die Zusammenfassung dem Zweck und Ziel des Textes sowie den Schlüsselpunkten aller thematischen Abschnitte entspricht. Schreiben Sie klar und einfach und stellen Sie Genauigkeit und Vollständigkeit sicher. Verwenden Sie nur die im Text bereitgestellten Informationen; VERWENDEN SIE KEINE Informationen, die Sie über die Welt wissen.",
+  "Einleitung": "Bitte schreiben Sie eine eloquente Einleitung für den Text, im Stil des Textes, als könnte sie vor dem Text gestellt werden.",
+  "Schlussfolgerung": "Bitte schreiben Sie eine eloquente Schlussfolgerung für den Text, im Stil des Textes, als könnte sie nach dem Text gestellt werden.",
+  "Erweitern": "Schreiben Sie unter Verwendung der bereitgestellten Notizen als Inspiration einen Text, der die Hauptideen und Themen ausdrückt, die vorhanden sind. Verwenden Sie einen geschäftsmäßig informativen Stil.",
+  "Ausdehnen": "Bitte erweitern Sie den Text mit mehr Details und Ausführungen, während Sie den aktuellen Ton und Stil beibehalten.",
+  "Abstrakt": "Bitte schreiben Sie ein Abstract für den Text, das einen prägnanten Überblick über die Schlüsselpunkte und Hauptthemen des Textes bietet, als könnte es vor dem Text gestellt werden.",
+  "Schlagzeile": "Bitte schreiben Sie eine Schlagzeile für den Text. Drucken Sie nur die rohe Schlagzeile, keine Erklärungen und keine Zitate. Verwenden Sie einen geschäftsmäßig informativen Stil.",
+  "10 Schlagzeilenvorschläge": "Bitte schreiben Sie 10 Vorschläge für eine Schlagzeile für den Text. Drucken Sie nur die rohe Schlagzeile, keine Erklärungen und keine Zitate. Verwenden Sie einen geschäftsmäßig informativen Stil.",
+  "10 Schlagzeilen- + Unterzeilenvorschläge": "Bitte schreiben Sie 10 Vorschläge für eine Schlagzeile und eine Unterzeile für den Text. Für jeden Vorschlag drucken Sie nur die rohe Schlagzeile und in der nächsten Zeile eine Unterzeile. Bitte keine Erklärungen und kein Umgeben mit Zitaten. Verwenden Sie einen geschäftsmäßig informativen Stil.",
+  "Frage": "Bitte beantworten Sie die folgende Frage basierend auf dem gegebenen Text:\n",
+  "Verbessern": "Drucken Sie eine verbesserte Version des Textes in einem geschäftsmäßig informativen Stil.\nKorrigieren Sie auch orthografische und grammatikalische Fehler.",
+  "SEO-Beschreibung": "Bitte erstellen Sie eine Beschreibung für eine Webseite mit dem folgenden Text, nutzbar für die Suchmaschinenoptimierung (SEO).",
+  "Teaser": "Bitte schreiben Sie einen kurzen, ansprechenden Teaser für den Text, wie er für einen Link zum Text verwendet werden könnte. Er sollte das Interesse des Lesers wecken und ihn ermutigen, den vollständigen Inhalt zu lesen.",
+  "Umschreiben für unterschiedliches Publikum": "Bitte schreiben Sie den Text um, um einem anderen Publikum zu entsprechen: \n",
+  "Aufzählungspunkt-Zusammenfassung": "Bitte fassen Sie die Hauptpunkte des Textes als Liste von Aufzählungspunkten zusammen, als könnte sie vor dem Text gestellt werden",
+  "BAB-Framework-Text": "Bitte schreiben Sie einen vollständigen Text unter Verwendung des Before-After-Bridge (BAB)-Frameworks. Beginnen Sie mit der Beschreibung des Problems, stellen Sie sich dann die Verbesserungen vor und führen Sie schließlich die Lösung ein, die diese Transformation möglich macht.",
+  "AIDA-Framework-Text": "Bitte schreiben Sie einen vollständigen Text unter Verwendung des AIDA-Frameworks. Beginnen Sie damit, Aufmerksamkeit zu erregen, dann Interesse zu wecken, den Wunsch zu induzieren und schließlich zum Handeln aufzurufen.",
+  "Slogan": "Bitte erstellen Sie basierend auf dem gegebenen Text einen eingängigen und denkwürdigen Slogan, der sein Hauptthema einfängt. Geben Sie ihn aus, als könnte er vor dem Text gestellt werden.",
+  "CTA": "Erstellen Sie basierend auf dem Text einen Call to Action, der den Leser ermutigt, den nächsten Schritt zu tun, und der den einzigartigen Wertvorschlag für den Leser klar vermittelt.",
+  "Markdown in HTML umwandeln": "Konvertieren Sie den folgenden Text von Markdown in HTML:\n\n",
+  "Bild beschreiben": "Bitte beschreiben Sie das folgende Bild so, dass es eine blinde Person verstehen kann."
+}
