@@ -23,12 +23,12 @@ import javax.annotation.Nullable;
  */
 public class FileLookupHelper {
 
-    private static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());
+    protected static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());
 
     public static final String HTML_PATTERN = ".*\\.html";
-    private final File directory;
+    protected final File directory;
 
-    private FileLookupHelper(String path) {
+    protected FileLookupHelper(String path) {
         sanityCheck();
         try {
             directory = new File(path).getAbsoluteFile().getCanonicalFile();
@@ -40,7 +40,7 @@ public class FileLookupHelper {
         }
     }
 
-    private static void sanityCheck() {
+    protected static void sanityCheck() {
         if (!new File("src/main/java").isDirectory() || !new File("pom.xml").isFile()) {
             // This might be actually OK, but seems more likely to be a mistake. Let's see.
             throw new IllegalStateException("Something is wrong - we are not started in the maven project, but " + new File(".").getAbsolutePath());

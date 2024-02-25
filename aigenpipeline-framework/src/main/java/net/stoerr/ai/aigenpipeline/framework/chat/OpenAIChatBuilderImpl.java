@@ -7,6 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,14 +18,17 @@ import com.google.gson.GsonBuilder;
  */
 public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
-    private static final String CHAT_COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    public static final int DEFAULT_MAX_TOKENS = 2048;
 
-    private String model = "gpt-4-turbo-preview";
-    private final List<Message> messages = new ArrayList<>();
-    private String openAiApiKey;
-    private int maxTokens = 1000;
-    private String url = CHAT_COMPLETION_URL;
+    protected static final String CHAT_COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
+    protected static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    protected final Pattern CODEBLOCK_PATTERN = Pattern.compile("\\A```\\w*\\n?(.*?)\\n*```\\Z", Pattern.DOTALL);
+
+    protected String model = "gpt-4-turbo-preview";
+    protected final List<Message> messages = new ArrayList<>();
+    protected String openAiApiKey;
+    protected int maxTokens = DEFAULT_MAX_TOKENS;
+    protected String url = CHAT_COMPLETION_URL;
 
     public OpenAIChatBuilderImpl() {
         openAiApiKey = System.getenv("OPENAI_API_KEY");
@@ -107,19 +112,28 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         return gson.toJson(request);
     }
 
-    private String extractResponse(String json) {
+    protected String extractResponse(String json) {
         ChatCompletionResponse response = gson.fromJson(json, ChatCompletionResponse.class);
         if (response.choices.isEmpty()) {
             throw new IllegalStateException("No choices in response: " + json);
         }
         ChatCompletionResponse.Choice choice = response.choices.get(0);
         if (!"stop".equals(choice.finish_reason)) {
-            throw new IllegalStateException("Invalid finish reason: " + choice.finish_reason + " in response: " + json);
+            String msg = "Invalid finish reason: " + choice.finish_reason + " in response: " + json;
+            if ("length".equals(choice.finish_reason)) {
+                msg += "\n- try increasing maxTokens";
+            }
+            throw new IllegalStateException(msg);
         }
-        return choice.message.content;
+        String content = choice.message.content.trim();
+        Matcher matcher = CODEBLOCK_PATTERN.matcher(content);
+        if (matcher.matches()) {
+            content = matcher.group(1);
+        }
+        return content;
     }
 
-    private static class Message {
+    protected static class Message {
         String role;
         String content;
 
@@ -129,7 +143,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         }
     }
 
-    private static class ChatCompletionRequest {
+    protected static class ChatCompletionRequest {
         String model;
         List<Message> messages;
         double temperature;
@@ -143,7 +157,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         }
     }
 
-    private static class ChatCompletionResponse {
+    protected static class ChatCompletionResponse {
         List<Choice> choices;
 
         static class Choice {

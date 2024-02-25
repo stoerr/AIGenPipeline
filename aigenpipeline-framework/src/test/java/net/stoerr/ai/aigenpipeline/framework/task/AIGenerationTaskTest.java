@@ -67,6 +67,7 @@ public class AIGenerationTaskTest {
         Path outFile = tempDir.resolve("output.txt");
         task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
         task.setOutputFile(outFile.toFile());
+        task.maxTokens(1000);
 
         Assert.assertTrue(task.hasToBeRun());
         task.execute(MockAIChatBuilder::new, new File("."));

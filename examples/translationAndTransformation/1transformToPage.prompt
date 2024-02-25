@@ -1,0 +1,43 @@
+Transform this to a .content.xml for a page for Adobe AEM, inserting the absolutely all the keys and their values into the appropriate nodes.
+Add teasers as needed. The result should look like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wknd/components/page"
+            cq:template="/conf/wknd/settings/wcm/templates/content-page-template"
+            jcr:language="en"
+            jcr:title="Prompt Library"
+            hideInNav="true">
+        <root
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container"
+                layout="responsiveGrid">
+            <container
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/container"
+                    layout="responsiveGrid">
+                <teaser_1
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="key1"
+                        jcr:description="value1"
+                />
+                <teaser_2
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wknd/components/teaser"
+                        jcr:title="key2"
+                        jcr:description="value2"
+                />
+                ...
+            </container>
+        </root>
+    </jcr:content>
+</jcr:root>
+```

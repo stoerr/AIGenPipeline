@@ -15,16 +15,17 @@ import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
 
 public class AIGenPipeline {
 
-    private boolean help, verbose, dryRun, check, force, version;
-    private String output, explain;
-    private String url;
-    private String key;
-    private List<String> inputFiles = new ArrayList<>();
-    private String promptFile;
-    private String model = "gpt-4-turbo-preview";
-    private AIGenerationTask task;
-    private File rootDir = new File(".");
-    private PrintStream logStream;
+    protected boolean help, verbose, dryRun, check, force, version;
+    protected String output, explain;
+    protected String url;
+    protected String key;
+    protected List<String> inputFiles = new ArrayList<>();
+    protected String promptFile;
+    protected String model = "gpt-4-turbo-preview";
+    protected AIGenerationTask task;
+    protected File rootDir = new File(".");
+    protected PrintStream logStream;
+    protected Integer tokens;
 
 
     public static void main(String[] args) throws IOException {
@@ -55,6 +56,9 @@ public class AIGenPipeline {
         }
         if (null != model) {
             chatBuilder.model(model);
+        }
+        if (null != tokens) {
+            chatBuilder.maxTokens(tokens);
         }
         return chatBuilder;
     }
@@ -88,7 +92,7 @@ public class AIGenPipeline {
         }
     }
 
-    private File toFile(String filename) {
+    protected File toFile(String filename) {
         return rootDir.toPath().relativize(Path.of(filename)).toFile();
     }
 
@@ -121,6 +125,7 @@ public class AIGenPipeline {
                 "                           OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need\n" +
                 "                           an API key. Used in \"Authorization: Bearer <key>\" header.\n" +
                 "  -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .\n" +
+                "  -t <maxtokens>           The maximum number of tokens to generate.\n" +
                 "\n" +
                 "Arguments:\n" +
                 "  [<input_files>...]       Input files to be processed. \n" +
@@ -163,6 +168,10 @@ public class AIGenPipeline {
                     }
                     promptFile = args[++i];
                     break;
+                case "-s":
+                case "--sysmsg":
+                    task.setSystemMessage(new File(args[++i]));
+                    break;
                 case "-v":
                 case "--verbose":
                     verbose = true;
@@ -194,6 +203,10 @@ public class AIGenPipeline {
                 case "-m":
                 case "--model":
                     model = args[++i];
+                    break;
+                case "-t":
+                case "--maxtokens":
+                    tokens = Integer.parseInt(args[++i]);
                     break;
                 default:
                     inputFiles.add(args[i]);

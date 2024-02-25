@@ -48,7 +48,7 @@ import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
  */
 public class AIGenerationTask implements Cloneable {
 
-    private static final Logger LOG = Logger.getLogger(AIGenerationTask.class.getName());
+    protected static final Logger LOG = Logger.getLogger(AIGenerationTask.class.getName());
 
     /**
      * A marker that can be inserted by the AI when something is wrong / unclear. We will make sure the user
@@ -63,13 +63,14 @@ public class AIGenerationTask implements Cloneable {
             Pattern.compile("\\A<!--(?s).*?Copyright.*?Adobe.*?Licensed under.*?-->");
 
 
-    private List<File> inputFiles = new ArrayList<>();
-    private File outputFile;
-    private String prompt;
-    private File promptFile;
-    private String systemMessage;
-    private File systemMessageFile;
-    private boolean force;
+    protected List<File> inputFiles = new ArrayList<>();
+    protected File outputFile;
+    protected String prompt;
+    protected File promptFile;
+    protected String systemMessage;
+    protected File systemMessageFile;
+    protected boolean force;
+    protected Integer maxTokens;
 
     @Override
     public AIGenerationTask clone() throws CloneNotSupportedException {
@@ -87,6 +88,11 @@ public class AIGenerationTask implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("Bug - impossible.", e);
         }
+    }
+
+    public AIGenerationTask maxTokens(Integer maxTokens) {
+        this.maxTokens = maxTokens;
+        return this;
     }
 
     public AIGenerationTask addOptionalInputFile(@Nullable File file) {
@@ -121,18 +127,33 @@ public class AIGenerationTask implements Cloneable {
 
     protected String embedComment(String content, String comment) {
         String result;
-        if (outputFile.getName().endsWith(".java")) {
-            result = "// " + comment + "\n\n" + content;
-        } else if (outputFile.getName().endsWith(".html")) {
-            result = content + "\n\n<!-- " + comment + " -->\n";
-        } else if (outputFile.getName().endsWith(".css")) {
-            result = "/* " + comment + " */\n\n" + content;
-        } else if (outputFile.getName().endsWith(".md")) {
-            result = "<!-- " + comment + " -->\n\n" + content;
-        } else if (outputFile.getName().endsWith(".sh")) {
-            result = "# " + comment + "\n" + content;
-        } else {
-            result = "/* " + comment + " */\n\n" + content;
+        String extension = outputFile.getName().substring(outputFile.getName().lastIndexOf('.') + 1);
+        switch(extension) {
+            case "java":
+            case "txt": // there is no real comment syntax for txt, but that might be obvious to a human reader
+                result = "// " + comment + "\n\n" + content;
+                break;
+            case "html":
+            case "htm":
+            case "xml":
+            case "jsp":
+                result = content + "\n\n<!-- " + comment + " -->\n";
+                break;
+            case "css":
+            case "js":
+            case "json": // that's a problem, no comment syntax. Let's see whether this makes sense.
+                result = "/* " + comment + " */\n\n" + content;
+                break;
+            case "md":
+                result = "<!-- " + comment + " -->\n\n" + content;
+                break;
+            case "sh":
+            case "yaml":
+                result = "# " + comment + "\n" + content;
+                break;
+            default:
+                result = "/* " + comment + " */\n\n" + content;
+                break;
         }
         if (!result.endsWith("\n")) {
             result += "\n";
@@ -154,7 +175,7 @@ public class AIGenerationTask implements Cloneable {
     }
 
     @Nonnull
-    private List<String> calculateAllInputsMarkers() {
+    protected List<String> calculateAllInputsMarkers() {
         List<String> allInputsMarkers = new ArrayList<>();
         if (systemMessageFile != null) {
             allInputsMarkers.add(determineFileVersionMarker(systemMessageFile));
@@ -325,7 +346,9 @@ public class AIGenerationTask implements Cloneable {
     @Nonnull
     protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, String outputRelPath) {
         requireNonNull(outputFile, "No writeable output file given! " + outputFile);
-        outputFile.getParentFile().mkdirs();
+        if (null != outputFile.getParentFile() && !outputFile.getParentFile().isDirectory()) {
+            outputFile.getParentFile().mkdirs();
+        }
         if (outputFile.exists() && !outputFile.canWrite()) {
             throw new IllegalArgumentException("No writeable output file given! " + outputFile);
         }
@@ -333,6 +356,9 @@ public class AIGenerationTask implements Cloneable {
             throw new IllegalArgumentException("No prompt given!");
         }
         AIChatBuilder chat = chatBuilderFactory.get();
+        if (maxTokens != null) {
+            chat.maxTokens(maxTokens);
+        }
         if (systemMessage != null && !systemMessage.isBlank()) {
             chat.systemMsg(systemMessage);
         } else {

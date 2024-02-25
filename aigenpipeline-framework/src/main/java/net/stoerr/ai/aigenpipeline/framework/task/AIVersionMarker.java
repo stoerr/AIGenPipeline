@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 public class AIVersionMarker {
 
     public static final Pattern VERSION_MARKER_PATTERN = Pattern.compile("AIGenVersion\\([^)]+\\)");
-    private final String ourVersion;
-    private final List<String> inputVersions;
+    protected final String ourVersion;
+    protected final List<String> inputVersions;
 
     public AIVersionMarker(String ourVersion, List<String> inputVersions) {
         this.ourVersion = ourVersion;
