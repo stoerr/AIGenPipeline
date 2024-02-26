@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 CMD="../../bin/aigenpipeline"
+CMD="$CMD -m gpt-3.5-turbo"
 # CMD="$CMD -v"
 set -v -e
 for lang in de es fr; do

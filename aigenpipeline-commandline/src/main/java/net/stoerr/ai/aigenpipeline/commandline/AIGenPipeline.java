@@ -24,7 +24,7 @@ public class AIGenPipeline {
     protected List<String> inputFiles = new ArrayList<>();
     protected List<String> promptFiles = new ArrayList<>();
     protected Map<String, String> keyValues = new LinkedHashMap<>();
-    protected String model = "gpt-4-turbo-preview";
+    protected String model = "gpt-3.5-turbo"; // "gpt-4-turbo-preview";
     protected AIGenerationTask task;
     protected File rootDir = new File(".");
     protected PrintStream logStream;
