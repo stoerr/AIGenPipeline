@@ -1,0 +1,10 @@
+Greeter(audience):
+  @currentAudience = audience
+  div
+    h1#mainHeadline.primary.blue.big Hello you {@currentAudience}!
+    joke { color: green }
+    section#input
+      input[@currentAudience].rounded{ fontStyle: italic }
+
+Main:
+  Greeter(audience: "exuberant tech wizards")

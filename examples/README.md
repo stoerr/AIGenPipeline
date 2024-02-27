@@ -1,5 +1,9 @@
 # Some examples of employing the AIGenPipeline
 
+In this folder you will find a couple of examples of how to use the AIGenPipeline for generating code, transforming 
+content, and other tasks. Here it's done with the command line tool, but for complicated tasks involving many files
+you could also consider using the framework.
+
 ## [Translation and Rewriting](translationAndTransformation/)
 
 For the Composum AI I needed a number of prompts translated into several languages, and transformed into pages for 
@@ -12,3 +16,14 @@ though.)
 
 Caution: running that with GPT-4 takes 10 minutes and costs in the order of 0.25$. With GPT-3.5 it's peanuts and 2
 minutes, though a bit lower quality.
+
+## [ACT DSL](actDSL)
+
+That's an interesting idea I picked up at Clemens Helm's interesting talk at
+[JUG Saxony Day 2023](https://jugsaxony.org/timeline/2023/9/29/JSD2023) .
+
+For some kinds of repetitive jobs DSLs (domain specific languages) are a very nice productivity tools that can
+give you a boost when starting up or even go the whole way. I often did that in Scala since that nicely combines
+type safety, code completion and easy access to documentation in the IDE and a concise syntax. But because of LLM
+we have a new option in cases where implementing such a DSL would be too much effort. Clemens' nice idea is to define 
+the DSL as rules for ChatGPT how to create the code. For the code generation we can then use the AIGenPipeline.

@@ -1,0 +1,10 @@
+In the following I'll define the programming language "Act". Please compile this language by converting it to a React component following these rules:
+
+1. The top level statement defines the component name like `Component:`, all of its content is nested by 2 spaces. Content can also be nested within content.
+2. A statement `p#myId.firstClass.secondClass text` should be converted to `<p id="myId" className="firstClass secondClass">text</p>`
+3. Styles provided in curly braces like this `section{ fontWeight: bold } content` should be converted to `<section style={{ fontWeight: "bold" }}>content</section>`
+4. The `joke` component should render a paragraph with a joke about AI dev tools.
+5. A component should accept props as a list of comma-separated values. Example: `Component(a, b)` accepts the props `a` and `b`.
+6. Props can be passed to a component by invoking it like `Component(a: "text", b: 42)`
+7. State can be defined as `@myState = abc` which should get converted to `const [myState, setMyState] = useState(abc)`
+8. An input can create a two-way binding to state like `input[@myState]` which should be converted into `<input value={myState} onChange={(e) => setMyState(e.target.value)} />`
