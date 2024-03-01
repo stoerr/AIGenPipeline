@@ -1,6 +1,6 @@
-// AIGenVersion(22608f97, codeRules.prompt-5223a176, createcode.prompt-7b58c524, ChatGPTPromptExecutorImpl.java-270eeb6e, ChatGPTPromptExecutor.java-7738d948, request.json-2f61881f, response.json-6105b6cb)
+// AIGenVersion(58ab4def, codeRules.prompt-5223a176, createcode.prompt-2958dba4, ChatGPTPromptExecutor.java-7738d948, request.json-2f61881f, response.json-6105b6cb)
 
-package net.stoerr.ai.aigenpipeline;
+package net.stoerr.ai.aigenpipeline.examples.requesttocode;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -12,6 +12,8 @@ import java.util.List;
 
 /**
  * Implementation of {@link ChatGPTPromptExecutor} that sends a JSON payload to the OpenAI API.
+ * It constructs the request with the provided system message and prompt, sends it to the API,
+ * and parses the response to return the content of the assistant's message.
  */
 public class ChatGPTPromptExecutorImpl implements ChatGPTPromptExecutor {
 
@@ -26,7 +28,7 @@ public class ChatGPTPromptExecutorImpl implements ChatGPTPromptExecutor {
     private final Gson gson;
 
     /**
-     * Constructs a new instance of {@code ChatGPTPromptExecutorImpl}.
+     * Constructs a new instance of {@code ChatGPTPromptExecutorImpl} with a default HTTP client and Gson instance.
      */
     public ChatGPTPromptExecutorImpl() {
         this.httpClient = HttpClient.newHttpClient();
@@ -60,7 +62,11 @@ public class ChatGPTPromptExecutorImpl implements ChatGPTPromptExecutor {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ResponsePayload responsePayload = gson.fromJson(response.body(), ResponsePayload.class);
-            return responsePayload.choices.get(0).message.content;
+            Choice firstChoice = responsePayload.choices.get(0);
+            if (!"stop".equals(firstChoice.finishReason)) {
+                throw new IOException("Unexpected finish reason: " + firstChoice.finishReason);
+            }
+            return firstChoice.message.content;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Request to OpenAI API was interrupted", e);
@@ -109,14 +115,18 @@ public class ChatGPTPromptExecutorImpl implements ChatGPTPromptExecutor {
      */
     private static class Choice {
         final Message message;
+        final String finishReason;
 
-        Choice(Message message) {
+        Choice(Message message, String finishReason) {
             this.message = message;
+            this.finishReason = finishReason;
         }
     }
 
     /**
      * Main method for testing the {@code ChatGPTPromptExecutorImpl}.
+     * It takes the system message and the prompt as arguments, sends them to the ChatGPT API,
+     * and prints the response content.
      *
      * @param args Command line arguments where args[0] is the system message and args[1] is the user prompt.
      */

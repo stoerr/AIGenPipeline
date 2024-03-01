@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -13,7 +14,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -81,11 +81,6 @@ public class AIGenerationTask implements Cloneable {
     protected boolean force;
     protected Integer maxTokens;
 
-    @Override
-    public AIGenerationTask clone() throws CloneNotSupportedException {
-        return (AIGenerationTask) super.clone();
-    }
-
     /**
      * Creates a deep copy of the task.
      */
@@ -99,6 +94,17 @@ public class AIGenerationTask implements Cloneable {
         }
     }
 
+    /**
+     * We override this to allow cloning for use with the {@link #copy()} method, but deliberately leave it protected
+     * since the use of {@link #copy()} is intended.
+     *
+     * @deprecated use {@link #copy()}
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     public AIGenerationTask maxTokens(Integer maxTokens) {
         this.maxTokens = maxTokens;
         return this;
@@ -108,7 +114,7 @@ public class AIGenerationTask implements Cloneable {
         if (file != null && file.exists()) {
             inputFiles.add(file);
         } else {
-            LOG.fine("Optional file not there: " + file);
+            LOG.fine(() -> "Optional file not there: " + file);
         }
         return this;
     }
@@ -189,8 +195,13 @@ public class AIGenerationTask implements Cloneable {
         if (systemMessageFile != null) {
             allInputsMarkers.add(determineFileVersionMarker(systemMessageFile));
         }
-        promptFiles.forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
-        inputFiles.forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
+        promptFiles.stream()
+                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
+                .forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
+        inputFiles.stream()
+                // don't introduce circular dependencies when updating an existing output file:
+                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
+                .forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
         if (!placeholdersAndValues.isEmpty()) {
             allInputsMarkers.add("parms-" + shaHash(placeholdersAndValues.toString()));
         }
@@ -336,12 +347,12 @@ public class AIGenerationTask implements Cloneable {
     public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
         if (!force && !hasToBeRun()) {
-            LOG.info("Task does not have to be run for: " + outputRelPath);
+            LOG.info(() -> "Task does not have to be run for: " + outputRelPath);
             return this;
         }
         AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
         String result = chat.execute();
-        LOG.fine("Result for task execution for: " + outputRelPath + "\n" + result);
+        LOG.fine(() -> "Result for task execution for: " + outputRelPath + "\n" + result);
         String outputVersion = shaHash(result);
         String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();
         String withVersionComment = embedComment(result, versionComment);
@@ -386,8 +397,8 @@ public class AIGenerationTask implements Cloneable {
         if (systemMessage != null && !systemMessage.isBlank()) {
             chat.systemMsg(systemMessage);
         } else {
-            try {
-                String defaultSysPrompt = new String(AIGenerationTask.class.getResourceAsStream("/defaultsystemprompt.txt").readAllBytes(), StandardCharsets.UTF_8);
+            try (InputStream defaultprompt = AIGenerationTask.class.getResourceAsStream("/defaultsystemprompt.txt")) {
+                String defaultSysPrompt = new String(defaultprompt.readAllBytes(), StandardCharsets.UTF_8);
                 chat.systemMsg(defaultSysPrompt);
             } catch (IOException e) {
                 throw new IllegalStateException("Error reading default system message", e);
@@ -399,7 +410,7 @@ public class AIGenerationTask implements Cloneable {
             chat.assistantMsg(unclutter(getFileContent(file)));
         });
         chat.userMsg(prompt);
-        LOG.fine("Executing chat for: " + outputRelPath + "\n" + chat.toJson());
+        LOG.fine(() -> "Executing chat for: " + outputRelPath + "\n" + chat.toJson());
         return chat;
     }
 
@@ -421,7 +432,7 @@ public class AIGenerationTask implements Cloneable {
         chat.assistantMsg(previousOutput);
         chat.userMsg(question);
         String result = chat.execute();
-        LOG.info("Explanation result for " + outputRelPath + " with question " + question + " is:\n" + result);
+        LOG.info(() -> "Explanation result for " + outputRelPath + " with question " + question + " is:\n" + result);
         if (result.contains(FIXME)) {
             throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
         }

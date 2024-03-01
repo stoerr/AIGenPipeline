@@ -4,6 +4,9 @@ In this folder you will find a couple of examples of how to use the AIGenPipelin
 content, and other tasks. Here it's done with the command line tool, but for complicated tasks involving many files
 you could also consider using the framework.
 
+The examples always contain a generate.sh script that triggers the generation process. Feel free to experiment with 
+this!
+
 ## [Translation and Rewriting](translationAndTransformation/)
 
 For the Composum AI I needed a number of prompts translated into several languages, and transformed into pages for 
@@ -27,3 +30,15 @@ give you a boost when starting up or even go the whole way. I often did that in 
 type safety, code completion and easy access to documentation in the IDE and a concise syntax. But because of LLM
 we have a new option in cases where implementing such a DSL would be too much effort. Clemens' nice idea is to define 
 the DSL as rules for ChatGPT how to create the code. For the code generation we can then use the AIGenPipeline.
+
+## [Generate Java Code for a REST API from example request](requesttocode/)
+
+This example generates Java sourcec ode to access a simple version of OpenAI's chat completion service just from 
+examples for request and responses. It demonstrates several things:
+
+- The prompt and input files can be spread out as needed into various files containing request, response, 
+  documentation, prompts.
+- A nice way to tell the AI what you expect from the generated code is to give it an interface to implement.
+- If you have already generated code or specification and want to update / evolve it from changed specifications, you 
+  can try to add the (already existing) output file as first input file to the AI. Not sure whether that always 
+  works and it will probably need adapting the instructions sometimes, but as you can try it seems to work nicely here.

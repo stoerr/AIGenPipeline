@@ -98,4 +98,20 @@ public class AIGenerationTaskTest {
         Assert.assertFalse(task.hasToBeRun());
     }
 
+    /** Checks whether the deep copy works. */
+    @Test
+    public void testCopy() {
+        AIGenerationTask task = new AIGenerationTask();
+
+        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
+        task.addInputFile(inputDir.resolve("input.txt").toFile());
+        Path outFile = tempDir.resolve("output.txt");
+        task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
+        task.setOutputFile(outFile.toFile());
+        task.maxTokens(1000);
+
+        AIGenerationTask copy = task.copy();
+        assertEquals(task.toString(), copy.toString());
+    }
+
 }
