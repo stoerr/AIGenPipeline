@@ -1,0 +1,13 @@
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "system",
+      "content": "This is to be replaced with the system message"
+    },
+    {
+      "role": "user",
+      "content": "This is to be replaced with the user message"
+    }
+  ]
+}
