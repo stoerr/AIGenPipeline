@@ -6,3 +6,4 @@ Content-Type: application/json
 Authorization: Bearer $OPENAI_API_KEY
 where $OPENAI_API_KEY is a key to be read from an environment variable.
 Use the java.net.http.HttpClient and encode the JSON payload with Gson. Create inner classes for the JSON payload and response.
+For testing, add a main method with two arguments used as the system message and prompt.

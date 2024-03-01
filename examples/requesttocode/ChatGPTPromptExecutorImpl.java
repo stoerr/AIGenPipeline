@@ -1,4 +1,4 @@
-// AIGenVersion(60c48389, codeRules.prompt-5223a176, createcode.prompt-7daabacf, ChatGPTPromptExecutor.java-7738d948, request.json-2f61881f, response.json-1c2114e7)
+// AIGenVersion(56af7fa3, codeRules.prompt-5223a176, createcode.prompt-5d0f9bca, ChatGPTPromptExecutorImpl.java-56af7fa3, ChatGPTPromptExecutor.java-7738d948, request.json-2f61881f, response.json-1c2114e7)
 
 package net.stoerr.ai.aigenpipeline.examples.requesttocode;
 
@@ -9,7 +9,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
 
 /**
  * Implementation of ChatGPTPromptExecutor that sends a JSON payload to OpenAI Chat API.
@@ -75,5 +74,28 @@ public class OpenAIChatGPTPromptExecutor implements ChatGPTPromptExecutor {
         private String systemMessage;
         private String prompt;
         private String completion;
+    }
+
+    /**
+     * Main method for testing the OpenAIChatGPTPromptExecutor.
+     *
+     * @param args The system message and prompt to test.
+     */
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Usage: java OpenAIChatGPTPromptExecutor <systemMessage> <prompt>");
+            return;
+        }
+
+        String systemMessage = args[0];
+        String prompt = args[1];
+
+        OpenAIChatGPTPromptExecutor executor = new OpenAIChatGPTPromptExecutor();
+        try {
+            String response = executor.execute(systemMessage, prompt);
+            System.out.println("Response from OpenAI Chat API: " + response);
+        } catch (IOException e) {
+            System.err.println("Error executing request: " + e.getMessage());
+        }
     }
 }
