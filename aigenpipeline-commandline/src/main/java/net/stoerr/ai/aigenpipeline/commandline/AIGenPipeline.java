@@ -74,7 +74,9 @@ public class AIGenPipeline {
         if (promptFiles.isEmpty()) {
             throw new IllegalArgumentException("At least one prompt file has to be given.");
         }
-        promptFiles.stream().map(this::toFile).forEach(f -> task.addPrompt(f, keyValues));
+        promptFiles.stream()
+                .map(this::toFile)
+                .forEach(f -> task.addPrompt(f, keyValues));
         task.force(force);
         if (verbose) {
             logStream.println(task.toJson(this::makeChatBuilder, rootDir));

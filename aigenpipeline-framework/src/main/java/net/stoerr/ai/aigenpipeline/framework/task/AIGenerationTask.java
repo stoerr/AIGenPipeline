@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -260,7 +261,11 @@ public class AIGenerationTask implements Cloneable {
      * @return this
      */
     public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues) {
-        String newPrompt = unclutter(getFileContent(promptFile));
+        String fileContent = getFileContent(promptFile);
+        if (fileContent == null) {
+            throw new IllegalArgumentException("Could not read prompt file " + promptFile);
+        }
+        String newPrompt = unclutter(fileContent);
         requireNonNull(newPrompt, "Could not read prompt file " + promptFile);
         for (Map.Entry<String, String> entry : placeholdersAndValues.entrySet()) {
             newPrompt = newPrompt.replace(entry.getKey(), entry.getValue());
