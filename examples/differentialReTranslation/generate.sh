@@ -5,3 +5,4 @@ CMD="$CMD -m gpt-3.5-turbo"
 set -v -e
 $CMD -p 0dialogelements.prompt README.md -o dialogelements.txt
 $CMD -p 1html.prompt README.md dialogelements.txt -o differentialReTranslation.html
+$CMD -p 2css.prompt README.md differentialReTranslation.html -o differentialReTranslation.css
