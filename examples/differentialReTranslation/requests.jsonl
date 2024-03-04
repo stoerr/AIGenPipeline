@@ -1,0 +1,39 @@
+// request for the "translate" button
+// use only for POST to https://api.openai.com/v1/chat/completions
+// additional headers:
+// 'Content-Type': 'application/json',
+// 'Authorization': 'Bearer ' + apiKey
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are tasked as an expert translator to translate texts with utmost fidelity, preserving the original style, tone, sentiment, and all formatting elements (markdown, HTML tags, special characters) to the greatest extent possible.\nIMPORTANT: Only provide the translated text, maintaining all original formatting and non-translatable elements. Avoid any extraneous comments or actions not directly related to the translation."
+    },
+    {
+      "role": "user",
+      "content": "Print the original text you have to translate exactly without any comments."
+    },
+    {
+      "role": "assistant",
+      "content": "${sourcephrase}"
+    },
+    {
+      "role": "user",
+      "content": "Print this complete text translated into ${targetlanguage}. ${addition}"
+    }
+  ]
+}
+
+// example response for the "translate" button
+{
+ "choices": [
+   {
+     "message": {
+       "role": "assistant",
+       "content": "${translatedphrase}"
+     },
+     "finish_reason": "stop"
+   }
+ ]
+}

@@ -6,3 +6,5 @@ set -v -e
 $CMD -p 0dialogelements.prompt README.md -o dialogelements.txt
 $CMD -p 1html.prompt README.md dialogelements.txt -o differentialReTranslation.html
 $CMD -p 2css.prompt README.md differentialReTranslation.html -o differentialReTranslation.css
+$CMD -p 3js.prompt README.md dialogelements.txt requests.jsonl -o differentialReTranslation.js
+echo DONE
