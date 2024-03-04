@@ -51,6 +51,9 @@ In this dialog appear the following elements, in the order from top to bottom:
 
 8. **Differential Re-translation Button**: When clicked, this button initiates the process of translating the Changed Original Text, taking into account the General Instructions, the original Automatic Translation, and any Manual Corrections made. The goal is to produce a new translation that incorporates the essence of the manual corrections while adapting to the changes in the original text.
 
+9. **Result of re-translation**: Displays the result of the differential re-translation. This field is automatically 
+   populated after the user clicks the Differential Re-translation button.
+
 ## Dialog layout
 
 The full dialog can look like this. A headline and introductory text is at the top, then the dialog fields appear. 

@@ -1,0 +1,6 @@
+Write a headline '## Dialog elements'.
+Generate a list of dialog element ids for the given dialog elements with the corresponding HTML tag.
+This list can be used to access the dialog elements from Javascript.
+
+For example:
+- Examples Dropdown : select id="examplesDropdown"
