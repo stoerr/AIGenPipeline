@@ -36,17 +36,23 @@ public class AIGenPipeline {
     }
 
     protected void run(String[] args) throws IOException {
-        parseArguments(args);
-        if (version) {
-            System.out.println(getVersion());
+        try {
+            parseArguments(args);
+            if (version) {
+                System.out.println(getVersion());
+            }
+            if (help) {
+                printHelpAndExit(false);
+            }
+            if (version || help) {
+                System.exit(0);
+            }
+            run();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Usage error: " + e.getMessage());
+            System.err.println();
+            printHelpAndExit(true);
         }
-        if (help) {
-            printHelpAndExit(false);
-        }
-        if (version || help) {
-            System.exit(0);
-        }
-        run();
     }
 
     public AIChatBuilder makeChatBuilder() {
@@ -123,8 +129,8 @@ public class AIGenPipeline {
                 "                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
                 "                           regenerated.\n" +
                 "  -f, --force              Force regeneration of output files, ignoring any version checks.\n" +
-                "  --ask <question>         Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_\n" +
-                "                           that was given to generate the output file, and the additional --ask <question> option.\n" +
+                "  -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_\n" +
+                "                           that was given to generate the output file, and the additional --explain <question> option.\n" +
                 "                           It recreates the conversation that lead to the output file and asks the AI for a \n" +
                 "                           clarification. The output file is not written, but read to recreate the conversation.\n" +
                 "  -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .\n" +
@@ -147,7 +153,7 @@ public class AIGenPipeline {
                 "    aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java\n" +
                 "\n" +
                 "  Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:\n" +
-                "    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --ask \"Why did you not use annotations?\"  \n" +
+                "    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain \"Why did you not use annotations?\"  \n" +
                 "\n" +
                 "Note:\n" +
                 "  It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. \n" +

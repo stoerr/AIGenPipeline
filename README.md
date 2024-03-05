@@ -39,7 +39,7 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
    improve it:
 
    ```shell
-   aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --ask \
+   aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --explain \
         "Why wasn't a @GET annotation used in method foo? How would I have to change the prompt to make sure it's 
    used?"
    ```
@@ -116,8 +116,8 @@ Options:
                            generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
                            regenerated.
   -f, --force              Force regeneration of output files, ignoring any version checks.
-  --ask <question>         Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
-                           that was given to generate the output file, and the additional --ask <question> option.
+  -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
+                           that was given to generate the output file, and the additional --explain <question> option.
                            It recreates the conversation that lead to the output file and asks the AI for a 
                            clarification. The output file is not written, but read to recreate the conversation.
   -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
@@ -139,7 +139,7 @@ Examples:
     aigenpipeline -f -o specs/openapi.yaml -p api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
-    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --ask "Why did you not use annotations?"  
+    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
 
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
