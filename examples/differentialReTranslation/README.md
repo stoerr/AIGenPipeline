@@ -104,3 +104,17 @@ Text fields are given a label and a one sentence description.
    *Label: Result of differential re-translation**
    *Description: View the result of the translation of the changed original text while trying to maintain the manual 
    corrections.
+
+## Implementation remarks
+
+If the response from the OpenAI chat completion service has not status 200, the response should be displayed via alert.
+Each sent request should be logged with console.log, the received response should be logged with console.log as well,
+ and the text should be put into the "Automatically Translated Original Text Field" or "Result of re-translation", depending on the button.
+The api key should be read from localStorage.getItem('openai_api_key') as cache or prompted if not there yet.
+During request processing the buttons should be disabled.
+
+There should be a list of several examples using English and German language with value sets for all fields
+(including the automatically translated fields), and the dropdown should be filled with them.
+The first option is an option "Select an example" and the other options are the examples.
+On choosing an example in the dropdown, the form should be filled with the values of the example.
+The manually corrected translation should the automatically translated text with some synonyms replaced.

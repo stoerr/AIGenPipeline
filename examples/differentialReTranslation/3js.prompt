@@ -1,9 +1,7 @@
-Write a js that implements the functionalities.
-Use the given requests and the response as an example. If the response has not status 200, the response should be displayed via alert.
-
-The api key should be read from localStorage.getItem('openai_api_key') as cache or prompted if not there yet.
-
-Do not print any examples. Do bind the appropriate functions to the buttons as given in the dialogelements.txt file.
+As a professional Javascript programmer using best practices,
+write a js that implements the functionalities except for the drop down list.
+Follow the instructions in the README.md to the letter.
+Do not print any code examples. Do bind the appropriate functions to the buttons as given in the dialogelements.txt file.
 Replace all placeholders (${...}) in the requests by the appropriate values from the form.
-
-During request processing the buttons should be disabled.
+Use the fetch API to send the requests asynchrously to the server.
+Document the source code.

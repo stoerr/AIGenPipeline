@@ -1,8 +1,9 @@
-// request for the "translate" button
 // use only for POST to https://api.openai.com/v1/chat/completions
 // additional headers:
 // 'Content-Type': 'application/json',
 // 'Authorization': 'Bearer ' + apiKey
+
+// request for the "Translate Button"
 {
   "model": "gpt-3.5-turbo",
   "messages": [
@@ -25,20 +26,7 @@
   ]
 }
 
-// example response for both responses
-{
-  "choices": [
-    {
-      "message": {
-        "role": "assistant",
-        "content": "${translatedphrase}"
-      },
-      "finish_reason": "stop"
-    }
-  ]
-}
-
-// example for retranslation request
+// example for request for the Differential Re-translation Button
 {
   "model": "gpt-3.5-turbo",
   "messages": [
@@ -81,6 +69,19 @@
     {
       "role": "user",
       "content": "Translate the new text. Take care to include the manual adaptions for the original text."
+    }
+  ]
+}
+
+// example response for both responses
+{
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "${translatedphrase}"
+      },
+      "finish_reason": "stop"
     }
   ]
 }

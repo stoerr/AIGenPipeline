@@ -3,4 +3,5 @@ Write a HTML file for the dialog according to the specified dialog layout. Obser
 Use bootstrap to format the dialog, using the rebooted form styles. Include a form tag.
 Add classes to elements that are not styled by bootstrap / would need special styling, so you can style them in the future.
 The form elements should have the given label, but also the description as normal text after the label.
-It should also load differentialReTranslation.css and differentialReTranslation.js. The js file should be loaded at the end of the body.
+It should also load differentialReTranslation.css and differentialReTranslation.js and differentialReTranslationExamples.js.
+The js file should be loaded at the end of the body.

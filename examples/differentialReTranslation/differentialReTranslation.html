@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,57 +8,59 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="differentialReTranslation.css">
 </head>
+
 <body>
     <div class="container">
         <form>
             <h1 class="mt-4">Advanced Translation Assistance Tool</h1>
-            <p class="lead">Explore the future of language translation with our cutting-edge tool. By combining automatic translation with human insight, this application enhances the accuracy and relevance of translations across various languages and contexts. Perfect for professionals and language enthusiasts alike.</p>
+            <p class="mb-4">Explore the future of language translation with our cutting-edge tool. By combining automatic translation with human insight, this application enhances the accuracy and relevance of translations across various languages and contexts. Perfect for professionals and language enthusiasts alike.</p>
 
             <div class="form-group">
                 <label for="examplesDropdown">Choose an Example</label>
                 <select class="form-control" id="examplesDropdown">
-                    <!-- Options will be populated dynamically -->
+                    <option value="">Select an example</option>
+                    <!-- Options filled by JavaScript from differentialReTranslationExamples.js -->
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="instructionsField">Instructions for Translation</label>
                 <p>Enter the specific requirements for the translation, such as tone, formality level, or additional contextual information.</p>
-                <textarea class="form-control" id="instructionsField">Translate this text into </textarea>
+                <textarea class="form-control" id="instructionsField" rows="4">Translate this text into </textarea>
             </div>
 
             <div class="form-group">
                 <label for="originalTextField">Original Text</label>
                 <p>Input the text you wish to translate. This will serve as the base for the initial automatic translation.</p>
-                <textarea class="form-control" id="originalTextField"></textarea>
+                <textarea class="form-control" id="originalTextField" rows="4"></textarea>
             </div>
 
-            <button type="button" class="btn btn-primary" id="translateButton">Translate</button>
+            <button class="btn btn-primary" id="translateButton">Translate</button>
 
             <div class="form-group">
                 <label for="autoTranslatedTextField">Automatically Translated Text</label>
                 <p>View the initial translation of your original text. This text is generated based on the general instructions.</p>
-                <textarea class="form-control" id="autoTranslatedTextField" readonly></textarea>
+                <textarea class="form-control" id="autoTranslatedTextField" rows="4" readonly></textarea>
             </div>
 
             <div class="form-group">
                 <label for="correctedTextField">Manually Corrected Translation</label>
                 <p>Make adjustments to the automatic translation to better meet your requirements or correct inaccuracies.</p>
-                <textarea class="form-control" id="correctedTextField"></textarea>
+                <textarea class="form-control" id="correctedTextField" rows="4"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="changedTextField">Revised Original Text</label>
                 <p>Enter a modified version of the original text to see how the application adapts the translation to reflect these changes.</p>
-                <textarea class="form-control" id="changedTextField"></textarea>
+                <textarea class="form-control" id="changedTextField" rows="4"></textarea>
             </div>
 
-            <button type="button" class="btn btn-primary" id="retranslateButton">Differential Re-translation</button>
+            <button class="btn btn-primary" id="retranslateButton">Differential Re-translation</button>
 
             <div class="form-group">
                 <label for="retranslatedResultField">Result of differential re-translation</label>
                 <p>View the result of the translation of the changed original text while trying to maintain the manual corrections.</p>
-                <textarea class="form-control" id="retranslatedResultField" readonly></textarea>
+                <textarea class="form-control" id="retranslatedResultField" rows="4" readonly></textarea>
             </div>
         </form>
     </div>
@@ -66,7 +69,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="differentialReTranslation.js"></script>
+    <script src="differentialReTranslationExamples.js"></script>
 </body>
+
 </html>
 
-<!-- AIGenVersion(791cbba5, 1html.prompt-3c81bea3, README.md-0243cfe5, dialogelements.txt-4684af8d) -->
+<!-- AIGenVersion(35ff6cec, 1html.prompt-7ce5e2d3, README.md-2deb7062, dialogelements.txt-4684af8d) -->
