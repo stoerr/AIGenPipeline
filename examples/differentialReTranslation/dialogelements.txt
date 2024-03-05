@@ -1,13 +1,13 @@
-// AIGenVersion(64c2ec1a, 0dialogelements.prompt-54ed1022, README.md-38c61603)
+// AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-0243cfe5)
 
 ## Dialog elements
 
 - Examples Dropdown : select id="examplesDropdown"
-- General Instructions Field : textarea id="generalInstructions"
-- Original Text Field : textarea id="originalText"
+- Instructions Field : textarea id="instructionsField"
+- Original Text Field : textarea id="originalTextField"
 - Translate Button : button id="translateButton"
-- Automatically Translated Original Text Field : textarea id="autoTranslatedText"
-- Manually Corrected Translation Field : textarea id="correctedTranslation"
-- Changed Original Text Field : textarea id="changedOriginalText"
+- Automatically Translated Original Text Field : textarea id="autoTranslatedTextField"
+- Manually Corrected Translation Field : textarea id="correctedTextField"
+- Changed Original Text Field : textarea id="changedTextField"
 - Differential Re-translation Button : button id="retranslateButton"
-- Result of re-translation : textarea id="retranslatedResult"
+- Result of re-translation : textarea id="retranslatedResultField"

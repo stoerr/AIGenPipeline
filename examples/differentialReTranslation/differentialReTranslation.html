@@ -9,56 +9,55 @@
 </head>
 <body>
     <div class="container">
-        <h1>Advanced Translation Assistance Tool</h1>
-        <p>Explore the future of language translation with our cutting-edge tool. By combining automatic translation with human insight, this application enhances the accuracy and relevance of translations across various languages and contexts. Perfect for professionals and language enthusiasts alike.</p>
-        
         <form>
+            <h1 class="mt-4">Advanced Translation Assistance Tool</h1>
+            <p class="lead">Explore the future of language translation with our cutting-edge tool. By combining automatic translation with human insight, this application enhances the accuracy and relevance of translations across various languages and contexts. Perfect for professionals and language enthusiasts alike.</p>
+
             <div class="form-group">
                 <label for="examplesDropdown">Choose an Example</label>
                 <select class="form-control" id="examplesDropdown">
-                    <!-- Options will be dynamically populated -->
+                    <!-- Options will be populated dynamically -->
                 </select>
-                <small class="form-text text-muted">Select from predefined scenarios to automatically populate the translation fields and explore different translation challenges and solutions.</small>
             </div>
-            
+
             <div class="form-group">
-                <label for="generalInstructions">General Instructions for Translation</label>
-                <textarea class="form-control" id="generalInstructions"></textarea>
-                <small class="form-text text-muted">Enter any specific requirements for the translation, such as tone, formality level, or additional contextual information.</small>
+                <label for="instructionsField">Instructions for Translation</label>
+                <p>Enter the specific requirements for the translation, such as tone, formality level, or additional contextual information.</p>
+                <textarea class="form-control" id="instructionsField">Translate this text into </textarea>
             </div>
-            
+
             <div class="form-group">
-                <label for="originalText">Original Text</label>
-                <textarea class="form-control" id="originalText"></textarea>
-                <small class="form-text text-muted">Input the text you wish to translate. This will serve as the base for the initial automatic translation.</small>
+                <label for="originalTextField">Original Text</label>
+                <p>Input the text you wish to translate. This will serve as the base for the initial automatic translation.</p>
+                <textarea class="form-control" id="originalTextField"></textarea>
             </div>
-            
+
             <button type="button" class="btn btn-primary" id="translateButton">Translate</button>
-            
+
             <div class="form-group">
-                <label for="autoTranslatedText">Automatically Translated Text</label>
-                <textarea class="form-control" id="autoTranslatedText" readonly></textarea>
-                <small class="form-text text-muted">View the initial translation of your original text. This text is generated based on the general instructions.</small>
+                <label for="autoTranslatedTextField">Automatically Translated Text</label>
+                <p>View the initial translation of your original text. This text is generated based on the general instructions.</p>
+                <textarea class="form-control" id="autoTranslatedTextField" readonly></textarea>
             </div>
-            
+
             <div class="form-group">
-                <label for="correctedTranslation">Manually Corrected Translation</label>
-                <textarea class="form-control" id="correctedTranslation"></textarea>
-                <small class="form-text text-muted">Make adjustments to the automatic translation to better meet your requirements or correct inaccuracies.</small>
+                <label for="correctedTextField">Manually Corrected Translation</label>
+                <p>Make adjustments to the automatic translation to better meet your requirements or correct inaccuracies.</p>
+                <textarea class="form-control" id="correctedTextField"></textarea>
             </div>
-            
+
             <div class="form-group">
-                <label for="changedOriginalText">Revised Original Text</label>
-                <textarea class="form-control" id="changedOriginalText"></textarea>
-                <small class="form-text text-muted">Enter a modified version of the original text to see how the application adapts the translation to reflect these changes.</small>
+                <label for="changedTextField">Revised Original Text</label>
+                <p>Enter a modified version of the original text to see how the application adapts the translation to reflect these changes.</p>
+                <textarea class="form-control" id="changedTextField"></textarea>
             </div>
-            
+
             <button type="button" class="btn btn-primary" id="retranslateButton">Differential Re-translation</button>
-            
+
             <div class="form-group">
-                <label for="retranslatedResult">Result of differential re-translation</label>
-                <textarea class="form-control" id="retranslatedResult" readonly></textarea>
-                <small class="form-text text-muted">View the result of the translation of the changed original text while trying to maintain the manual corrections.</small>
+                <label for="retranslatedResultField">Result of differential re-translation</label>
+                <p>View the result of the translation of the changed original text while trying to maintain the manual corrections.</p>
+                <textarea class="form-control" id="retranslatedResultField" readonly></textarea>
             </div>
         </form>
     </div>
@@ -70,4 +69,4 @@
 </body>
 </html>
 
-<!-- AIGenVersion(479d12d1, 1html.prompt-15962403, README.md-38c61603, dialogelements.txt-64c2ec1a) -->
+<!-- AIGenVersion(791cbba5, 1html.prompt-3c81bea3, README.md-0243cfe5, dialogelements.txt-4684af8d) -->

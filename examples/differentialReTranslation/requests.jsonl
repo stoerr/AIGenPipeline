@@ -16,11 +16,11 @@
     },
     {
       "role": "assistant",
-      "content": "${sourcephrase}"
+      "content": "${original text}"
     },
     {
       "role": "user",
-      "content": "Print this complete text translated into ${targetlanguage}. ${addition}"
+      "content": "${instructions for translation}"
     }
   ]
 }

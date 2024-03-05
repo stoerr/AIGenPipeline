@@ -16,7 +16,7 @@ would be lost when the original text is simply retranslated. However, if you giv
 correction, it can try to replicate that correction for the translation of the changed original. The AI would be
 given the following data:
 
-- general instructions for the translation including the discussed additional instructions
+- instructions for the translation including the discussed additional instructions
 - the original text
 - the automatically translated original text
 - the manually corrected translation
@@ -27,7 +27,7 @@ replicate the manual correction. This application can be used to explore this co
 translation of an original text, and, after adding some manual corrections, to apply such a differential re-translation.
 
 In addition to the mentioned text fields the application has a button "Translate" after the original text that reads
-the general instructions and the original text and writes the translation into the "automatically translated original
+the instructions and the original text and writes the translation into the "automatically translated original
 text", a "Differential re-translation" button that performs this action, and an "Examples" at the top that drop down list that fills 
 the fields with one of several predefined examples.
 
@@ -37,7 +37,10 @@ In this dialog appear the following elements, in the order from top to bottom:
 
 1. **Examples Dropdown**: Allows users to select from predefined examples to fill in the translation fields automatically. This feature is designed to demonstrate the capabilities of the application without requiring the user to input original texts manually.
 
-2. **General Instructions Field**: A text input area where users can specify general instructions for the translation. These instructions can include the desired writing style, target audience considerations, and any additional context or background information relevant to the translation task.
+2. **Instructions Field**: A text input area where users can specify the instructions for the 
+   translation. These instructions have to include the language, and can include further information like desired 
+   writing style, target audience considerations, and 
+   any additional context or background information relevant to the translation task.
 
 3. **Original Text Field**: A text input area for the user to enter the text that needs to be translated. This field represents the source material in its original language.
 
@@ -69,9 +72,11 @@ Text fields are given a label and a one sentence description.
    *Label: Choose an Example*  
    *Description: Select from predefined scenarios to automatically populate the translation fields and explore different translation challenges and solutions.*
 
-2. **General Instructions Field**  
-   *Label: General Instructions for Translation*  
-   *Description: Enter any specific requirements for the translation, such as tone, formality level, or additional contextual information.*
+2. **Instructions Field**  
+   *Label: Instructions for Translation*  
+   *Description: Enter the specific requirements for the translation, such as tone, formality level, or additional 
+   contextual information.*
+   Initial value / content of the textarea: "Translate this text into "
 
 3. **Original Text Field**  
    *Label: Original Text*  

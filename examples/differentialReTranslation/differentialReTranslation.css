@@ -1,4 +1,4 @@
-/* AIGenVersion(48c06004, 2css.prompt-6264c46a, README.md-38c61603, differentialReTranslation.html-479d12d1) */
+/* AIGenVersion(735dc4a0, 2css.prompt-5434cae6, README.md-0243cfe5, differentialReTranslation.html-791cbba5) */
 
 /* differentialReTranslation.css */
 
@@ -19,12 +19,11 @@ body {
 }
 
 h1 {
-    color: #333;
-    text-align: center;
+    color: #007bff;
 }
 
-form {
-    margin-top: 20px;
+p {
+    color: #6c757d;
 }
 
 .form-group {
@@ -39,7 +38,7 @@ textarea {
     width: 100%;
     min-height: 100px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
     border-radius: 5px;
 }
 
@@ -47,20 +46,16 @@ textarea {
     margin-top: 10px;
 }
 
-/* Add space below the buttons */
+/* Add space below buttons */
 .btn {
     margin-bottom: 20px;
 }
 
-.form-text {
-    color: #6c757d;
-}
-
-/* Additional styling for the select dropdown */
+/* Additional styling for the dropdown */
 select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
     border-radius: 5px;
 }
 
