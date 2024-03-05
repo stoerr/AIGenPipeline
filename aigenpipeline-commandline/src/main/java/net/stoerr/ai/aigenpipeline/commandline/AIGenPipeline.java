@@ -50,8 +50,9 @@ public class AIGenPipeline {
             run();
         } catch (IllegalArgumentException e) {
             System.err.println("Usage error: " + e.getMessage());
-            System.err.println();
-            printHelpAndExit(true);
+//            System.err.println();
+//            printHelpAndExit(true);
+            System.exit(1);
         }
     }
 
