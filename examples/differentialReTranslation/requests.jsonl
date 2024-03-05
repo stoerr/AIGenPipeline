@@ -25,15 +25,62 @@
   ]
 }
 
-// example response for the "translate" button
+// example response for both responses
 {
- "choices": [
-   {
-     "message": {
-       "role": "assistant",
-       "content": "${translatedphrase}"
-     },
-     "finish_reason": "stop"
-   }
- ]
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "${translatedphrase}"
+      },
+      "finish_reason": "stop"
+    }
+  ]
+}
+
+// example for retranslation request
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are tasked as an expert translator to translate texts with utmost fidelity, preserving the original style, tone, sentiment, and all formatting elements (markdown, HTML tags, special characters) to the greatest extent possible.\nIMPORTANT: Only provide the translated text, maintaining all original formatting and non-translatable elements. Avoid any extraneous comments or actions not directly related to the translation."
+    },
+    {
+      "role": "user",
+      "content": "Print the original text you have to translate exactly without any comments."
+    },
+    {
+      "role": "assistant",
+      "content": "${original text}"
+    },
+    {
+      "role": "user",
+      "content": "${instructions for translation}"
+    },
+    {
+      "role": "assistant",
+      "content": "${automatically translated text}"
+    },
+    {
+      "role": "user",
+      "content": "Print this original text as it was manually adapted."
+    },
+    {
+      "role": "assistant",
+      "content": "${manually corrected translation}"
+    },
+    {
+      "role": "user",
+      "content": "Print the new text that is to be translated."
+    },
+    {
+      "role": "assistant",
+      "content": "${revised original text}"
+    },
+    {
+      "role": "user",
+      "content": "Translate the new text. Take care to include the manual adaptions for the original text."
+    }
+  ]
 }
