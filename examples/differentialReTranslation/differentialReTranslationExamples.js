@@ -1,58 +1,67 @@
-/* AIGenVersion(195c2445, 4examplejs.prompt-6417c081, README.md-2deb7062, dialogelements.txt-4684af8d) */
+/* AIGenVersion(0cae8e86, 4examplejs.prompt-57d98546, README.md-0f3151bb, dialogelements.txt-4684af8d, examples.txt-714c4162) */
 
-// JavaScript code implementing the functionalities related to the drop down list
-
-const examples = {
-    "Select an example": {
-        instructions: "Translate this text into",
-        originalText: "",
-        autoTranslatedText: "",
-        correctedText: "",
-        changedText: ""
+// Define the examples data
+const examples = [
+    {
+        name: "Our Contributors",
+        originalText: "Our Contributors",
+        instructions: "Translate this text into German",
+        autoTranslatedText: "Unsere Mitwirkenden",
+        manuallyCorrectedText: "Unsere Autoren",
+        changedOriginalText: "Meet our contributors",
+        retranslatedResult: "Treffe unsere Autoren"
     },
-    "Example 1": {
-        instructions: "Translate this text into German with a formal tone.",
-        originalText: "Hello, how are you?",
-        autoTranslatedText: "Hallo, wie geht es Ihnen?",
-        correctedText: "Guten Tag, wie geht es Ihnen?",
-        changedText: "Good morning, how are you?"
+    {
+        name: "Travel Guides",
+        originalText: "Meet our extraordinary travel guides. When you travel with a certified WKND guide you gain access to attractions and perspectives not found on the pages of a guide book.",
+        instructions: "Translate this text into German",
+        autoTranslatedText: "Lernen Sie unsere außergewöhnlichen Reiseführer kennen. Wenn Sie mit einem zertifizierten WKND-Reiseleiter unterwegs sind, erhalten Sie Zugang zu Attraktionen und Perspektiven, die nicht auf den Seiten eines Reiseführers zu finden sind.",
+        manuallyCorrectedText: "Lernen Sie unsere außergewöhnlichen Reiseleiter kennen. Wenn Sie mit einem zertifizierten WKND-Reiseleiter unterwegs sind, erhalten Sie Zugang zu Attraktionen und Perspektiven, die nicht auf den Seiten eines Reiseführers zu finden sind.",
+        changedOriginalText: "Meet our extraordinary travel guides. When you travel with a certified WKND guide you gain access to attractions and perspectives not found on the pages of a guide book.",
+        retranslatedResult: "Lernen Sie unsere außergewöhnlichen Reiseleiter kennen. Wenn Sie mit einem zertifizierten WKND-Reiseleiter unterwegs sind, erhalten Sie Zugang zu Attraktionen und Perspektiven, die nicht auf den Seiten eines Reiseführers zu finden sind. Wählen Sie den perfekten Reiseleiter für sich!"
     },
-    "Example 2": {
-        instructions: "Translate this text into English with a casual tone.",
-        originalText: "Guten Morgen, wie geht es Ihnen?",
-        autoTranslatedText: "Good morning, how are you?",
-        correctedText: "Hey, how's it going?",
-        changedText: "Hey, how are you doing?"
-    },
-    "Example 3": {
-        instructions: "Translate this text into German with a friendly tone.",
-        originalText: "I need help with my homework.",
-        autoTranslatedText: "Ich brauche Hilfe bei meinen Hausaufgaben.",
-        correctedText: "Kannst du mir bei meinen Hausaufgaben helfen?",
-        changedText: "I require assistance with my assignments."
+    {
+        name: "Sustainable living",
+        originalText: "Discover the latest trends in sustainable living.",
+        instructions: "Translate to German, aiming for a young, eco-conscious audience. Use informal 'du' and include relevant cultural references to Germany.",
+        autoTranslatedText: "Entdecke die neuesten Trends im nachhaltigen Leben.",
+        manuallyCorrectedText: "Entdecke die neuesten Trends für ein umweltbewusstes Leben.",
+        changedOriginalText: "Explore the latest trends in sustainable living in urban environments.",
+        retranslatedResult: "Entdecke die neuesten Trends für ein umweltbewusstes Leben in städtischen Umgebungen."
     }
-};
+];
 
-const examplesDropdown = document.getElementById("examplesDropdown");
-const instructionsField = document.getElementById("instructionsField");
-const originalTextField = document.getElementById("originalTextField");
-const autoTranslatedTextField = document.getElementById("autoTranslatedTextField");
-const correctedTextField = document.getElementById("correctedTextField");
-const changedTextField = document.getElementById("changedTextField");
+// Populate the dropdown list with examples
+const dropdown = document.getElementById('examplesDropdown');
 
-// Populate dropdown with examples
-for (const example in examples) {
-    const option = document.createElement("option");
-    option.text = example;
-    examplesDropdown.add(option);
+// Add a default option
+const defaultOption = document.createElement('option');
+defaultOption.text = "Select an example";
+dropdown.add(defaultOption);
+
+// Add each example to the dropdown
+examples.forEach((example, index) => {
+    const option = document.createElement('option');
+    option.text = example.name;
+    option.value = index; // Use the index as the value for easy retrieval of example data
+    dropdown.add(option);
+});
+
+// Function to fill the form fields with the selected example data
+function fillFormWithExampleData(index) {
+    const example = examples[index];
+    document.getElementById('originalTextField').value = example.originalText;
+    document.getElementById('instructionsField').value = example.instructions;
+    document.getElementById('autoTranslatedTextField').value = example.autoTranslatedText;
+    document.getElementById('correctedTextField').value = example.manuallyCorrectedText;
+    document.getElementById('changedTextField').value = example.changedOriginalText;
+    document.getElementById('retranslatedResultField').value = example.retranslatedResult;
 }
 
 // Event listener for dropdown change
-examplesDropdown.addEventListener("change", function() {
-    const selectedExample = examples[this.value];
-    instructionsField.value = selectedExample.instructions;
-    originalTextField.value = selectedExample.originalText;
-    autoTranslatedTextField.value = selectedExample.autoTranslatedText;
-    correctedTextField.value = selectedExample.correctedText;
-    changedTextField.value = selectedExample.changedText;
+dropdown.addEventListener('change', function() {
+    const selectedIndex = dropdown.value;
+    if (selectedIndex !== "Select an example") {
+        fillFormWithExampleData(selectedIndex);
+    }
 });

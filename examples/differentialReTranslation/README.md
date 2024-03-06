@@ -37,12 +37,12 @@ In this dialog appear the following elements, in the order from top to bottom:
 
 1. **Examples Dropdown**: Allows users to select from predefined examples to fill in the translation fields automatically. This feature is designed to demonstrate the capabilities of the application without requiring the user to input original texts manually.
 
-2. **Instructions Field**: A text input area where users can specify the instructions for the 
+2. **Original Text Field**: A text input area for the user to enter the text that needs to be translated. This field represents the source material in its original language.
+
+3. **Instructions Field**: A text input area where users can specify the instructions for the 
    translation. These instructions have to include the language, and can include further information like desired 
    writing style, target audience considerations, and 
    any additional context or background information relevant to the translation task.
-
-3. **Original Text Field**: A text input area for the user to enter the text that needs to be translated. This field represents the source material in its original language.
 
 4. **Translate Button**: Positioned after the Original Text Field, this button initiates the automatic translation of the text entered in the Original Text Field based on the General Instructions provided. 
 
@@ -72,15 +72,15 @@ Text fields are given a label and a one sentence description.
    *Label: Choose an Example*  
    *Description: Select from predefined scenarios to automatically populate the translation fields and explore different translation challenges and solutions.*
 
-2. **Instructions Field**  
+2. **Original Text Field**  
+   *Label: Original Text*  
+   *Description: Input the text you wish to translate. This will serve as the base for the initial automatic translation.*
+
+3. **Instructions Field**  
    *Label: Instructions for Translation*  
    *Description: Enter the specific requirements for the translation, such as tone, formality level, or additional 
    contextual information.*
    Initial value / content of the textarea: "Translate this text into "
-
-3. **Original Text Field**  
-   *Label: Original Text*  
-   *Description: Input the text you wish to translate. This will serve as the base for the initial automatic translation.*
 
 4. **Translate Button**  
    *Description: Click to translate the original text according to the provided general instructions.*

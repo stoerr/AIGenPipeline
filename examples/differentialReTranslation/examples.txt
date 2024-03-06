@@ -1,0 +1,23 @@
+Example: "Our Contributors"
+Original text: Our Contributors
+Instructions: Translate this text into German
+Automatically translated: Unsere Mitwirkenden
+Manually corrected: Unsere Autoren
+Revised original: Meet our contributors
+Result of retranslation: Treffe unsere Autoren
+
+Example: "Travel Guides"
+Original text: Meet our extraordinary travel guides. When you travel with a certified WKND guide you gain access to attractions and perspectives not found on the pages of a guide book.
+Instructions: Übersetze den Text auf Deutsch, addressiere mit Du.
+Automatically translated: Lerne unsere außergewöhnlichen Reiseführer kennen. Wenn du mit einem zertifizierten WKND-Führer reist, erhältst du Zugang zu Sehenswürdigkeiten und Perspektiven, die nicht in Reiseführern zu finden sind.
+Manually corrected: Lerne unsere außergewöhnlichen Reiseleiter kennen. Wenn du mit einem zertifizierten WKND-Reiseleiter reist, erhältst du Zugang zu Sehenswürdigkeiten und Perspektiven, die nicht in Reiseführern zu finden sind.
+Revised original: Meet our extraordinary travel guides. When you travel with a certified WKND guide you gain access to attractions and perspectives not found on the pages of a guide book.
+Result of retranslation: Lerne unsere außergewöhnlichen Reiseleiter kennen. Wenn du mit einem zertifizierten WKND-Reiseleiter reist, erhältst du Zugang zu Sehenswürdigkeiten und Perspektiven, die nicht in Reiseführern zu finden sind.
+
+Example: "Sustainable living"
+Original text: Discover the latest trends in sustainable living.
+Instructions: Translate to German, aiming for a young, eco-conscious audience. Use informal 'du' and include relevant cultural references to Germany.
+Automatically translated: Entdecke die neuesten Trends im nachhaltigen Leben.
+Manually corrected: Entdecke die neuesten Trends für ein umweltbewusstes Leben.
+Revised original: Explore the latest trends in sustainable living in urban environments.
+Result of retranslation: Entdecke die neuesten Trends für ein umweltbewusstes Leben in städtischen Umgebungen.
