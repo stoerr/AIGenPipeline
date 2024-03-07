@@ -23,12 +23,12 @@ import javax.annotation.Nullable;
  */
 public class FileLookupHelper {
 
-<span class="nc" id="L26">    private static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());</span>
+<span class="nc" id="L26">    protected static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());</span>
 
     public static final String HTML_PATTERN = &quot;.*\\.html&quot;;
-    private final File directory;
+    protected final File directory;
 
-<span class="nc" id="L31">    private FileLookupHelper(String path) {</span>
+<span class="nc" id="L31">    protected FileLookupHelper(String path) {</span>
 <span class="nc" id="L32">        sanityCheck();</span>
         try {
 <span class="nc" id="L34">            directory = new File(path).getAbsoluteFile().getCanonicalFile();</span>
@@ -40,7 +40,7 @@ public class FileLookupHelper {
         }
 <span class="nc" id="L41">    }</span>
 
-    private static void sanityCheck() {
+    protected static void sanityCheck() {
 <span class="nc bnc" id="L44" title="All 4 branches missed.">        if (!new File(&quot;src/main/java&quot;).isDirectory() || !new File(&quot;pom.xml&quot;).isFile()) {</span>
             // This might be actually OK, but seems more likely to be a mistake. Let's see.
 <span class="nc" id="L46">            throw new IllegalStateException(&quot;Something is wrong - we are not started in the maven project, but &quot; + new File(&quot;.&quot;).getAbsolutePath());</span>

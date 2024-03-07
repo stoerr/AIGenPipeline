@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 public class AIVersionMarker {
 
 <span class="nc" id="L16">    public static final Pattern VERSION_MARKER_PATTERN = Pattern.compile(&quot;AIGenVersion\\([^)]+\\)&quot;);</span>
-    private final String ourVersion;
-    private final List&lt;String&gt; inputVersions;
+    protected final String ourVersion;
+    protected final List&lt;String&gt; inputVersions;
 
 <span class="nc" id="L20">    public AIVersionMarker(String ourVersion, List&lt;String&gt; inputVersions) {</span>
 <span class="nc" id="L21">        this.ourVersion = ourVersion;</span>

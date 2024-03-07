@@ -118,7 +118,7 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-02-24</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-03-07</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
             <span id="projectVersion" class="px-1 navbar-text">Version: 0.1-SNAPSHOT</span>
           </div>
@@ -173,7 +173,7 @@ aigenpipeline -p test_prompt.txt -i generated_interface.java -o generated_test.j
 improve it:</p>
 
 <div class="verbatim">
-<pre><code class="language-shell">aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --ask \
+<pre><code class="language-shell">aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --explain \
      &quot;Why wasn't a @GET annotation used in method foo? How would I have to change the prompt to make sure it's 
 used?&quot;
 </code></pre></div></li>
@@ -241,8 +241,8 @@ Options:
                            generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
                            regenerated.
   -f, --force              Force regeneration of output files, ignoring any version checks.
-  --ask &lt;question&gt;         Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
-                           that was given to generate the output file, and the additional --ask &lt;question&gt; option.
+  -e, --explain &lt;question&gt; Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
+                           that was given to generate the output file, and the additional --explain &lt;question&gt; option.
                            It recreates the conversation that lead to the output file and asks the AI for a 
                            clarification. The output file is not written, but read to recreate the conversation.
   -u, --url &lt;url&gt;          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
@@ -264,7 +264,7 @@ Examples:
     aigenpipeline -f -o specs/openapi.yaml -p api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
-    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --ask &quot;Why did you not use annotations?&quot;  
+    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --explain &quot;Why did you not use annotations?&quot;  
 
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
