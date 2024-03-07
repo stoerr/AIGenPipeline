@@ -96,7 +96,8 @@ public class AIGenPipeline {
             System.exit(hasToBeRun ? 0 : 1); // command line like: 0 is "OK" = file is up to date.
         }
         if (dryRun) {
-            logStream.println("Dryrun - not executed.");
+            boolean hasToBeRun = task.hasToBeRun();
+            logStream.println("Dryrun - not executed; needs executing: " + hasToBeRun);
             return;
         }
         if (explain != null && !explain.isBlank()) {

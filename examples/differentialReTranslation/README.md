@@ -33,6 +33,8 @@ the instructions and the original text and writes the translation into the "auto
 text", a "Differential re-translation" button that performs this action, and an "Examples" at the top that drop down list that fills 
 the fields with one of several predefined examples.
 
+The application should look colorful, yet professional.
+
 ## List of dialog elements
 
 In this dialog appear the following elements, in the order from top to bottom:
