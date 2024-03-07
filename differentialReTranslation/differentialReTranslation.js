@@ -5,7 +5,9 @@ async function handleTranslate() {
   const originalText = document.getElementById('originalTextField').value;
   const instructions = document.getElementById('instructionsField').value;
   const apiKey = localStorage.getItem('openai_api_key') || prompt('Enter OpenAI API Key:');
-  localStorage.setItem('openai_api_key', apiKey);
+  if(apiKey) {
+    localStorage.setItem('openai_api_key', apiKey);
+  }
 
   const requestBody = {
     model: "gpt-3.5-turbo",
