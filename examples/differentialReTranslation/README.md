@@ -1,3 +1,5 @@
+// AIGenVersion(1.0)
+
 # Differential re-translation demonstration
 
 ## Basic idea
@@ -62,8 +64,6 @@ In this dialog appear the following elements, in the order from top to bottom:
 The full dialog can look like this. A headline and introductory text is at the top, then the dialog fields appear. 
 Text fields are given a label and a one sentence description.
 
-### Dialog Layout
-
 **Headline:** Advanced Translation Assistance Tool
 
 **Introductory Text:** Explore the future of language translation with our cutting-edge tool. By combining automatic translation with human insight, this application enhances the accuracy and relevance of translations across various languages and contexts. Perfect for professionals and language enthusiasts alike.
@@ -111,6 +111,7 @@ If the response from the OpenAI chat completion service has not status 200, the 
 Each sent request should be logged with console.log, the received response should be logged with console.log as well,
  and the text should be put into the "Automatically Translated Original Text Field" or "Result of re-translation", depending on the button.
 The api key should be read from localStorage.getItem('openai_api_key') as cache or prompted if not there yet.
+If the prompt does not give a result, the result should not be written to the cache.
 During request processing the buttons should be disabled.
 
 There should be a list of several examples using English and German language with value sets for all fields

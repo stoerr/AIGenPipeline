@@ -1,4 +1,4 @@
-/* AIGenVersion(1516c86e, 3js.prompt-29a550a7, README.md-2deb7062, dialogelements.txt-4684af8d, requests.jsonl-5dddc8c5) */
+/* AIGenVersion(1516c86e, 3js.prompt-29a550a7, README.md-1.0, dialogelements.txt-4684af8d, requests.jsonl-5dddc8c5) */
 
 // Function to handle translation request
 async function handleTranslate() {
