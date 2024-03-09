@@ -135,6 +135,14 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.5.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
