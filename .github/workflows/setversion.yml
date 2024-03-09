@@ -18,7 +18,7 @@ jobs:
 
     env:
       SUBDIR: ${{ github.event.inputs.subdir }}
-      MVNCMD: mvn -B -ntp -P allmodules
+      MVNCMD: mvn -B -ntp
 
     steps:
     - uses: actions/checkout@v3
