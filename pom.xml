@@ -42,10 +42,20 @@
             <url>${siteurl}</url>
         </site>
         <repository>
+            <id>github</id>
+            <name>Github Packages for stoerr/AIGenPipeline</name>
+            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>Github Packages for stoerr/AIGenPipeline</name>
+            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
+        </snapshotRepository>
+        <!-- <repository>
           <id>ossrh</id>
           <name>Central Repository OSSRH</name>
           <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
+        </repository> -->
     </distributionManagement>
 
     <licenses>
@@ -130,7 +140,7 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.5.0</version>
                 </plugin>
-                <plugin>
+                <!-- <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <extensions>true</extensions>
@@ -139,7 +149,7 @@
                         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <autoReleaseAfterClose>false</autoReleaseAfterClose>
                     </configuration>
-                </plugin>
+                </plugin> -->
             </plugins>
         </pluginManagement>
 
