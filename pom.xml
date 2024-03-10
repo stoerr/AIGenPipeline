@@ -42,15 +42,10 @@
             <url>${siteurl}</url>
         </site>
         <repository>
-            <id>github</id>
-            <name>Github Packages for stoerr/AIGenPipeline</name>
-            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
+          <id>ossrh</id>
+          <name>Central Repository OSSRH</name>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>Github Packages for stoerr/AIGenPipeline</name>
-            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <licenses>

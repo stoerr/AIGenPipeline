@@ -3,6 +3,7 @@
 # the irreversible actions are done only after all builds are done. That is the git push and the release to maven central.
 # The copy to the Sonatype staging area is likely repeatable. That way you just have to restart the job if it fails,
 # with no harm done and no traces in git.
+# See also https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven
 
 name: Create Release
 run-name: Create Release of ${{ github.ref_name }} , dryrun=${{ inputs.dryrun }}
@@ -41,6 +42,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         maven-version: 3.8.7
+        server-id: ossrh
+        server-username: OSSRH_USER
+        server-password: OSSRH_PASSWD
         # deliberately not: cache: maven
 
     - name: Dump event context for debugging
