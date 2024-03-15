@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.stoerr.ai.aigenpipeline</groupId>
     <artifactId>aigenpipeline</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>aigenpipeline-commandline</module>
