@@ -5,6 +5,7 @@ package net.stoerr.ai.aigenpipeline.framework.chat;
  */
 public interface AIChatBuilder {
 
+
     /**
      * Sets the URL for the chat completion request.
      *

@@ -159,8 +159,12 @@ public class AIGenerationTask implements Cloneable {
             case "json": // that's a problem, no comment syntax. Let's see whether this makes sense.
                 result = "/* " + comment + " */\n\n" + content;
                 break;
-            case "md":
-                result = "<!-- " + comment + " -->\n\n" + content;
+            case "md": // TODO check for already existing front matter.
+                if (content.startsWith("---\n")) {
+                    result = content.replaceFirst("---\n", "---\nversion: " + comment + "\n");
+                } else {
+                    result = "---\nversion: " + comment + "\n---\n\n" + content;
+                }
                 break;
             case "sh":
             case "yaml":

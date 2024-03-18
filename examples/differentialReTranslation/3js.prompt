@@ -1,5 +1,5 @@
 As a professional Javascript programmer using best practices,
-write a js that implements the functionalities except for the drop down list.
+Write a js that implements the functionalities except for the drop down list, which will be implemented in a different js file.
 Follow the instructions in the README.md to the letter.
 Do not print any code examples. Do bind the appropriate functions to the buttons as given in the dialogelements.txt file.
 Replace all placeholders (${...}) in the requests by the appropriate values from the form.

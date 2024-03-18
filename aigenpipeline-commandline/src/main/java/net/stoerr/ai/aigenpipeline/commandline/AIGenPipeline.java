@@ -41,7 +41,7 @@ public class AIGenPipeline {
             if (version) {
                 System.out.println(getVersion());
             }
-            if (help) {
+            if (help || args.length == 0) {
                 printHelpAndExit(false);
             }
             if (version || help) {
@@ -85,15 +85,15 @@ public class AIGenPipeline {
                 .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
         task.force(force);
-        if (verbose) {
-            logStream.println(task.toJson(this::makeChatBuilder, rootDir));
-        }
         if (check) {
             boolean hasToBeRun = task.hasToBeRun();
             if (verbose) {
                 logStream.println("Needs running: " + hasToBeRun);
             }
             System.exit(hasToBeRun ? 0 : 1); // command line like: 0 is "OK" = file is up to date.
+        }
+        if (verbose) {
+            logStream.println(task.toJson(this::makeChatBuilder, rootDir));
         }
         if (dryRun) {
             boolean hasToBeRun = task.hasToBeRun();

@@ -1,4 +1,6 @@
-// AIGenVersion(1.0)
+---
+version: AIGenVersion(1.0)
+---
 
 # Differential re-translation demonstration
 
