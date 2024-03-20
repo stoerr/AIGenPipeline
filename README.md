@@ -1,4 +1,4 @@
-# Command line tool AIGenPipeline
+# AI based generation pipeline (AIGenPipeline)
 
 > In silence, code weaves,<br>
 > Through prompts, AI breathes life anew,<br>
