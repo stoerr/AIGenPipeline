@@ -24,4 +24,4 @@
 - https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven
 - https://www.baeldung.com/maven-repo-github
 - https://stackoverflow.com/questions/14013644/hosting-a-maven-repository-on-github
-- 
+- https://central.sonatype.org/publish/publish-portal-maven/#introduction

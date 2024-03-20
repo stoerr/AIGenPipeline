@@ -24,7 +24,7 @@ for file in $(find src/site/markdown -type f -name "*.md"); do
 
     # Append the entry to the $SITEMAP
 echo "  <url>" >> $SITEMAP
-echo "    <loc>https://AIGenPipeline.stoerr.net/$html_path</loc>" >> $SITEMAP
+echo "    <loc>https://aigenpipeline.stoerr.net/$html_path</loc>" >> $SITEMAP
 echo "    <lastmod>$last_commit_date</lastmod>" >> $SITEMAP
 echo "  </url>" >> $SITEMAP
 done

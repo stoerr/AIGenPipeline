@@ -3,9 +3,9 @@
 scriptdir="$(dirname $(readlink -f $0))"
 
 # find the jar file. Try first according to project layout, then in scriptdir itself.
-jarFile="$(ls -1 $scriptdir/../aigenpipeline-commandline/target/aigenpipeline-commandline*.jar | tail -n 1)"
+jarFile="$(ls -1tr $scriptdir/../aigenpipeline-commandline/target/aigenpipeline-commandline*.jar | fgrep -v sources | tail -n 1)"
 if [ -z "$jarFile" ]; then
-  jarFile="$(ls -1 $scriptdir/aigenpipeline-commandline*.jar | tail -n 1)"
+  jarFile="$(ls -1tr $scriptdir/aigenpipeline-commandline*.jar | fgrep -v sources | tail -n 1)"
 fi
 
 if [ -z "$jarFile" ]; then

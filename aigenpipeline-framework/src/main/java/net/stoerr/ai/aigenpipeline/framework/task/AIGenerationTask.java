@@ -156,7 +156,7 @@ public class AIGenerationTask implements Cloneable {
                 break;
             case "css":
             case "js":
-            case "json": // that's a problem, no comment syntax. Let's see whether this makes sense.
+            case "json": // json is a problem, no comment syntax. Let's see whether this makes sense.
                 result = "/* " + comment + " */\n\n" + content;
                 break;
             case "md": // TODO check for already existing front matter.
