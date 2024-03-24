@@ -42,20 +42,10 @@
             <url>${siteurl}</url>
         </site>
         <repository>
-            <id>github</id>
-            <name>Github Packages for stoerr/AIGenPipeline</name>
-            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
-        </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>Github Packages for stoerr/AIGenPipeline</name>
-            <url>https://maven.pkg.github.com/stoerr/AIGenPipeline</url>
-        </snapshotRepository>
-        <!-- <repository>
           <id>ossrh</id>
           <name>Central Repository OSSRH</name>
           <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository> -->
+        </repository>
     </distributionManagement>
 
     <licenses>
@@ -140,16 +130,18 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.5.0</version>
                 </plugin>
-                <!-- <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                <!-- https://central.sonatype.org/publish/publish-portal-maven/ -->
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.4.0</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        <publishingServerId>central</publishingServerId>
+                        <tokenAuth>true</tokenAuth>
+                        <autoPublish>false</autoPublish>
                     </configuration>
-                </plugin> -->
+                </plugin>
             </plugins>
         </pluginManagement>
 
