@@ -130,16 +130,12 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.5.0</version>
                 </plugin>
-                <!-- https://central.sonatype.org/publish/publish-portal-maven/ -->
                 <plugin>
-                    <groupId>org.sonatype.central</groupId>
-                    <artifactId>central-publishing-maven-plugin</artifactId>
-                    <version>0.4.0</version>
-                    <extensions>true</extensions>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.1</version>
                     <configuration>
-                        <publishingServerId>central</publishingServerId>
-                        <tokenAuth>true</tokenAuth>
-                        <autoPublish>false</autoPublish>
+                        <deployAtEnd>true</deployAtEnd>
                     </configuration>
                 </plugin>
             </plugins>
@@ -172,7 +168,7 @@
                 <configuration>
                     <scmCommentPrefix>[maven-scm] :</scmCommentPrefix>
                     <preparationGoals>clean install</preparationGoals>
-                    <goals>install</goals>
+                    <goals>clean deploy</goals>
                     <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
@@ -267,7 +263,7 @@
 
     <profiles>
         <profile>
-            <id>deploy</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <!-- Maven Source Plugin -->
@@ -328,6 +324,18 @@
                             <failOnError>false</failOnError>
                             <quiet>true</quiet>
                             <notimestamp>true</notimestamp>
+                        </configuration>
+                    </plugin>
+                    <!-- https://central.sonatype.org/publish/publish-portal-maven/ -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.4.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <detail>true</detail>
                         </configuration>
                     </plugin>
                 </plugins>
