@@ -336,7 +336,7 @@
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>false</autoPublish>
                             <detail>true</detail>
-                            <tokenAuth>true</tokenAuth>
+                            <tokenAuth>false</tokenAuth>
                         </configuration>
                     </plugin>
                 </plugins>
