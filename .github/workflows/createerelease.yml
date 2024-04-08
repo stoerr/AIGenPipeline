@@ -2,6 +2,7 @@
 # See also https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven
 # https://github.com/actions/setup-java
 # https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md?tab=readme-ov-file#Publishing-using-Apache-Maven
+# https://central.sonatype.org/publish-ea/publish-ea-guide/
 
 name: Create Release
 run-name: Create Release of ${{ github.ref_name }} , dryrun=${{ inputs.dryrun }}

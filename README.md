@@ -1,4 +1,4 @@
-# AI based generation pipeline (AIGenPipeline)
+# AI based code generation pipeline (AIGenPipeline)
 
 > In silence, code weaves,<br>
 > Through prompts, AI breathes life anew,<br>
