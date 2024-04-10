@@ -337,6 +337,7 @@
                             <autoPublish>false</autoPublish>
                             <detail>true</detail>
                             <tokenAuth>true</tokenAuth>
+                            <checksums>all</checksums>
                         </configuration>
                     </plugin>
                 </plugins>
