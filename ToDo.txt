@@ -1,5 +1,9 @@
 # Ideas what to do next
 
+- Run Master workflow automatically
+- completely automated deployment with GitHub Actions
+- Add more models
+
 ## Endpoints
 
 https://octo.ai/product/text-generation/
