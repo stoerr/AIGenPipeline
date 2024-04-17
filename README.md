@@ -1,9 +1,11 @@
 # AI based code generation pipeline (AIGenPipeline)
 
+<h3>A command line tool and framework for systematic code generation using AI</h3>
+
 > In silence, code weaves,<br>
 > Through prompts, AI breathes life anew,<br>
 > Scripts bloom, knowledge leaves.
-> 
+>
 > Git guards every step,<br>
 > In the dance of creation,<br>
 > Change blooms, watched and kept.<br>
@@ -21,7 +23,7 @@ e.g. create an OpenAPI document from a specification, then generate an interface
 that, a test and an implementation class. Of course, manual inspection and editing of the generated files will usually
 be necessary.
 
-I suggest to inspect the intermediate and final results and committing them into a version control system like Git. 
+I suggest to inspect the intermediate and final results and committing them into a version control system like Git.
 That ensures manual checks when they are regenerated, and minimizes regeneration.
 
 ## Some example usages
