@@ -7,6 +7,10 @@ you could also consider using the framework.
 The examples always contain a generate.sh script that triggers the generation process. Feel free to experiment with 
 this!
 
+## [helloworld](helloworld/)
+
+Generates "print hello world" in Javascript with OpenAI and Anthropic Claude.
+
 ## [Translation and Rewriting](translationAndTransformation/)
 
 For the Composum AI I needed a number of prompts translated into several languages, and transformed into pages for 
