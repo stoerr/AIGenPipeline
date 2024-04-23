@@ -12,14 +12,19 @@ keywords:
   <img decoding="async" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" loading="lazy" data-recalc-dims="1"></img>
 </a>
 
+<div style="float: right; margin-left: 2em; margin-bottom: 2em;">
+<img src="images/AIGenPipelineLogo-square.png" alt="AIGenPipeline Logo" width="320" height="320"/>
+</div>
+
+
 # AI based code generation pipeline
 
-<h3>A command line tool and framework for systematic code generation using AI</strong>
+<strong>A command line tool and framework for systematic code generation using AI</strong>
 
 > In silence, code weaves,<br/>
 > Through prompts, AI breathes life anew,<br/>
 > Scripts bloom, knowledge leaves.
-> 
+>
 > Git guards every step,<br/>
 > In the dance of creation,<br/>
 > Change blooms, watched and kept.<br/>
@@ -37,7 +42,7 @@ e.g. create an OpenAPI document from a specification, then generate an interface
 that, a test and an implementation class. Of course, manual inspection and editing of the generated files will usually
 be necessary.
 
-I suggest to inspect the intermediate and final results and committing them into a version control system like Git. 
+I suggest to inspect the intermediate and final results and committing them into a version control system like Git.
 That ensures manual checks when they are regenerated, and minimizes regeneration.
 
 ## Some example usages
