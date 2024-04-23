@@ -3,10 +3,12 @@
 ## Command line / framework improvements
 - prompt on command line? stdin? unclear what filename!
   - (idea: -p - = stdin , versioning from tag)
-- variables for placeholders on command line? unclear for versioning
 - makefile-modus : regenerate when older
 - only when not existant modus
-- number of tokens for output configurable
+- Run Master workflow automatically
+- completely automated deployment with GitHub Actions
+- replace parts of a file with the result
+- refactor to extract version comment strategies
 
 ## Site improvements
 - split into several pages
@@ -17,7 +19,17 @@
   - HTL to md to java?
   - construct mini-application?
   - demonstrate explain feature
-- deployment on Maven Central
+
+## Endpoints
+
+https://octo.ai/product/text-generation/
+Huggingface?
+Claude, Gemini
+https://console.groq.com/docs/openai - https://simonwillison.net/2024/Apr/22/llama-3/
+https://openrouter.ai/models/meta-llama/llama-3-70b-instruct
+
+llm? llm -m Meta-Llama-3-8B-Instruct
+llm chat -m Meta-Llama-3-8B-Instruct
 
 ## Maven central
 - https://github.com/volkodavs/ossrh-demo
