@@ -4,8 +4,8 @@ AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipel
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIVersionMarker,170,0,20,0,32,0,19,0,9,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper.new SimpleFileVisitor() {...},31,0,2,0,4,0,3,0,2,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.Message,9,0,0,0,4,0,1,0,1,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.Choice,3,0,0,0,1,0,1,0,1,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse,3,0,0,0,1,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl,420,0,56,0,99,0,43,0,15,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse,3,0,0,0,1,0,1,0,1,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.Choice,3,0,0,0,1,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionRequest,15,0,0,0,6,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.ClaudeResponseContent,3,0,0,0,1,0,1,0,1,0
