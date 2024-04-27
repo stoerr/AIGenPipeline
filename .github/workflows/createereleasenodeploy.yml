@@ -1,11 +1,5 @@
-# Creates a release and uploads that. We don't upload the site - that's done in the master.yml workflow once it's merged.
-# See also https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven
-# https://github.com/actions/setup-java
-# https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md?tab=readme-ov-file#Publishing-using-Apache-Maven
-# https://central.sonatype.org/publish-ea/publish-ea-guide/
-
-name: Create Release
-run-name: Create Release of ${{ github.ref_name }} , dryrun=${{ inputs.dryrun }}
+name: Create Release w/o deploy
+run-name: Create Release w/o deploy of ${{ github.ref_name }} , dryrun=${{ inputs.dryrun }}
 
 on:
   workflow_dispatch:
@@ -21,7 +15,7 @@ jobs:
 
     env:
       SUBDIR: ${{ github.event.inputs.subdir }}
-      MVNCMD: mvn -B -ntp -P release
+      MVNCMD: mvn -B -ntp
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_ACTOR: ${{ github.actor }}
 
@@ -41,11 +35,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-          server-id: central
-          server-username: OSSRH_USER
-          server-password: OSSRH_PASSWD
-          # gpg-private-key: ${{ secrets.GPG_SECRET_KEYS }}
-          gpg-passphrase: GPG_PASSPHRASE
 
       - name: Dump settings
         run: cat $HOME/.m2/settings.xml
@@ -63,38 +52,18 @@ jobs:
         run: |
           echo '${{ toJSON(github) }}'
 
-      - name: Try to set a master password
-        run: |
-          MASTERPWD=$(openssl rand -base64 25)
-          echo "<settingsSecurity> <master>$(mvn --encrypt-master-password "$MASTERPWD")</master></settingsSecurity>" > $HOME/.m2/settings-security.xml
-          # echo "MASTERPWD=\"$MASTERPWD\"" >> $GITHUB_ENV
-          # The master password isn't actually used, but the maven-gpg-plugin complains otherwise.
-
       - name: Git & Maven Status
         run: |
           $MVNCMD -version
           git remote -v
           git status --untracked-files --ignored
           git log -3 --no-color --decorate
-          $MVNCMD -version
-          find . -name 'settings*xml'
-          find /home/runner/work/ -name 'settings*xml'
 
       - name: Mvn Effective POM
         run: $MVNCMD -N help:effective-pom
 
       - name: Mvn Effective Settings
         run: $MVNCMD -N help:effective-settings
-
-      - name: Import GPG key
-        env:
-          GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
-          GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
-        run: |
-          echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
-          echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
-          gpg -v --refresh-keys
-          gpg --list-secret-keys --keyid-format LONG
 
       - name: Configure git user for release commits
         # specific to repository - we don't want that to be the same thing in a fork.
@@ -143,14 +112,10 @@ jobs:
           git log -3 --no-color --decorate
           cat release.properties || true
 
+      # create a release without deploying it since we still have trouble with maven central
       - name: Perform release
-        env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER  }}
-          OSSRH_PASSWD: ${{ secrets.OSSRH_PASSWD  }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          $MVNCMD -X release:perform -DlocalCheckout=true -DdeployAtEnd=true "-Darguments=-DdeployAtEnd=true"
-          # "-Dgoals=clean install package source:jar javadoc:jar deploy" "-DreleaseProfiles=release"
+          $MVNCMD -X release:perform -DlocalCheckout=true -DdeployAtEnd=true "-Darguments=-DdeployAtEnd=true" "-Dgoals=clean install"
 
       - name: Git Status after perform
         if: always()
@@ -167,26 +132,6 @@ jobs:
         if: ${{ github.event.inputs.dryrun == 'false' }}
         run: |
           git push origin --follow-tags -v
-
-      #    - name: Release to maven central repository
-      #      if: ${{ github.event.inputs.dryrun == 'false' }}
-      #      env:
-      #        OSSRH_USER: ${{ secrets.OSSRH_USER  }}
-      #        OSSRH_PASSWD: ${{ secrets.OSSRH_PASSWD  }}
-      #      run: |
-      #        cd target/checkout
-      #        pwd
-      #        $MVNCMD nexus-staging:release
-
-      #    - name: Drop from OSSRH on dryrun
-      #      if: ${{ github.event.inputs.dryrun != 'false' }}
-      #      env:
-      #        OSSRH_USER: ${{ secrets.OSSRH_USER  }}
-      #        OSSRH_PASSWD: ${{ secrets.OSSRH_PASSWD  }}
-      #      run: |
-      #        cd target/checkout
-      #        pwd
-      #        $MVNCMD nexus-staging:drop
 
       - name: List target files even if recipe fails
         if: always()
