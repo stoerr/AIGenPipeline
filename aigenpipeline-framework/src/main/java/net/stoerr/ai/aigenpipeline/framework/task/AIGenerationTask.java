@@ -295,7 +295,7 @@ public class AIGenerationTask implements Cloneable {
             return null;
         }
         requireNonNull(rootDirectory, "Root directory must not be null");
-        String rootPath = null;
+        String rootPath;
         try {
             rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
             String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
@@ -364,7 +364,7 @@ public class AIGenerationTask implements Cloneable {
             chat.systemMsg(systemMessage);
         } else {
             try (InputStream defaultprompt = AIGenerationTask.class.getResourceAsStream("/defaultsystemprompt.txt")) {
-                String defaultSysPrompt = new String(defaultprompt.readAllBytes(), StandardCharsets.UTF_8);
+                String defaultSysPrompt = new String(requireNonNull(defaultprompt).readAllBytes(), StandardCharsets.UTF_8);
                 chat.systemMsg(defaultSysPrompt);
             } catch (IOException e) {
                 throw new IllegalStateException("Error reading default system message", e);

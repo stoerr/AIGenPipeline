@@ -17,7 +17,7 @@ public interface WritingStrategy {
     /**
      * Writes the raw file without the cersion comment.
      */
-    static final WritingStrategy WITHOUTVERSION = new WritingStrategy() {
+    WritingStrategy WITHOUTVERSION = new WritingStrategy() {
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
             Files.write(output.toPath(), content.getBytes(StandardCharsets.UTF_8));
@@ -27,7 +27,7 @@ public interface WritingStrategy {
     /**
      * Writes the file with the version comment.
      */
-    static final WritingStrategy WITHVERSION = new WritingStrategy() {
+    WritingStrategy WITHVERSION = new WritingStrategy() {
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
             Files.write(output.toPath(), embedComment(output, content, versionComment).getBytes(StandardCharsets.UTF_8));

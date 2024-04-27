@@ -20,14 +20,14 @@ public interface RegenerationCheckStrategy {
      */
     boolean needsRegeneration(@Nonnull File output, @Nonnull List<File> inputs);
 
-    final RegenerationCheckStrategy ALWAYS = (output, inputs) -> true;
+    RegenerationCheckStrategy ALWAYS = (output, inputs) -> true;
 
-    final RegenerationCheckStrategy IF_NOT_EXISTS = (output, inputs) -> !output.exists();
+    RegenerationCheckStrategy IF_NOT_EXISTS = (output, inputs) -> !output.exists();
 
     /**
      * Regenerate when output file does not exist or is older than one of the input files.
      */
-    final RegenerationCheckStrategy IF_OLDER = (output, inputs) -> {
+    RegenerationCheckStrategy IF_OLDER = (output, inputs) -> {
         if (!output.exists()) return true;
         long outputTime = output.lastModified();
         for (File input : inputs) {
@@ -37,11 +37,11 @@ public interface RegenerationCheckStrategy {
         return false;
     };
 
-    final RegenerationCheckStrategy VERSIONMARKER = (output, inputs) -> {
+    RegenerationCheckStrategy VERSIONMARKER = (output, inputs) -> {
         throw new UnsupportedOperationException("Not implemented yet."); // FIXME hps 24/04/27 not implemented
     };
 
-    static final Map<String, RegenerationCheckStrategy> STRATEGIES = Map.of(
+    Map<String, RegenerationCheckStrategy> STRATEGIES = Map.of(
             "a", ALWAYS,
             "n", IF_NOT_EXISTS,
             "o", IF_OLDER,
