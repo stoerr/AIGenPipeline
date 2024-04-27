@@ -56,6 +56,28 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
    Alternatively, the output files could just be removed before running the tool, or the version comments in suitable
    input files or prompt file(s) could be changed.
 
+4. **Generate parts of a file**: If you want to combine manually written and ai generated parts in one file, you can use
+   the `-wp <marker>` option to replace a part of the output file. The marker should occur in exactly two lines of the
+   already existing output file - the lines between them are replaced by the AI generated text. The first line must 
+   also contain the version commment (see below).
+
+   ```shell
+   aigenpipeline -wp generatedtable -o outputfile.md -p maketablefromjson.txt input.json
+   ```
+  
+   could e.g. replace the part between the lines `<!-- start generatedtable AIGenVersion(1.0) -->` and `<!-- end 
+   generatedtable -->` in:
+
+   ```
+   This is the hand generated part
+   <!-- start generatedtable AIGenVersion(1.0) -->
+   | Column1 | Column2 |
+   |---------|---------|
+   | value1  | value2  |
+   <!-- end generatedtable -->
+   Here can be more handwritten stuff that is untouched.
+   ```
+
 ## Caching and versioning
 
 Since generation takes time, costs a little and the results have to be manually checked, the tool takes precaution
@@ -108,40 +130,50 @@ aigenpipeline [options] [<input_files>...]
 Options:
   -h, --help               Show this help message and exit.
   --version                Show the version of the AIGenPipeline tool and exit.
-  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
-  -p, --prompt <file>      Reads a prompt from the given file. Exactly one needs to be given.
-  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
-  -v, --verbose            Enable verbose output to stderr, providing more details about the process.
-  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
-                           actually calling the AI or writing any files.
   -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                            generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
                            regenerated.
-  -f, --force              Force regeneration of output files, ignoring any version checks.
+  -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
+  -ga, --gen-always        Generate the output file always, ignoring version checks.
+  -gn, --gen-notexists     Generate the output file only if it does not exist.
+  -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
+  -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
+  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
+                           actually calling the AI or writing any files.
+  -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
+  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
+  -p, --prompt <file>      Reads a prompt from the given file.
+  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
+  -v, --verbose            Enable verbose output to stderr, providing more details about the process.
+  -wv, --write-version     Write the output file with a version comment. (Default.)
+  -wo, --write-noversion   Write the output file without a version comment.
+  -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.                           If a version marker is written, it has to be in the first of those lines and is changed there.                           It is an error if the marker does not occur exactly twice; the output file has to exist.
   -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
                            that was given to generate the output file, and the additional --explain <question> option.
                            It recreates the conversation that lead to the output file and asks the AI for a 
                            clarification. The output file is not written, but read to recreate the conversation.
+
   -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
                            In the case of OpenAI the API key is expected to be in the environment variable 
                            OPENAI_API_KEY, or given as -k option.
-  -k, --key <key>          The API key for the AI server. If not given, it's expected to be in the environment variable 
+  -a, --api-key <key>      The API key for the AI server. If not given, it's expected to be in the environment variable 
                            OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
                            an API key. Used in "Authorization: Bearer <key>" header.
   -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
+  -t <maxtokens>           The maximum number of tokens to generate.
 
 Arguments:
   [<input_files>...]       Input files to be processed. 
 
 Examples:
   Generate documentation from a prompt file:
-    aigenpipeline -p documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java
+    aigenpipeline -p prompts/documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java
 
   Force regenerate an interface from an OpenAPI document, ignoring version checks:
-    aigenpipeline -f -o specs/openapi.yaml -p api_interface_prompt.txt src/main/java/foo/MyInterface.java
+    aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
-    aigenpipeline -o PreviousOutput.java -p promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
+    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
 
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
