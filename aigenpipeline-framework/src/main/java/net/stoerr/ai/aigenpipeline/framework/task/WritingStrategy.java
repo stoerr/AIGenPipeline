@@ -15,12 +15,22 @@ public interface WritingStrategy {
     void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException;
 
     /**
+     * Version of current output file.
+     */
+    AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws IOException;
+
+    /**
      * Writes the raw file without the cersion comment.
      */
     WritingStrategy WITHOUTVERSION = new WritingStrategy() {
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
             Files.write(output.toPath(), content.getBytes(StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Cannot read version marker from file without version comment.");
         }
     };
 
@@ -31,6 +41,22 @@ public interface WritingStrategy {
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
             Files.write(output.toPath(), embedComment(output, content, versionComment).getBytes(StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws IOException {
+            if (!output.exists()) {
+                return null;
+            }
+            String content = Files.readString(output.toPath(), StandardCharsets.UTF_8);
+            if (content == null) {
+                return null;
+            }
+            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+            if (aiVersionMarker == null) {
+                throw new IllegalStateException("Could not find version marker in " + output);
+            }
+            return aiVersionMarker;
         }
 
         protected String embedComment(@Nonnull File outputFile, String content, String comment) {

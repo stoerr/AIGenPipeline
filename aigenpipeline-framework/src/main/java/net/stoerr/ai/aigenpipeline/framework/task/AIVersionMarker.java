@@ -1,11 +1,23 @@
 package net.stoerr.ai.aigenpipeline.framework.task;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -38,11 +50,49 @@ public class AIVersionMarker {
             return new AIVersionMarker("", Collections.emptyList());
         }
         String ourVersion = parts[0];
-        List<String> inputVersions = new ArrayList<>();
-        for (int i = 1; i < parts.length; i++) {
-            inputVersions.add(parts[i]);
-        }
+        List<String> inputVersions = Arrays.asList(parts).subList(1, parts.length);
         return new AIVersionMarker(ourVersion, inputVersions);
+    }
+
+    /** Determine the version marker for input files / prompt files. */
+    public static String determineFileVersionMarker(@Nonnull File file) {
+        String content = null;
+        try {
+            content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read file " + file, e);
+        }
+        requireNonNull(content, "Could not read file " + file);
+        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+        String version;
+        if (aiVersionMarker != null) {
+            version = aiVersionMarker.getOurVersion();
+        } else {
+            version = shaHash(content);
+        }
+        return file.getName() + "-" + version;
+    }
+
+    public static String shaHash(String content) {
+        String condensedWhitespace = content.replaceAll("\\s+", " ");
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(condensedWhitespace.getBytes(StandardCharsets.UTF_8));
+            // turn first 4 bytes into hex number
+            long hashNumber = ((hash[3] * 256L + hash[2]) * 256L + hash[1]) * 256L + hash[0];
+            String hexString = "00000000" + Long.toHexString(Math.abs(hashNumber));
+            return hexString.substring(hexString.length() - 8);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA256 not available", e);
+        }
+    }
+
+    public static List<String> calculateInputMarkers(List<File> inputs, List<String> additionalMarkers) {
+        List<String> inputVersions = inputs.stream()
+                .map(AIVersionMarker::determineFileVersionMarker)
+                .collect(Collectors.toList());
+        inputVersions.addAll(additionalMarkers);
+        return inputVersions;
     }
 
     @Override

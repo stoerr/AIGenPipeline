@@ -1,16 +1,14 @@
 package net.stoerr.ai.aigenpipeline.framework.task;
 
 import static java.util.Objects.requireNonNull;
+import static net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarker.shaHash;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +76,6 @@ public class AIGenerationTask implements Cloneable {
 
     protected String systemMessage;
     protected File systemMessageFile;
-    protected boolean force;
     protected Integer maxTokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
@@ -94,17 +91,6 @@ public class AIGenerationTask implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("Bug - impossible.", e);
         }
-    }
-
-    /**
-     * We override this to allow cloning for use with the {@link #copy()} method, but deliberately leave it protected
-     * since the use of {@link #copy()} is intended.
-     *
-     * @deprecated use {@link #copy()}
-     */
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     public AIGenerationTask maxTokens(Integer maxTokens) {
@@ -142,82 +128,50 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-
-    public boolean hasToBeRun() {
-        if (!outputFile.exists()) {
-            return true;
-        }
-        AIVersionMarker outputVersionMarker = getRecordedOutputVersionMarker();
-        if (outputVersionMarker == null) {
-            return true;
-        }
-        List<String> inputVersions = calculateAllInputsMarkers();
-        List<String> oldInputVersions = outputVersionMarker.getInputVersions();
-        return !new HashSet<Object>(inputVersions).equals(new HashSet<Object>(oldInputVersions));
-    }
-
-    @Nonnull
-    protected List<String> calculateAllInputsMarkers() {
-        List<String> allInputsMarkers = new ArrayList<>();
-        if (systemMessageFile != null) {
-            allInputsMarkers.add(determineFileVersionMarker(systemMessageFile));
-        }
-        promptFiles.stream()
-                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
-                .forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
-        inputFiles.stream()
-                // don't introduce circular dependencies when updating an existing output file:
-                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
-                .forEach(file -> allInputsMarkers.add(determineFileVersionMarker(file)));
-        if (!placeholdersAndValues.isEmpty()) {
-            allInputsMarkers.add("parms-" + shaHash(placeholdersAndValues.toString()));
-        }
-        return allInputsMarkers;
-    }
-
-    protected String determineFileVersionMarker(@Nonnull File file) {
-        String content = getFileContent(file);
-        requireNonNull(content, "Could not read file " + file);
-        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
-        String version;
-        if (aiVersionMarker != null) {
-            version = aiVersionMarker.getOurVersion();
-        } else {
-            version = shaHash(content);
-        }
-        return file.getName() + "-" + version;
-    }
-
-    protected String shaHash(String content) {
-        String condensedWhitespace = content.replaceAll("\\s+", " ");
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(condensedWhitespace.getBytes(StandardCharsets.UTF_8));
-            // turn first 4 bytes into hex number
-            long hashNumber = ((hash[3] * 256L + hash[2]) * 256L + hash[1]) * 256L + hash[0];
-            String hexString = "00000000" + Long.toHexString(Math.abs(hashNumber));
-            return hexString.substring(hexString.length() - 8);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA256 not available", e);
-        }
+    /**
+     * Sets the strategy to check whether the generation has to be run. Default is {@link RegenerationCheckStrategy#VERSIONMARKER}.
+     */
+    public AIGenerationTask setRegenerationCheckStrategy(RegenerationCheckStrategy strategy) {
+        this.regenerationCheckStrategy = strategy;
+        return this;
     }
 
     /**
-     * Version of current output file.
+     * Sets the strategy to deal with writing the output file. Default is {@link WritingStrategy#WITHVERSION}.
      */
-    protected AIVersionMarker getRecordedOutputVersionMarker() {
-        if (!outputFile.exists()) {
-            return null;
+    public AIGenerationTask setWritingStrategy(WritingStrategy strategy) {
+        this.writingStrategy = strategy;
+        return this;
+    }
+
+    public boolean hasToBeRun() throws IOException {
+        List<File> allInputs = getAllInputFiles();
+        List<String> additionalMarkers = getAdditionalMarkers();
+        List<String> inputVersions = AIVersionMarker.calculateInputMarkers(allInputs, additionalMarkers);
+        return regenerationCheckStrategy.needsRegeneration(outputFile, allInputs, writingStrategy, inputVersions);
+    }
+
+    protected List<String> getAdditionalMarkers() {
+        List<String> additionalMarkers = new ArrayList<>();
+        if (!placeholdersAndValues.isEmpty()) {
+            additionalMarkers.add("parms-" + shaHash(placeholdersAndValues.toString()));
         }
-        String content = getFileContent(outputFile);
-        if (content == null) {
-            return null;
+        return additionalMarkers;
+    }
+
+    protected List<File> getAllInputFiles() {
+        List<File> allInputs = new ArrayList<>();
+        if (systemMessageFile != null) {
+            allInputs.add(systemMessageFile);
         }
-        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
-        if (aiVersionMarker == null) {
-            throw new IllegalStateException("Could not find version marker in " + outputFile);
-        }
-        return aiVersionMarker;
+        promptFiles.stream()
+                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
+                .forEach(allInputs::add);
+        inputFiles.stream()
+                // don't introduce circular dependencies when updating an existing output file:
+                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
+                .forEach(allInputs::add);
+        return allInputs;
     }
 
     /**
@@ -311,9 +265,9 @@ public class AIGenerationTask implements Cloneable {
     /**
      * Execute the task if necessary. If the output file is already there and up to date, nothing is done.
      */
-    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
+    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) throws IOException {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
-        if (!force && !hasToBeRun()) {
+        if (!hasToBeRun()) {
             LOG.info(() -> "Task does not have to be run for: " + outputRelPath);
             return this;
         }
@@ -321,14 +275,12 @@ public class AIGenerationTask implements Cloneable {
         String result = chat.execute();
         LOG.fine(() -> "Result for task execution for: " + outputRelPath + "\n" + result);
         String outputVersion = shaHash(result);
-        String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();
 
-        try {
-            writingStrategy.write(outputFile, result, versionComment);
-        } catch (IOException e) {
-            throw new IllegalStateException("Error writing file " + outputFile, e);
-        }
-        LOG.info("Wrote file file://" + outputFile.getAbsolutePath());
+        List<String> allInputMarkers = AIVersionMarker.calculateInputMarkers(getAllInputFiles(), getAdditionalMarkers());
+        String versionComment = new AIVersionMarker(outputVersion, allInputMarkers).toString();
+
+        writingStrategy.write(outputFile, result, versionComment);
+
         // We check that after writing since that likely makes it easier to check.
         if (result.contains(FIXME)) {
             throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
@@ -387,7 +339,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return the answer of the AI - not written to a file!
      */
-    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) {
+    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) throws IOException {
         String outputRelPath = relativePath(this.outputFile, rootDirectory);
         if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake
             throw new IllegalStateException("Task has to be already run for: " + outputRelPath);
@@ -415,12 +367,5 @@ public class AIGenerationTask implements Cloneable {
                 ", placeholdersAndValues=" + placeholdersAndValues +
                 ", prompt='" + prompt + '\'' +
                 '}';
-    }
-
-    /**
-     * If true the generation will be run even if not {@link #hasToBeRun()}.
-     */
-    public void force(boolean force) {
-        this.force = force;
     }
 }

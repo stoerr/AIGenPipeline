@@ -14,6 +14,7 @@ import java.util.Properties;
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
+import net.stoerr.ai.aigenpipeline.framework.task.RegenerationCheckStrategy;
 
 public class AIGenPipeline {
 
@@ -84,7 +85,9 @@ public class AIGenPipeline {
         promptFiles.stream()
                 .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
-        task.force(force);
+        if (force) {
+            task.setRegenerationCheckStrategy(RegenerationCheckStrategy.ALWAYS);
+        }
         if (check) {
             boolean hasToBeRun = task.hasToBeRun();
             if (verbose) {
@@ -164,7 +167,7 @@ public class AIGenPipeline {
         System.exit(onerror ? 1 : 0);
     }
 
-    protected void parseArguments(String[] args) throws IOException {
+    protected void parseArguments(String[] args) {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-h":
