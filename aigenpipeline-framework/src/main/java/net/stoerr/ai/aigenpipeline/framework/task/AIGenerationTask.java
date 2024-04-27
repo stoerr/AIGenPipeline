@@ -80,6 +80,8 @@ public class AIGenerationTask implements Cloneable {
     protected File systemMessageFile;
     protected boolean force;
     protected Integer maxTokens;
+    protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
+    protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
 
     /**
      * Creates a deep copy of the task.
@@ -140,45 +142,6 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    protected String embedComment(String content, String comment) {
-        String result;
-        String extension = outputFile.getName().substring(outputFile.getName().lastIndexOf('.') + 1);
-        switch (extension) {
-            case "java":
-            case "txt": // there is no real comment syntax for txt, but that might be obvious to a human reader
-                result = "// " + comment + "\n\n" + content;
-                break;
-            case "html":
-            case "htm":
-            case "xml":
-            case "jsp":
-                result = content + "\n\n<!-- " + comment + " -->\n";
-                break;
-            case "css":
-            case "js":
-            case "json": // json is a problem, no comment syntax. Let's see whether this makes sense.
-                result = "/* " + comment + " */\n\n" + content;
-                break;
-            case "md": // TODO check for already existing front matter.
-                if (content.startsWith("---\n")) {
-                    result = content.replaceFirst("---\n", "---\nversion: " + comment + "\n");
-                } else {
-                    result = "---\nversion: " + comment + "\n---\n\n" + content;
-                }
-                break;
-            case "sh":
-            case "yaml":
-                result = "# " + comment + "\n" + content;
-                break;
-            default:
-                result = "/* " + comment + " */\n\n" + content;
-                break;
-        }
-        if (!result.endsWith("\n")) {
-            result += "\n";
-        }
-        return result;
-    }
 
     public boolean hasToBeRun() {
         if (!outputFile.exists()) {
@@ -359,10 +322,9 @@ public class AIGenerationTask implements Cloneable {
         LOG.fine(() -> "Result for task execution for: " + outputRelPath + "\n" + result);
         String outputVersion = shaHash(result);
         String versionComment = new AIVersionMarker(outputVersion, calculateAllInputsMarkers()).toString();
-        String withVersionComment = embedComment(result, versionComment);
 
         try {
-            Files.write(outputFile.toPath(), withVersionComment.getBytes(StandardCharsets.UTF_8));
+            writingStrategy.write(outputFile, result, versionComment);
         } catch (IOException e) {
             throw new IllegalStateException("Error writing file " + outputFile, e);
         }
