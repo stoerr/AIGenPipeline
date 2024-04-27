@@ -38,4 +38,30 @@ public class AIVersionMarkerTest {
         Assert.assertEquals(null, marker.getOurVersion());
         Assert.assertTrue(marker.getInputVersions().isEmpty());
     }
+
+
+    @Test
+    public void replacesMarkerInContentWithSingleMarker() {
+        String content = "Some text AIGenVersion(1.0, file1@1.1, file2@1.2) more text";
+        String newMarker = "AIGenVersion(2.0, file3@2.1, file4@2.2)";
+        String expected = "Some text AIGenVersion(2.0, file3@2.1, file4@2.2) more text";
+        String result = AIVersionMarker.replaceMarkerIn(content, newMarker);
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void doesNotReplaceMarkerInContentWithoutMarker() {
+        String content = "Some text without marker more text";
+        String newMarker = "AIGenVersion(2.0, file3@2.1, file4@2.2)";
+        String result = AIVersionMarker.replaceMarkerIn(content, newMarker);
+        Assert.assertEquals(content, result);
+    }
+
+    @Test
+    public void returnsNullWhenContentIsNull() {
+        String newMarker = "AIGenVersion(2.0, file3@2.1, file4@2.2)";
+        String result = AIVersionMarker.replaceMarkerIn(null, newMarker);
+        Assert.assertNull(result);
+    }
+
 }

@@ -14,10 +14,12 @@ import java.util.Properties;
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
+import net.stoerr.ai.aigenpipeline.framework.task.RegenerationCheckStrategy;
+import net.stoerr.ai.aigenpipeline.framework.task.WritingStrategy;
 
 public class AIGenPipeline {
 
-    protected boolean help, verbose, dryRun, check, force, version;
+    protected boolean help, verbose, dryRun, check, version;
     protected String output, explain;
     protected String url;
     protected String apiKey;
@@ -29,7 +31,8 @@ public class AIGenPipeline {
     protected File rootDir = new File(".");
     protected PrintStream logStream;
     protected Integer tokens;
-
+    protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
+    protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -84,7 +87,8 @@ public class AIGenPipeline {
         promptFiles.stream()
                 .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
-        task.force(force);
+        task.setRegenerationCheckStrategy(regenerationCheckStrategy);
+        task.setWritingStrategy(writingStrategy);
         if (check) {
             boolean hasToBeRun = task.hasToBeRun();
             if (verbose) {
@@ -120,21 +124,33 @@ public class AIGenPipeline {
                 "Options:\n" +
                 "  -h, --help               Show this help message and exit.\n" +
                 "  --version                Show the version of the AIGenPipeline tool and exit.\n" +
-                "  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
-                "  -p, --prompt <file>      Reads a prompt from the given file.\n" +
-                "  -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. \n" +
-                "  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
-                "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
-                "  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
-                "                           actually calling the AI or writing any files.\n" +
                 "  -c, --check              Only check if the output needs to be regenerated based on input versions without actually \n" +
                 "                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
                 "                           regenerated.\n" +
-                "  -f, --force              Force regeneration of output files, ignoring any version checks.\n" +
+                "  -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.\n" +
+                // regeneration check strategy
+                "  -ga, --gen-always        Generate the output file always, ignoring version checks.\n" +
+                "  -gn, --gen-notexists     Generate the output file only if it does not exist.\n" +
+                "  -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.\n" +
+                "  -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)\n" +
+                "  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
+                "                           actually calling the AI or writing any files.\n" +
+                "  -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. \n" +
+                "  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
+                "  -p, --prompt <file>      Reads a prompt from the given file.\n" +
+                "  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
+                "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
+                // writing strategy
+                "  -wv, --write-version     Write the output file with a version comment. (Default.)\n" +
+                "  -wo, --write-noversion   Write the output file without a version comment.\n" +
+                "  -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence." +
+                "                           If a version marker is written, it has to be in the first of those lines and is changed there." +
+                "                           It is an error if the marker does not occur exactly twice; the output file has to exist.\n" +
                 "  -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_\n" +
                 "                           that was given to generate the output file, and the additional --explain <question> option.\n" +
                 "                           It recreates the conversation that lead to the output file and asks the AI for a \n" +
                 "                           clarification. The output file is not written, but read to recreate the conversation.\n" +
+                "\n" +
                 "  -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .\n" +
                 "                           In the case of OpenAI the API key is expected to be in the environment variable \n" +
                 "                           OPENAI_API_KEY, or given as -k option.\n" +
@@ -164,7 +180,7 @@ public class AIGenPipeline {
         System.exit(onerror ? 1 : 0);
     }
 
-    protected void parseArguments(String[] args) throws IOException {
+    protected void parseArguments(String[] args) {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-h":
@@ -204,7 +220,33 @@ public class AIGenPipeline {
                     break;
                 case "-f":
                 case "--force":
-                    force = true;
+                case "-ga":
+                case "--gen-always":
+                    regenerationCheckStrategy = RegenerationCheckStrategy.ALWAYS;
+                    break;
+                case "-gn":
+                case "--gen-notexists":
+                    regenerationCheckStrategy = RegenerationCheckStrategy.IF_NOT_EXISTS;
+                    break;
+                case "-go":
+                case "--gen-older":
+                    regenerationCheckStrategy = RegenerationCheckStrategy.IF_OLDER;
+                    break;
+                case "-gv":
+                case "--gen-versioncheck":
+                    regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
+                    break;
+                case "-wv":
+                case "--write-version":
+                    writingStrategy = WritingStrategy.WITHVERSION;
+                    break;
+                case "-wo":
+                case "--write-noversion":
+                    writingStrategy = WritingStrategy.WITHOUTVERSION;
+                    break;
+                case "-wp":
+                case "--write-part":
+                    writingStrategy = new WritingStrategy.WritePartStrategy(args[++i]);
                     break;
                 case "-e":
                 case "--explain":
@@ -227,6 +269,9 @@ public class AIGenPipeline {
                     tokens = Integer.parseInt(args[++i]);
                     break;
                 default:
+                    if (args[i].startsWith("-")) {
+                        throw new IllegalArgumentException("Unknown option: " + args[i]);
+                    }
                     inputFiles.add(args[i]);
                     break;
             }

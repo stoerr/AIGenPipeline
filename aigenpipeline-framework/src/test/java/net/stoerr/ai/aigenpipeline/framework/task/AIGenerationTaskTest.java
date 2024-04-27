@@ -114,4 +114,22 @@ public class AIGenerationTaskTest {
         assertEquals(task.toString(), copy.toString());
     }
 
+    @Test
+    public void testReplacePart() throws IOException {
+        AIGenerationTask task = new AIGenerationTask();
+
+        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
+        task.addInputFile(inputDir.resolve("input.txt").toFile());
+        task.addInputFile(inputDir.resolve("inputWithVersion.txt").toFile());
+        Path outFile = tempDir.resolve("outputWithReplacement.txt");
+        Files.copy(inputDir.resolve("outputWithReplacement.txt"), outFile);
+        task.setOutputFile(outFile.toFile());
+        task.setWritingStrategy(new WritingStrategy.WritePartStrategy("thereplacedpart"));
+
+
+        Assert.assertTrue(task.hasToBeRun());
+        task.execute(MockAIChatBuilder::new, new File("."));
+        checkOutputExistsAndIsAsExpected(outFile);
+    }
+
 }
