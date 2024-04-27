@@ -1,0 +1,7 @@
+this should be left alone at the beginning.
+yes yes
+<!-- start of thereplacedpart AIGenVersion(1) -->
+this should be overwritten
+<!-- end of thereplacedpart AIGenVersion() -->
+this should be left alone at the end.
+yes

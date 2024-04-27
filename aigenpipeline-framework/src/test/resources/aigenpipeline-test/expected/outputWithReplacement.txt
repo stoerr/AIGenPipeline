@@ -1,0 +1,38 @@
+this should be left alone at the beginning.
+yes yes
+<!-- start of thereplacedpart AIGenVersion(6881255a, prompt.txt-45366fcf, input.txt-7e10dd2a, inputWithVersion.txt-1.1) -->
+Response to:
+{
+  "model": "gpt-4-turbo-preview",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`EMCIF(AI) ` and a description of that problem.\n"
+    },
+    {
+      "role": "user",
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "This is a test input file for AIGenerationTask."
+    },
+    {
+      "role": "user",
+      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/inputWithVersion.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "--\nversion: \n--\nThis is a test input file for AIGenerationTask.\n"
+    },
+    {
+      "role": "user",
+      "content": "This is a test prompt for AIGenerationTask."
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 2048
+}
+<!-- end of thereplacedpart AIGenVersion() -->
+this should be left alone at the end.
+yes

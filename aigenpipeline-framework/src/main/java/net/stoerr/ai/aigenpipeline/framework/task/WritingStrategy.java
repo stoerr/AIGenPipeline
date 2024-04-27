@@ -148,8 +148,9 @@ public interface WritingStrategy {
             if (lines.stream().filter(line -> line.contains(marker)).count() != 2) {
                 throw new IllegalArgumentException("Marker " + marker + " is not exactly twice in " + output);
             }
-            int firstMarker = lines.indexOf(marker);
-            int secondMarker = lines.subList(firstMarker + 1, lines.size()).indexOf(marker) + firstMarker + 1;
+            int firstMarker = lines.indexOf(lines.stream().filter(line -> line.contains(marker)).findFirst().get());
+            List<String> rest = lines.subList(firstMarker + 1, lines.size());
+            int secondMarker = rest.indexOf(rest.stream().filter(line -> line.contains(marker)).findFirst().get()) + firstMarker + 1;
             if (content.contains(marker)) {
                 throw new IllegalArgumentException("Content contains marker " + marker + ". That would lead to trouble next time.");
             }
