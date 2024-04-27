@@ -54,9 +54,21 @@ public class AIVersionMarker {
         return new AIVersionMarker(ourVersion, inputVersions);
     }
 
+    @Nullable
+    public static String replaceMarkerIn(@Nullable String content, @Nonnull String newMarker) {
+        if (content == null) {
+            return null;
+        }
+        Matcher matcher = VERSION_MARKER_PATTERN.matcher(content);
+        if (!matcher.find()) {
+            return content;
+        }
+        return matcher.replaceFirst(newMarker);
+    }
+
     /** Determine the version marker for input files / prompt files. */
     public static String determineFileVersionMarker(@Nonnull File file) {
-        String content = null;
+        String content;
         try {
             content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {

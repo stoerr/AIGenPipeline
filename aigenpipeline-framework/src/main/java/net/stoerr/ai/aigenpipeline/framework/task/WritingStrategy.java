@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -100,5 +103,67 @@ public interface WritingStrategy {
         }
 
     };
+
+    class WritePartStrategy implements WritingStrategy {
+        private final String marker;
+
+        public WritePartStrategy(String marker) {
+            this.marker = marker;
+        }
+
+        /**
+         * Find the first line of the file that contains the marker - that should also contain the version comment.
+         */
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws IOException {
+            try (Stream<String> lines = Files.lines(output.toPath())) {
+                String markerLine = lines
+                        .filter(line -> line.contains(marker))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Could not find marker " + marker + " in " + output));
+                AIVersionMarker versionMarker = AIVersionMarker.find(markerLine);
+                if (versionMarker == null) {
+                    throw new IllegalStateException("Could not find version marker in " + output + " line " + markerLine);
+                }
+                return versionMarker;
+            }
+        }
+
+        /**
+         * Replaces the lines between the first line with marker and the second line with the marker with the content.
+         * The first line should contain a version comment that is replaced by the new version comment.
+         * It is an error if the marker is not exactly twice in the output file.
+         *
+         * @param output         the file to write to, has to exist
+         * @param content        the content to write
+         * @param versionComment the version comment to write
+         * @throws IOException if the file cannot be read or written
+         */
+        @Override
+        public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
+            if (!output.exists()) {
+                throw new IllegalArgumentException("File " + output + " does not exist. Required for WritePartStrategy.");
+            }
+            List<String> lines = Files.readAllLines(output.toPath(), StandardCharsets.UTF_8);
+            if (lines.stream().filter(line -> line.contains(marker)).count() != 2) {
+                throw new IllegalArgumentException("Marker " + marker + " is not exactly twice in " + output);
+            }
+            int firstMarker = lines.indexOf(marker);
+            int secondMarker = lines.subList(firstMarker + 1, lines.size()).indexOf(marker) + firstMarker + 1;
+            if (content.contains(marker)) {
+                throw new IllegalArgumentException("Content contains marker " + marker + ". That would lead to trouble next time.");
+            }
+            String firstMarkerLineNew = AIVersionMarker.replaceMarkerIn(lines.get(firstMarker), versionComment);
+            if (AIVersionMarker.find(firstMarkerLineNew) == null) {
+                throw new IllegalArgumentException("Bug: cannot find new version marker in new first marker line" + firstMarkerLineNew);
+            }
+            List<String> newLines = new ArrayList<>(lines.subList(0, firstMarker));
+            newLines.add(firstMarkerLineNew);
+            newLines.add(content);
+            newLines.addAll(lines.subList(secondMarker, lines.size()));
+            Files.write(output.toPath(), newLines, StandardCharsets.UTF_8);
+        }
+
+    }
 
 }

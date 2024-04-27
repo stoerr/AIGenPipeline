@@ -62,12 +62,4 @@ public interface RegenerationCheckStrategy {
 
     }
 
-    Map<String, RegenerationCheckStrategy> STRATEGIES = Map.of(
-            "a", ALWAYS,
-            "n", IF_NOT_EXISTS,
-            "o", IF_OLDER,
-            "v", VERSIONMARKER
-    );
-
-
 }

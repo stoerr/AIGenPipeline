@@ -143,6 +143,9 @@ public class AIGenPipeline {
                 // writing strategy
                 "  -wv, --write-version     Write the output file with a version comment. (Default.)\n" +
                 "  -wo, --write-noversion   Write the output file without a version comment.\n" +
+                "  -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence." +
+                "                           If a version marker is written, it has to be in the first of those lines and is changed there." +
+                "                           It is an error if the marker does not occur exactly twice; the output file has to exist.\n" +
                 "  -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_\n" +
                 "                           that was given to generate the output file, and the additional --explain <question> option.\n" +
                 "                           It recreates the conversation that lead to the output file and asks the AI for a \n" +
@@ -217,8 +220,6 @@ public class AIGenPipeline {
                     break;
                 case "-f":
                 case "--force":
-                    regenerationCheckStrategy = RegenerationCheckStrategy.ALWAYS;
-                    break;
                 case "-ga":
                 case "--gen-always":
                     regenerationCheckStrategy = RegenerationCheckStrategy.ALWAYS;
@@ -242,6 +243,10 @@ public class AIGenPipeline {
                 case "-wo":
                 case "--write-noversion":
                     writingStrategy = WritingStrategy.WITHOUTVERSION;
+                    break;
+                case "-wp":
+                case "--write-part":
+                    writingStrategy = new WritingStrategy.WritePartStrategy(args[++i]);
                     break;
                 case "-e":
                 case "--explain":
