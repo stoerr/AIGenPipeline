@@ -10,12 +10,12 @@ on:
         default: false
 
 jobs:
-  createrelease:
+  createreleasenodeploy:
     runs-on: ubuntu-latest
 
     env:
       SUBDIR: ${{ github.event.inputs.subdir }}
-      MVNCMD: mvn -B -ntp
+      MVNCMD: mvn -B -ntp -Dmaven.deploy.skip=true
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_ACTOR: ${{ github.actor }}
 
@@ -35,6 +35,11 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+          server-id: central
+          server-username: OSSRH_USER
+          server-password: OSSRH_PASSWD
+          # gpg-private-key: ${{ secrets.GPG_SECRET_KEYS }}
+          gpg-passphrase: GPG_PASSPHRASE
 
       - name: Dump settings
         run: cat $HOME/.m2/settings.xml
@@ -52,18 +57,38 @@ jobs:
         run: |
           echo '${{ toJSON(github) }}'
 
+      - name: Try to set a master password
+        run: |
+          MASTERPWD=$(openssl rand -base64 25)
+          echo "<settingsSecurity> <master>$(mvn --encrypt-master-password "$MASTERPWD")</master></settingsSecurity>" > $HOME/.m2/settings-security.xml
+          # echo "MASTERPWD=\"$MASTERPWD\"" >> $GITHUB_ENV
+          # The master password isn't actually used, but the maven-gpg-plugin complains otherwise.
+
       - name: Git & Maven Status
         run: |
           $MVNCMD -version
           git remote -v
           git status --untracked-files --ignored
           git log -3 --no-color --decorate
+          $MVNCMD -version
+          find . -name 'settings*xml'
+          find /home/runner/work/ -name 'settings*xml'
 
       - name: Mvn Effective POM
         run: $MVNCMD -N help:effective-pom
 
       - name: Mvn Effective Settings
         run: $MVNCMD -N help:effective-settings
+
+      - name: Import GPG key
+        env:
+          GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
+          GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
+        run: |
+          echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
+          echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
+          gpg -v --refresh-keys
+          gpg --list-secret-keys --keyid-format LONG
 
       - name: Configure git user for release commits
         # specific to repository - we don't want that to be the same thing in a fork.
@@ -113,9 +138,13 @@ jobs:
           cat release.properties || true
 
       # create a release without deploying it since we still have trouble with maven central
-      - name: Perform release
+      - name: Perform release w/o deploy
+        env:
+          OSSRH_USER: ${{ secrets.OSSRH_USER  }}
+          OSSRH_PASSWD: ${{ secrets.OSSRH_PASSWD  }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          $MVNCMD -X release:perform -DlocalCheckout=true -DdeployAtEnd=true "-Darguments=-DdeployAtEnd=true" "-Dgoals=clean install"
+          $MVNCMD release:perform -DlocalCheckout=true -Darguments=-Dmaven.deploy.skip=true -Dgoals=install
 
       - name: Git Status after perform
         if: always()
