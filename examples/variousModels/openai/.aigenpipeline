@@ -1,0 +1,9 @@
+# for completeness, but that URL hasn't to be set since it's the default.
+-u https://api.openai.com/v1/chat/completions
+-a $OPENAI_API_KEY
+# optional, if you need that
+-org $OPENAI_ORG_ID
+-m gpt-3.5-turbo
+
+# Don't look for further configuration files
+-cn

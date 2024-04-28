@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +39,9 @@ public class AIGenPipeline {
      */
     public static final String CONFIGFILE = ".aigenpipeline";
 
+    /** Pattern for accessing an environment variable, e.g. $FOO or ${FOO} */
+    protected final Pattern ENVVARIABLE_PATTERN = Pattern.compile("\\$[A-Za-z_][A-Za-z0-9_]*|\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}");
+
     protected boolean help, verbose, dryRun, check, version;
     protected String output, explain;
     protected String url;
@@ -58,6 +63,8 @@ public class AIGenPipeline {
     }
 
     protected void run(String[] args) throws IOException {
+        task = new AIGenerationTask();
+
         try {
             readArguments(args, new File("."));
 
@@ -154,12 +161,8 @@ public class AIGenPipeline {
 
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? System.out : System.err;
-        task = new AIGenerationTask();
         inputFiles.stream().map(this::toFile).forEach(task::addInputFile);
         task.setOutputFile(toFile(Objects.requireNonNull(output, "No output file given.")));
-        if (promptFiles.isEmpty()) {
-            throw new IllegalArgumentException("At least one prompt file has to be given.");
-        }
         promptFiles.stream()
                 .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
@@ -222,7 +225,7 @@ public class AIGenPipeline {
                 "    -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.\n" +
                 "    -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)\n" +
                 "    -wv, --write-version     Write the output file with a version comment. (Default.)\n" +
-                "    -wo, --write-noversion   Write the output file without a version comment.\n" +
+                "    -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .\n" +
                 "    -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence." +
                 "                             If a version marker is written, it has to be in the first of those lines and is changed there." +
                 "                             It is an error if the marker does not occur exactly twice; the output file has to exist.\n" +
@@ -278,11 +281,15 @@ public class AIGenPipeline {
     protected void parseArguments(String[] args) throws IOException {
         // replace environment variables
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("$")) {
-                String env = System.getenv(args[i].substring(1));
-                if (env != null) {
-                    args[i] = env;
+            if (args[i].contains("$")) {
+                Matcher matcher = ENVVARIABLE_PATTERN.matcher(args[i]);
+                StringBuffer sb = new StringBuffer();
+                while (matcher.find()) {
+                    String env = System.getenv(matcher.group().substring(1));
+                    matcher.appendReplacement(sb, env != null ? env : "");
                 }
+                matcher.appendTail(sb);
+                args[i] = sb.toString();
             }
         }
 
@@ -368,7 +375,6 @@ public class AIGenPipeline {
                 case "-org":
                 case "--organization":
                     organizationId = args[++i];
-                    i++;
                     break;
                 case "-m":
                 case "--model":

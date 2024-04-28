@@ -1,0 +1,6 @@
+-u https://api.anthropic.com/v1/messages
+-m $ANTHROPIC_DEFAULT_MODEL
+-a $ANTHROPIC_API_KEY
+
+# Don't look for further configuration files
+-cn
