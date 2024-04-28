@@ -23,6 +23,14 @@ public interface AIChatBuilder {
     AIChatBuilder key(String key);
 
     /**
+     * Sets the organization ID for the chat completion request - if applicable (OpenAI).
+     *
+     * @param organizationId The organization ID.
+     * @return The builder instance for chaining.
+     */
+    AIChatBuilder organizationId(String organizationId);
+
+    /**
      * Sets the maximum number of tokens the completion can use.
      *
      * @param maxTokens The maximum number of tokens.

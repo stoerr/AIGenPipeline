@@ -128,6 +128,21 @@ The comment syntax (in this case /* */) is ignored - we just look for the AIGenV
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.
 
+## Configuration files
+
+The tool can read configuration files with common configurations (e.g. which AI backend to use). These should simply
+contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment 
+variable AI_GEN_PIPELINE_CONFIG that can contain options.
+
+Configuration files can be given explicitly (option `-cf` / `--configfile`) or the tool can scan for files named
+`.aigenpipeline` upwards from the output file directory. The search for `.aigenpipeline` files can be switched off
+with the `-cn` / `--confignoscan` option. If that option is given in one of these configuration files, that aborts
+the scanning further upwards in the directory tree.
+
+The order these configurations are processed is: environment variable, `.aigenpipeline` files from top to bottom,
+command line arguments. Thus, the later override the earlier one. Explicitly given configuration files are
+processed at the point where the argument occurs when processing the command line arguments.
+
 ## Other features
 
 If you are not satisfied with the result, the tool can also be used to ask the AI for clarification: ask a question
@@ -152,6 +167,9 @@ Options:
   -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                            generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
                            regenerated.
+  -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
+  -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.
+  -cne, --configignoreenv  Ignore the environment variable `APGENPIPELINE_CONFIG`.
   -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
   -ga, --gen-always        Generate the output file always, ignoring version checks.
   -gn, --gen-notexists     Generate the output file only if it does not exist.
@@ -193,6 +211,13 @@ Examples:
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
     aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
+
+Configuration files:
+  These contain options like on the command line. The environment variable `APGENPIPELINE_CONFIG` can contain options.
+  If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.
+  The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,
+  command line arguments. Thus the later override the earlier one, as these get more specific to the current call.
+  Lines starting with a # are ignored in configuration files (comments).
 
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 

@@ -44,6 +44,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     protected String model = "gpt-4-turbo-preview";
     protected final List<Message> messages = new ArrayList<>();
     protected String apiKey;
+    protected String organizationId;
     protected int maxTokens = DEFAULT_MAX_TOKENS;
     protected String url = AIModelConstants.OPENAI_URL;
 
@@ -56,6 +57,12 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     @Override
     public AIChatBuilder key(String key) {
         this.apiKey = key;
+        return this;
+    }
+
+    @Override
+    public AIChatBuilder organizationId(String organizationId) {
+        this.organizationId = organizationId;
         return this;
     }
 
@@ -134,6 +141,9 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
             anthropicVersion = anthropicVersion != null ? anthropicVersion : ANTHROPIC_DEFAULT_VERSION;
             builder.header("x-api-key", determineApiKey())
                     .header("anthropic-version", anthropicVersion);
+        }
+        if (organizationId != null) {
+            builder.header("OpenAI-Organization", organizationId);
         }
         HttpRequest request = builder.build();
         try {

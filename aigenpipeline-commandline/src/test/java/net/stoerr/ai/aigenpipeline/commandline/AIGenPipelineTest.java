@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
