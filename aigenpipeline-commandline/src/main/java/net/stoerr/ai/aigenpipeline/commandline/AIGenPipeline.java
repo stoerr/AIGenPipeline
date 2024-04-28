@@ -3,13 +3,21 @@ package net.stoerr.ai.aigenpipeline.commandline;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
@@ -18,6 +26,16 @@ import net.stoerr.ai.aigenpipeline.framework.task.RegenerationCheckStrategy;
 import net.stoerr.ai.aigenpipeline.framework.task.WritingStrategy;
 
 public class AIGenPipeline {
+
+    /**
+     * Name of the environment variable where we read common configuration from.
+     */
+    public static final String APGENPIPELINE_CONFIG = "APGENPIPELINE_CONFIG";
+
+    /**
+     * Name of configuration files we scan upwards from the output directory.
+     */
+    public static final String CONFIGFILE = ".aigenpipeline";
 
     protected boolean help, verbose, dryRun, check, version;
     protected String output, explain;
@@ -40,7 +58,8 @@ public class AIGenPipeline {
 
     protected void run(String[] args) throws IOException {
         try {
-            parseArguments(args);
+            readArguments(args, new File("."));
+
             if (version) {
                 System.out.println(getVersion());
             }
@@ -50,6 +69,7 @@ public class AIGenPipeline {
             if (version || help) {
                 System.exit(0);
             }
+
             run();
         } catch (IllegalArgumentException e) {
             System.err.println("Usage error: " + e.getMessage());
@@ -58,6 +78,58 @@ public class AIGenPipeline {
             System.exit(1);
         }
     }
+
+    protected void readArguments(String[] args, @Nonnull File startDir) throws IOException {
+        String[] envargs = System.getenv(APGENPIPELINE_CONFIG) == null ? new String[0] :
+                System.getenv(APGENPIPELINE_CONFIG).split("\\s+");
+        List<String[]> argumentSets = new ArrayList<>();
+        argumentSets.add(args);
+
+        // If no -cn option is given, scan for .aigenpipeline files upwards from the output file directory.
+        if (isContinueScan(args)) {
+            File currentDir = startDir;
+            while (currentDir != null) {
+                File configFile = new File(currentDir, CONFIGFILE);
+                if (configFile.exists()) {
+                    String[] argumentsFromFile = parseConfigFile(configFile.getAbsolutePath());
+                    argumentSets.add(argumentsFromFile);
+                    if (!isContinueScan(argumentsFromFile)) break;
+                }
+                currentDir = currentDir.getParentFile();
+            }
+        }
+
+        // read the arguments from the environment variable only if no -cne option was given
+        if (argumentSets.stream().anyMatch(this::isReadEnvironmentVariableArguments)) {
+            argumentSets.add(envargs);
+        }
+
+        Collections.reverse(argumentSets);
+        for (String[] argumentsFromFile : argumentSets) {
+            parseArguments(argumentsFromFile);
+        }
+    }
+
+    protected boolean isContinueScan(String[] argumentsFromFile) {
+        return null == argumentsFromFile || !Arrays.asList(argumentsFromFile).contains("-cn")
+                && !Arrays.asList(argumentsFromFile).contains("--confignoscan");
+    }
+
+    protected boolean isReadEnvironmentVariableArguments(String[] argumentsFromFile) {
+        return null == argumentsFromFile || !Arrays.asList(argumentsFromFile).contains("-cne")
+                && !Arrays.asList(argumentsFromFile).contains("--configignoreenv");
+    }
+
+    protected String[] parseConfigFile(String filename) throws IOException {
+        try (Stream<String> lines = Files.lines(Path.of(filename), StandardCharsets.UTF_8)) {
+            String content = lines
+                    .filter(line -> !line.trim().startsWith("#"))
+                    .collect(Collectors.joining(" "));
+            String[] arguments = content.split("\\s+");
+            return arguments;
+        }
+    }
+
 
     public AIChatBuilder makeChatBuilder() {
         AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
@@ -127,8 +199,10 @@ public class AIGenPipeline {
                 "  -c, --check              Only check if the output needs to be regenerated based on input versions without actually \n" +
                 "                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
                 "                           regenerated.\n" +
+                "  -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.\n" +
+                "  -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.\n" +
+                "  -cne, --configignoreenv  Ignore the environment variable `APGENPIPELINE_CONFIG`.\n" +
                 "  -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.\n" +
-                // regeneration check strategy
                 "  -ga, --gen-always        Generate the output file always, ignoring version checks.\n" +
                 "  -gn, --gen-notexists     Generate the output file only if it does not exist.\n" +
                 "  -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.\n" +
@@ -140,7 +214,6 @@ public class AIGenPipeline {
                 "  -p, --prompt <file>      Reads a prompt from the given file.\n" +
                 "  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
                 "  -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
-                // writing strategy
                 "  -wv, --write-version     Write the output file with a version comment. (Default.)\n" +
                 "  -wo, --write-noversion   Write the output file without a version comment.\n" +
                 "  -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence." +
@@ -173,6 +246,13 @@ public class AIGenPipeline {
                 "  Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:\n" +
                 "    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain \"Why did you not use annotations?\"  \n" +
                 "\n" +
+                "Configuration files:\n" +
+                "  These contain options like on the command line. The environment variable `APGENPIPELINE_CONFIG` can contain options.\n" +
+                "  If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.\n" +
+                "  The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,\n" +
+                "  command line arguments. Thus the later override the earlier one, as these get more specific to the current call.\n" +
+                "  Lines starting with a # are ignored in configuration files (comments).\n" +
+                "\n" +
                 "Note:\n" +
                 "  It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. \n" +
                 "  More detailed instructions and explanations can be found in the README at https://github.com/stoerr/AIGenPipeline .\n"
@@ -180,7 +260,17 @@ public class AIGenPipeline {
         System.exit(onerror ? 1 : 0);
     }
 
-    protected void parseArguments(String[] args) {
+    protected void parseArguments(String[] args) throws IOException {
+        // replace environment variables
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("$")) {
+                String env = System.getenv(args[i].substring(1));
+                if (env != null) {
+                    args[i] = env;
+                }
+            }
+        }
+
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-h":
@@ -267,6 +357,17 @@ public class AIGenPipeline {
                 case "-t":
                 case "--maxtokens":
                     tokens = Integer.parseInt(args[++i]);
+                    break;
+                case "-cf":
+                case "--configfile":
+                    String filename = args[++i];
+                    parseArguments(parseConfigFile(filename));
+                    break;
+                case "-cn":
+                case "--confignoscan":
+                case "-cne":
+                case "--configignoreenv":
+                    // handled when reading config files, just ignore here
                     break;
                 default:
                     if (args[i].startsWith("-")) {
