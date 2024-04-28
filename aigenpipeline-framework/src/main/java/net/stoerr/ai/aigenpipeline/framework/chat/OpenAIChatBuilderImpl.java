@@ -1,10 +1,13 @@
 package net.stoerr.ai.aigenpipeline.framework.chat;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -128,11 +131,15 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     @Override
     public String execute() {
         String key = determineApiKey();
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(20))
+                .proxy(ProxySelector.of(InetSocketAddress.createUnresolved("localhost", 8080)))
+                .build();
+        String json = toJson();
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(toJson()));
+                .POST(HttpRequest.BodyPublishers.ofString(json));
         if (isOpenAI()) {
             builder.header("Authorization", "Bearer " + key);
         } else if (isClaude()) {
@@ -145,6 +152,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         if (organizationId != null) {
             builder.header("OpenAI-Organization", organizationId);
         }
+        builder.timeout(Duration.ofSeconds(60));
         HttpRequest request = builder.build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -155,8 +163,6 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while waiting for chat completion response", e);
-        } catch (RuntimeException e) {
-            throw e;
         } catch (IOException e) {
             throw new IllegalStateException("Failed to execute chat completion request", e);
         }
@@ -191,9 +197,9 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     protected String extractResponse(String json) {
         ChatCompletionResponse response = gson.fromJson(json, ChatCompletionResponse.class);
-        boolean stopped = false;
-        String finish_reason = null;
-        String content = null;
+        boolean stopped;
+        String finish_reason;
+        String content;
         if (response.choices != null && !response.choices.isEmpty()) { // OpenAI format
             ChatCompletionResponse.Choice choice = response.choices.get(0);
             content = choice.message.content.trim();
@@ -260,7 +266,6 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         }
 
         static class ClaudeResponseContent {
-            String type;
             String text;
         }
     }

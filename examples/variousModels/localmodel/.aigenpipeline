@@ -1,0 +1,6 @@
+# for completeness, but that URL hasn't to be set since it's the default.
+-u http://localhost:1234/v1/chat/completions
+# -u http://local.composum:1234/v1/models
+
+# Don't look for further configuration files
+-cn
