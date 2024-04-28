@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AIVersionMarker.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">AIVersionMarker.java</span></div><h1>AIVersionMarker.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -13,66 +25,116 @@ import javax.annotation.Nullable;
  */
 public class AIVersionMarker {
 
-<span class="nc" id="L16">    public static final Pattern VERSION_MARKER_PATTERN = Pattern.compile(&quot;AIGenVersion\\([^)]+\\)&quot;);</span>
+<span class="nc" id="L28">    public static final Pattern VERSION_MARKER_PATTERN = Pattern.compile(&quot;AIGenVersion\\([^)]+\\)&quot;);</span>
     protected final String ourVersion;
     protected final List&lt;String&gt; inputVersions;
 
-<span class="nc" id="L20">    public AIVersionMarker(String ourVersion, List&lt;String&gt; inputVersions) {</span>
-<span class="nc" id="L21">        this.ourVersion = ourVersion;</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">        this.inputVersions = null != inputVersions ? new ArrayList&lt;&gt;(inputVersions) : Collections.emptyList();</span>
-<span class="nc" id="L23">    }</span>
+<span class="nc" id="L32">    public AIVersionMarker(String ourVersion, List&lt;String&gt; inputVersions) {</span>
+<span class="nc" id="L33">        this.ourVersion = ourVersion;</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        this.inputVersions = null != inputVersions ? new ArrayList&lt;&gt;(inputVersions) : Collections.emptyList();</span>
+<span class="nc" id="L35">    }</span>
 
     @Nullable
     public static AIVersionMarker find(String content) {
-<span class="nc bnc" id="L27" title="All 2 branches missed.">        if (content == null) {</span>
-<span class="nc" id="L28">            return null;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (content == null) {</span>
+<span class="nc" id="L40">            return null;</span>
         }
-<span class="nc" id="L30">        Matcher matcher = VERSION_MARKER_PATTERN.matcher(content);</span>
-<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (!matcher.find()) {</span>
-<span class="nc" id="L32">            return null;</span>
+<span class="nc" id="L42">        Matcher matcher = VERSION_MARKER_PATTERN.matcher(content);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (!matcher.find()) {</span>
+<span class="nc" id="L44">            return null;</span>
         }
-<span class="nc" id="L34">        String marker = matcher.group();</span>
-<span class="nc" id="L35">        marker = marker.substring(13, marker.length() - 1); // Remove 'AIGenVersion(' and ')'</span>
-<span class="nc" id="L36">        String[] parts = marker.split(&quot;, &quot;);</span>
-<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (parts.length &lt; 1) {</span>
-<span class="nc" id="L38">            return new AIVersionMarker(&quot;&quot;, Collections.emptyList());</span>
+<span class="nc" id="L46">        String marker = matcher.group();</span>
+<span class="nc" id="L47">        marker = marker.substring(13, marker.length() - 1); // Remove 'AIGenVersion(' and ')'</span>
+<span class="nc" id="L48">        String[] parts = marker.split(&quot;, &quot;);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (parts.length &lt; 1) {</span>
+<span class="nc" id="L50">            return new AIVersionMarker(&quot;&quot;, Collections.emptyList());</span>
         }
-<span class="nc" id="L40">        String ourVersion = parts[0];</span>
-<span class="nc" id="L41">        List&lt;String&gt; inputVersions = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">        for (int i = 1; i &lt; parts.length; i++) {</span>
-<span class="nc" id="L43">            inputVersions.add(parts[i]);</span>
+<span class="nc" id="L52">        String ourVersion = parts[0];</span>
+<span class="nc" id="L53">        List&lt;String&gt; inputVersions = Arrays.asList(parts).subList(1, parts.length);</span>
+<span class="nc" id="L54">        return new AIVersionMarker(ourVersion, inputVersions);</span>
+    }
+
+    @Nullable
+    public static String replaceMarkerIn(@Nullable String content, @Nonnull String newMarker) {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (content == null) {</span>
+<span class="nc" id="L60">            return null;</span>
         }
-<span class="nc" id="L45">        return new AIVersionMarker(ourVersion, inputVersions);</span>
+<span class="nc" id="L62">        Matcher matcher = VERSION_MARKER_PATTERN.matcher(content);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (!matcher.find()) {</span>
+<span class="nc" id="L64">            return content;</span>
+        }
+<span class="nc" id="L66">        return matcher.replaceFirst(newMarker);</span>
+    }
+
+    /** Determine the version marker for input files / prompt files. */
+    public static String determineFileVersionMarker(@Nonnull File file) {
+        String content;
+        try {
+<span class="nc" id="L73">            content = Files.readString(file.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L74">        } catch (IOException e) {</span>
+<span class="nc" id="L75">            throw new IllegalStateException(&quot;Could not read file &quot; + file, e);</span>
+<span class="nc" id="L76">        }</span>
+<span class="nc" id="L77">        requireNonNull(content, &quot;Could not read file &quot; + file);</span>
+<span class="nc" id="L78">        AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
+        String version;
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (aiVersionMarker != null) {</span>
+<span class="nc" id="L81">            version = aiVersionMarker.getOurVersion();</span>
+        } else {
+<span class="nc" id="L83">            version = shaHash(content);</span>
+        }
+<span class="nc" id="L85">        return file.getName() + &quot;-&quot; + version;</span>
+    }
+
+    public static String shaHash(String content) {
+<span class="nc" id="L89">        String condensedWhitespace = content.replaceAll(&quot;\\s+&quot;, &quot; &quot;);</span>
+        try {
+<span class="nc" id="L91">            MessageDigest digest = MessageDigest.getInstance(&quot;SHA-256&quot;);</span>
+<span class="nc" id="L92">            byte[] hash = digest.digest(condensedWhitespace.getBytes(StandardCharsets.UTF_8));</span>
+            // turn first 4 bytes into hex number
+<span class="nc" id="L94">            long hashNumber = ((hash[3] * 256L + hash[2]) * 256L + hash[1]) * 256L + hash[0];</span>
+<span class="nc" id="L95">            String hexString = &quot;00000000&quot; + Long.toHexString(Math.abs(hashNumber));</span>
+<span class="nc" id="L96">            return hexString.substring(hexString.length() - 8);</span>
+<span class="nc" id="L97">        } catch (NoSuchAlgorithmException e) {</span>
+<span class="nc" id="L98">            throw new IllegalStateException(&quot;SHA256 not available&quot;, e);</span>
+        }
+    }
+
+    public static List&lt;String&gt; calculateInputMarkers(List&lt;File&gt; inputs, List&lt;String&gt; additionalMarkers) {
+<span class="nc" id="L103">        List&lt;String&gt; inputVersions = inputs.stream()</span>
+<span class="nc" id="L104">                .map(AIVersionMarker::determineFileVersionMarker)</span>
+<span class="nc" id="L105">                .collect(Collectors.toList());</span>
+<span class="nc" id="L106">        inputVersions.addAll(additionalMarkers);</span>
+<span class="nc" id="L107">        return inputVersions;</span>
     }
 
     @Override
     public int hashCode() {
-<span class="nc" id="L50">        return Objects.hash(ourVersion, inputVersions);</span>
+<span class="nc" id="L112">        return Objects.hash(ourVersion, inputVersions);</span>
     }
 
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (this == obj) return true;</span>
-<span class="nc bnc" id="L56" title="All 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
-<span class="nc" id="L57">        AIVersionMarker other = (AIVersionMarker) obj;</span>
-<span class="nc bnc" id="L58" title="All 4 branches missed.">        return Objects.equals(ourVersion, other.ourVersion) &amp;&amp; Objects.equals(inputVersions, other.inputVersions);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (this == obj) return true;</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
+<span class="nc" id="L119">        AIVersionMarker other = (AIVersionMarker) obj;</span>
+<span class="nc bnc" id="L120" title="All 4 branches missed.">        return Objects.equals(ourVersion, other.ourVersion) &amp;&amp; Objects.equals(inputVersions, other.inputVersions);</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L63">        StringBuilder sb = new StringBuilder(&quot;AIGenVersion(&quot;);</span>
-<span class="nc" id="L64">        sb.append(ourVersion);</span>
-<span class="nc" id="L65">        inputVersions.forEach(version -&gt; sb.append(&quot;, &quot;).append(version));</span>
-<span class="nc" id="L66">        sb.append(&quot;)&quot;);</span>
-<span class="nc" id="L67">        return sb.toString();</span>
+<span class="nc" id="L125">        StringBuilder sb = new StringBuilder(&quot;AIGenVersion(&quot;);</span>
+<span class="nc" id="L126">        sb.append(ourVersion);</span>
+<span class="nc" id="L127">        inputVersions.forEach(version -&gt; sb.append(&quot;, &quot;).append(version));</span>
+<span class="nc" id="L128">        sb.append(&quot;)&quot;);</span>
+<span class="nc" id="L129">        return sb.toString();</span>
     }
 
     public String getOurVersion() {
-<span class="nc" id="L71">        return ourVersion;</span>
+<span class="nc" id="L133">        return ourVersion;</span>
     }
 
     public List&lt;String&gt; getInputVersions() {
-<span class="nc" id="L75">        return Collections.unmodifiableList(inputVersions);</span>
+<span class="nc" id="L137">        return Collections.unmodifiableList(inputVersions);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
