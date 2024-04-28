@@ -3,12 +3,10 @@
 ## Command line / framework improvements
 - prompt on command line? stdin? unclear what filename!
   - (idea: -p - = stdin , versioning from tag)
-- makefile-modus : regenerate when older
-- only when not existant modus
-- Run Master workflow automatically
-- completely automated deployment with GitHub Actions
-- replace parts of a file with the result
-- refactor to extract version comment strategies
+- automatically push to master
+- improve automated deployment with GitHub Actions
+- read configuration from .apgenpipeline config file(s)
+- better document usage of various backends
 
 ## Site improvements
 - split into several pages
