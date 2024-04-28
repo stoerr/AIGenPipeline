@@ -103,13 +103,19 @@ jobs:
         run: |
           echo "Version: "
           $MVNCMD help:evaluate -Dexpression=project.version -q -DforceStdout
-          $MVNCMD help:evaluate -Dexpression=project.version -q -DforceStdout | egrep -- '-SNAPSHOT$' > /dev/null && exit 1
+          $MVNCMD enforcer:enforce -Denforcer.rules=requireReleaseVersion
 
       - name: Build with Maven
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         # When parent-2:1.7 is active, -P ensureSnapshots will do a sanity check of the version number
         run: $MVNCMD install
 
       - name: Deploy with Maven
+        env:
+          OSSRH_USER: ${{ secrets.OSSRH_USER  }}
+          OSSRH_PASSWD: ${{ secrets.OSSRH_PASSWD  }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: $MVNCMD deploy
 
       - name: List target files even if recipe fails
