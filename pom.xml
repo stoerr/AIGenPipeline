@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.stoerr.ai.aigenpipeline</groupId>
     <artifactId>aigenpipeline</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>aigenpipeline-commandline</module>
@@ -17,7 +17,7 @@
         <url>${giturl}</url>
         <connection>scm:git:${giturl}</connection>
         <developerConnection>scm:git:${giturl}</developerConnection>
-        <tag>HEAD</tag>
+        <tag>aigenpipeline-1.0.0</tag>
     </scm>
 
     <issueManagement>
