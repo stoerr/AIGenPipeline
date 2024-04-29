@@ -306,7 +306,7 @@ public class AIGenerationTask implements Cloneable {
 
     @Nonnull
     protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, String outputRelPath) {
-        requireNonNull(outputFile, "No writeable output file given! " + outputFile);
+        requireNonNull(outputFile, "Output file not writeable: " + outputFile);
         if (null != outputFile.getParentFile() && !outputFile.getParentFile().isDirectory()) {
             outputFile.getParentFile().mkdirs();
         }
@@ -332,7 +332,13 @@ public class AIGenerationTask implements Cloneable {
         }
         inputFiles.forEach(file -> {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
-            chat.userMsg("Retrieve the content of the input file " + relativePath(file, rootDirectory));
+            String path = relativePath(file, rootDirectory);
+            String usermsg = !file.getAbsolutePath().equals(outputFile.getAbsolutePath()) ?
+                            "Retrieve the content of the input file " + path :
+                            "Retrieve the current content of the output file " + path +
+                                    " Later you will take this file as basis for the output, check it and possibly modify it, " +
+                                    "but minimize changes.";
+            chat.userMsg(usermsg);
             String fileContent = getFileContent(file);
             if (fileContent == null) {
                 throw new IllegalArgumentException("Could not read input file " + file);

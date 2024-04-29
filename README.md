@@ -37,6 +37,9 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
    aigenpipeline -p test_prompt.txt -i generated_interface.java -o generated_test.java
    ```
 
+   By the way: if you want to change an existing output file, you can give it as additional input file to the AI. 
+   It will be instructed to check and update the file according to the new input files, minimizing the changes.
+
 2. **Explanation / Query**: After generating an output, if there are questions or the need for clarification on how to
    improve it:
 
