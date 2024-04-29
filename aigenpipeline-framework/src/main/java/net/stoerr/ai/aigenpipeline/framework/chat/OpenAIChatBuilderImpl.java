@@ -132,8 +132,9 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     public String execute() {
         String key = determineApiKey();
         HttpClient client = HttpClient.newBuilder()
+                // use HTTP 1.1 since at least LM Studio doesn't handle that right. Requests are slow, anyway.
+                .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(20))
-                .proxy(ProxySelector.of(InetSocketAddress.createUnresolved("localhost", 8080)))
                 .build();
         String json = toJson();
         HttpRequest.Builder builder = HttpRequest.newBuilder()
