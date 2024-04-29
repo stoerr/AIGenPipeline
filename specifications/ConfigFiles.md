@@ -7,7 +7,7 @@ These should simply contain command line options; we'll split it at whitespaces 
 Also there should be an environment variable that can contain options - e.g. reading configurations from a file, or
 the options themselves.
 
-The environment variable should be named `APGENPIPELINE_CONFIG`.
+The environment variable should be named `AIGENPIPELINE_CONFIG`.
 
 The configuration file(s) to read can be specified from the command line. I'd like it to scan upwards from the 
 current directory for files named `.aigenpipeline`. This way we can have a global configuration file in the root

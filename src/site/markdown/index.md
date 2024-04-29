@@ -33,8 +33,8 @@ keywords:
 ## Basic idea
 
 This is a command line tool to generate files using an AI - either ChatGPT or a model with a similar chat completion
-interface. It can be used to generate code, documentation, or other text files. Each run of the command line tool takes
-at least one prompt file with instructions what to generate as argument, but can also take other source files to be
+interface. It can be used to generate code, documentation, or other text files. Each run of the command line tool can
+take several prompt files with instructions what to generate as argument, but can also take other source files to be
 processed as further input. The output is written to a text file.
 
 It can be used to solve complex tasks with several steps by chaining several runs of the tool -
@@ -99,7 +99,7 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
 
 ## Caching and versioning
 
-Since generation takes time, costs a little and the results have to be manually checked, the tool takes precaution
+Since generation takes time, costs a little and the results often have to be manually checked, the tool takes precaution
 not to regenerate the output files unless the input changes.
 
 In the simplest case it can just do nothing when the output file is already there. If input files are changed,
@@ -128,11 +128,18 @@ The comment syntax (in this case /* */) is ignored - we just look for the AIGenV
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.
 
+## Using different large language models
+
+While the tool defaults to using the OpenAI chat completion service, it is possible to use other services / LLM as 
+well. I tried with [Anthropic Claude](https://www.anthropic.com/claude) 
+[text generation](https://docs.anthropic.com/claude/docs/text-generation) and some local models run with the nice 
+[LM Studio](https://lmstudio.ai/). See [using other models](otherModels.md) for some examples.
+
 ## Configuration files
 
 The tool can read configuration files with common configurations (e.g. which AI backend to use). These should simply
 contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment 
-variable AI_GEN_PIPELINE_CONFIG that can contain options.
+variable AIGENPIPELINE_CONFIG that can contain options.
 
 Configuration files can be given explicitly (option `-cf` / `--configfile`) or the tool can scan for files named
 `.aigenpipeline` upwards from the output file directory. The search for `.aigenpipeline` files can be switched off
@@ -162,45 +169,56 @@ Usage:
 aigenpipeline [options] [<input_files>...]
 
 Options:
-  -h, --help               Show this help message and exit.
-  --version                Show the version of the AIGenPipeline tool and exit.
-  -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
-                           generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
-                           regenerated.
-  -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
-  -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.
-  -cne, --configignoreenv  Ignore the environment variable `APGENPIPELINE_CONFIG`.
-  -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
-  -ga, --gen-always        Generate the output file always, ignoring version checks.
-  -gn, --gen-notexists     Generate the output file only if it does not exist.
-  -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
-  -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
-  -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
-                           actually calling the AI or writing any files.
-  -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
-  -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
-  -p, --prompt <file>      Reads a prompt from the given file.
-  -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
-  -v, --verbose            Enable verbose output to stderr, providing more details about the process.
-  -wv, --write-version     Write the output file with a version comment. (Default.)
-  -wo, --write-noversion   Write the output file without a version comment.
-  -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.                           If a version marker is written, it has to be in the first of those lines and is changed there.                           It is an error if the marker does not occur exactly twice; the output file has to exist.
-  -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
-                           that was given to generate the output file, and the additional --explain <question> option.
-                           It recreates the conversation that lead to the output file and asks the AI for a 
-                           clarification. The output file is not written, but read to recreate the conversation.
 
-  -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
-                           In the case of OpenAI the API key is expected to be in the environment variable 
-                           OPENAI_API_KEY, or given as -k option.
-  -a, --api-key <key>      The API key for the AI server. If not given, it's expected to be in the environment variable 
-                           OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
-                           an API key. Used in "Authorization: Bearer <key>" header.
-  -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
-  -t <maxtokens>           The maximum number of tokens to generate.
+  General options:
+    -h, --help               Show this help message and exit.
+    --version                Show the version of the AIGenPipeline tool and exit.
+    -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
+                             generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
+                             regenerated.
+    -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
+                             actually calling the AI or writing any files.
+    -v, --verbose            Enable verbose output to stderr, providing more details about the process.
+
+  Input / outputs:
+    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
+    -p, --prompt <file>      Reads a prompt from the given file.
+    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
+    -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
+
+  AI Generation control:
+    -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
+    -ga, --gen-always        Generate the output file always, ignoring version checks.
+    -gn, --gen-notexists     Generate the output file only if it does not exist.
+    -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
+    -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
+    -wv, --write-version     Write the output file with a version comment. (Default.)
+    -wo, --write-noversion   Write the output file without a version comment.
+    -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.                             If a version marker is written, it has to be in the first of those lines and is changed there.                             It is an error if the marker does not occur exactly twice; the output file has to exist.
+    -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
+                             that was given to generate the output file, and the additional --explain <question> option.
+                             It recreates the conversation that lead to the output file and asks the AI for a 
+                             clarification. The output file is not written, but read to recreate the conversation.
+
+  Configuration files:
+    -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
+    -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.
+    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.
+
+  AI backend settings:
+
+    -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .
+                             In the case of OpenAI the API key is expected to be in the environment variable 
+                             OPENAI_API_KEY, or given with the -a option.
+    -a, --api-key <key>      The API key for the AI server. If not given, it's expected to be in the environment variable 
+                             OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
+                             an API key. Used in "Authorization: Bearer <key>" header.
+    -org, --organization <id> The optional organization id in case of the OpenAI server.
+    -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
+    -t <maxtokens>           The maximum number of tokens to generate.
 
 Arguments:
-  [<input_files>...]       Input files to be processed. 
+  [<input_files>...]       Input files to be processed into the output file. 
 
 Examples:
   Generate documentation from a prompt file:
@@ -213,7 +231,7 @@ Examples:
     aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
 
 Configuration files:
-  These contain options like on the command line. The environment variable `APGENPIPELINE_CONFIG` can contain options.
+  These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.
   If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.
   The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,
   command line arguments. Thus the later override the earlier one, as these get more specific to the current call.
@@ -221,5 +239,5 @@ Configuration files:
 
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
-  More detailed instructions and explanations can be found in the README at https://github.com/stoerr/AIGenPipeline .
+  More detailed instructions and explanations can be found at https://aigenpipeline.stoerr.net/ .
 ```

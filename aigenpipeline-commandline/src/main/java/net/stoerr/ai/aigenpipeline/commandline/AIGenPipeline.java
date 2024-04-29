@@ -32,7 +32,7 @@ public class AIGenPipeline {
     /**
      * Name of the environment variable where we read common configuration from.
      */
-    public static final String APGENPIPELINE_CONFIG = "APGENPIPELINE_CONFIG";
+    public static final String AIGENPIPELINE_CONFIG = "AIGENPIPELINE_CONFIG";
 
     /**
      * Name of configuration files we scan upwards from the output directory.
@@ -88,8 +88,8 @@ public class AIGenPipeline {
     }
 
     protected void readArguments(String[] args, @Nonnull File startDir) throws IOException {
-        String[] envargs = System.getenv(APGENPIPELINE_CONFIG) == null ? new String[0] :
-                System.getenv(APGENPIPELINE_CONFIG).split("\\s+");
+        String[] envargs = System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
+                System.getenv(AIGENPIPELINE_CONFIG).split("\\s+");
         List<String[]> argumentSets = new ArrayList<>();
         argumentSets.add(args);
 
@@ -131,7 +131,8 @@ public class AIGenPipeline {
     protected String[] parseConfigFile(String filename) throws IOException {
         try (Stream<String> lines = Files.lines(Path.of(filename), StandardCharsets.UTF_8)) {
             String content = lines
-                    .filter(line -> !line.trim().startsWith("#"))
+                    .map(String::trim)
+                    .filter(line -> !line.startsWith("#"))
                     .collect(Collectors.joining(" "));
             String[] arguments = content.split("\\s+");
             return arguments;
@@ -237,7 +238,7 @@ public class AIGenPipeline {
                 "  Configuration files:\n" +
                 "    -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.\n" +
                 "    -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.\n" +
-                "    -cne, --configignoreenv  Ignore the environment variable `APGENPIPELINE_CONFIG`.\n" +
+                "    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.\n" +
                 "\n" +
                 "  AI backend settings:\n" +
                 "\n" +
@@ -265,7 +266,7 @@ public class AIGenPipeline {
                 "    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain \"Why did you not use annotations?\"  \n" +
                 "\n" +
                 "Configuration files:\n" +
-                "  These contain options like on the command line. The environment variable `APGENPIPELINE_CONFIG` can contain options.\n" +
+                "  These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.\n" +
                 "  If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.\n" +
                 "  The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,\n" +
                 "  command line arguments. Thus the later override the earlier one, as these get more specific to the current call.\n" +

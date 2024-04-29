@@ -1,14 +1,14 @@
-# AI based code generation pipeline (AIGenPipeline)
+# AI based code generation pipeline
 
-<h3>A command line tool and framework for systematic code generation using AI</h3>
+<strong>A command line tool and framework for systematic code generation using AI</strong>
 
-> In silence, code weaves,<br>
-> Through prompts, AI breathes life anew,<br>
+> In silence, code weaves,<br/>
+> Through prompts, AI breathes life anew,<br/>
 > Scripts bloom, knowledge leaves.
 >
-> Git guards every step,<br>
-> In the dance of creation,<br>
-> Change blooms, watched and kept.<br>
+> Git guards every step,<br/>
+> In the dance of creation,<br/>
+> Change blooms, watched and kept.<br/>
 > -- ChatGPT
 
 ## Basic idea
@@ -80,7 +80,7 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
 
 ## Caching and versioning
 
-Since generation takes time, costs a little and the results have to be manually checked, the tool takes precaution
+Since generation takes time, costs a little and the results often have to be manually checked, the tool takes precaution
 not to regenerate the output files unless the input changes.
 
 In the simplest case it can just do nothing when the output file is already there. If input files are changed,
@@ -109,11 +109,19 @@ The comment syntax (in this case /* */) is ignored - we just look for the AIGenV
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.
 
+## Using different large language models
+
+While the tool defaults to using the OpenAI chat completion service, it is possible to use other services / LLM as 
+well. I tried with [Anthropic Claude](https://www.anthropic.com/claude) 
+[text generation](https://docs.anthropic.com/claude/docs/text-generation) and some local models run with the nice 
+[LM Studio](https://lmstudio.ai/). See [using other models](https://aigenpipeline.stoerr.net/otherModels.md) for 
+some examples.
+
 ## Configuration files
 
 The tool can read configuration files with common configurations (e.g. which AI backend to use). These should simply
 contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment 
-variable AI_GEN_PIPELINE_CONFIG that can contain options.
+variable AIGENPIPELINE_CONFIG that can contain options.
 
 Configuration files can be given explicitly (option `-cf` / `--configfile`) or the tool can scan for files named
 `.aigenpipeline` upwards from the output file directory. The search for `.aigenpipeline` files can be switched off
@@ -177,7 +185,7 @@ Options:
   Configuration files:
     -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
     -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.
-    -cne, --configignoreenv  Ignore the environment variable `APGENPIPELINE_CONFIG`.
+    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.
 
   AI backend settings:
 
@@ -205,7 +213,7 @@ Examples:
     aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
 
 Configuration files:
-  These contain options like on the command line. The environment variable `APGENPIPELINE_CONFIG` can contain options.
+  These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.
   If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.
   The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,
   command line arguments. Thus the later override the earlier one, as these get more specific to the current call.
