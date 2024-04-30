@@ -212,6 +212,7 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
+    @Nullable
     protected String getFileContent(@Nonnull File file) {
         if (!file.exists()) {
             return null;
@@ -225,6 +226,9 @@ public class AIGenerationTask implements Cloneable {
 
     /* Remove some clutter that is not relevant and might even confuse the AI */
     protected static String unclutter(String content) {
+        if (content == null) {
+            return null;
+        }
         Matcher matcher = PATTERN_LICENCE.matcher(content);
         if (matcher.find()) {
             content = matcher.replaceFirst("");
@@ -237,7 +241,11 @@ public class AIGenerationTask implements Cloneable {
     }
 
     public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
-        String newSystemMessage = unclutter(getFileContent(systemMessageFile));
+        String fileContent = getFileContent(systemMessageFile);
+        if (fileContent == null) {
+            throw new IllegalArgumentException("Could not read system message file " + systemMessageFile);
+        }
+        String newSystemMessage = unclutter(fileContent);
         requireNonNull(newSystemMessage, "Could not read system message file " + systemMessageFile);
         this.systemMessage = newSystemMessage;
         this.systemMessageFile = systemMessageFile;
@@ -305,14 +313,14 @@ public class AIGenerationTask implements Cloneable {
         if (outputFile.exists() && !outputFile.canWrite()) {
             throw new IllegalArgumentException("No writeable output file given! " + outputFile);
         }
-        if (prompt == null || prompt.isBlank()) {
+        if ((prompt == null || prompt.isBlank()) && (systemMessage == null || systemMessage.isBlank()) && systemMessageFile == null) {
             throw new IllegalArgumentException("No prompt given!");
         }
         AIChatBuilder chat = chatBuilderFactory.get();
         if (maxTokens != null) {
             chat.maxTokens(maxTokens);
         }
-        if (systemMessage != null && !systemMessage.isBlank()) {
+        if (systemMessage != null) {
             chat.systemMsg(systemMessage);
         } else {
             try (InputStream defaultprompt = AIGenerationTask.class.getResourceAsStream("/defaultsystemprompt.txt")) {
@@ -325,7 +333,11 @@ public class AIGenerationTask implements Cloneable {
         inputFiles.forEach(file -> {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
             chat.userMsg("Retrieve the content of the input file " + relativePath(file, rootDirectory));
-            chat.assistantMsg(unclutter(getFileContent(file)));
+            String fileContent = getFileContent(file);
+            if (fileContent == null) {
+                throw new IllegalArgumentException("Could not read input file " + file);
+            }
+            chat.assistantMsg(unclutter(fileContent));
         });
         chat.userMsg(prompt);
         LOG.fine(() -> "Executing chat for: " + outputRelPath + "\n" + chat.toJson());
@@ -345,7 +357,11 @@ public class AIGenerationTask implements Cloneable {
             throw new IllegalStateException("Task has to be already run for: " + outputRelPath);
         }
         AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
-        String previousOutput = unclutter(getFileContent(outputFile));
+        String outputFileContent = getFileContent(outputFile);
+        if (outputFileContent == null) {
+            throw new IllegalStateException("Usage error - no previous call? Could not read output file " + outputFile);
+        }
+        String previousOutput = unclutter(outputFileContent);
         requireNonNull(previousOutput, "Could not read any content from file " + outputFile);
         chat.assistantMsg(previousOutput);
         chat.userMsg(question);

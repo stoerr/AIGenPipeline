@@ -1,0 +1,5 @@
+# for completeness, but that URL hasn't to be set since it's the default.
+-u http://localhost:1234/v1/chat/completions
+
+# Don't look for further configuration files
+-cn

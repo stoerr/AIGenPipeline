@@ -1,0 +1,4 @@
+-u https://medium-overwritten/
+-k med=foo
+# do not go further up in the directory tree:
+-cn

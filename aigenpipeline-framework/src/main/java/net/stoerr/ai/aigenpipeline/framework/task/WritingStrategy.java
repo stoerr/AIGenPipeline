@@ -35,6 +35,12 @@ public interface WritingStrategy {
         public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws UnsupportedOperationException {
             throw new UnsupportedOperationException("Cannot read version marker from file without version comment.");
         }
+
+
+        @Override
+        public String toString() {
+            return "WritingStrategy.WITHOUTVERSION";
+        }
     };
 
     /**
@@ -102,6 +108,10 @@ public interface WritingStrategy {
             return result;
         }
 
+        @Override
+        public String toString() {
+            return "WritingStrategy.WITHVERSION";
+        }
     };
 
     class WritePartStrategy implements WritingStrategy {
@@ -165,6 +175,10 @@ public interface WritingStrategy {
             Files.write(output.toPath(), newLines, StandardCharsets.UTF_8);
         }
 
+        @Override
+        public String toString() {
+            return "WritingStrategy.WritePartStrategy(" + marker + ")";
+        }
     }
 
 }
