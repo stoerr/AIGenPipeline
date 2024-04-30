@@ -57,6 +57,8 @@
                <ul class="dropdown-menu" aria-labelledby="OverviewMenuDropdown">
                  <li class="nav-item dropdown-item" id="IntroductionDropdown">
                    <a href="index.html" id="IntroductionDropdownLink" title="Introduction"  class="dropdown-item" >Introduction</a>                 </li>
+                 <li class="nav-item dropdown-item" id="Using other LLMDropdown">
+                   <a href="otherModels.html" id="Using other LLMDropdownLink" title="Using other LLM"  class="dropdown-item" >Using other LLM</a>                 </li>
                </ul>
              </li>
              <li class="nav-item dropdown">
@@ -78,6 +80,8 @@
                        <a href="dependency-convergence.html" id="Dependency ConvergenceDropdownLink" title="Dependency Convergence"  class="dropdown-item" >Dependency Convergence</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="dependency-info.html" id="Dependency InformationDropdownLink" title="Dependency Information"  class="dropdown-item" >Dependency Information</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-management.html" id="Dependency ManagementDropdownLink" title="Dependency Management"  class="dropdown-item" >Dependency Management</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="distribution-management.html" id="Distribution ManagementDropdownLink" title="Distribution Management"  class="dropdown-item" >Distribution Management</a>                     </li>
                      <li class="nav-item dropdown-item">
@@ -135,9 +139,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-04-28</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-04-30</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 1.0.0</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 1.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -154,7 +158,7 @@
 <tr class="b">
 <td><img src="images/icon_success_sml.gif" /></td>
 <td># of plugins using the latest version available</td>
-<td>12</td></tr>
+<td>11</td></tr>
 <tr class="a">
 <td><img src="images/icon_warning_sml.gif" /></td>
 <td># of plugins where the next version available is smaller than an incremental version update</td>
@@ -162,7 +166,7 @@
 <tr class="b">
 <td><img src="images/icon_warning_sml.gif" /></td>
 <td># of plugins where the next version available is an incremental version update</td>
-<td>2</td></tr>
+<td>3</td></tr>
 <tr class="a">
 <td><img src="images/icon_warning_sml.gif" /></td>
 <td># of plugins where the next version available is a minor version update</td>
@@ -218,12 +222,12 @@
 <td></td>
 <td><img src="images/icon_success_sml.gif" /></td></tr>
 <tr class="a">
-<td><img src="images/icon_success_sml.gif" /></td>
+<td><img src="images/icon_warning_sml.gif" /></td>
 <td>org.apache.maven.plugins</td>
 <td>maven-deploy-plugin</td>
-<td><b>3.1.1</b></td>
+<td>3.1.1</td>
 <td></td>
-<td></td>
+<td><b>3.1.2</b></td>
 <td></td>
 <td></td>
 <td><img src="images/icon_success_sml.gif" /></td></tr>
@@ -367,7 +371,7 @@
 <td></td>
 <td></td>
 <td><b>2.5.2</b></td>
-<td><b>3.1.1</b></td>
+<td><b>3.1.2</b></td>
 <td><img src="images/icon_success_sml.gif" /></td></tr>
 <tr class="b">
 <td><img src="images/icon_warning_sml.gif" /></td>
@@ -538,7 +542,7 @@
 <table class="table table-striped">
 <tr class="a">
 <th>Status</th>
-<td style="text-align: left;"><img src="images/icon_success_sml.gif" />&#160;No newer versions available.</td></tr>
+<td style="text-align: left;"><img src="images/icon_warning_sml.gif" />&#160;There is at least one newer incremental version available. Incremental updates are typically passive.</td></tr>
 <tr class="b">
 <th>Group Id</th>
 <td style="text-align: left;">org.apache.maven.plugins</td></tr>
@@ -547,7 +551,10 @@
 <td style="text-align: left;">maven-deploy-plugin</td></tr>
 <tr class="b">
 <th>Current Version</th>
-<td style="text-align: left;">3.1.1</td></tr></table></section><section>
+<td style="text-align: left;">3.1.1</td></tr>
+<tr class="a">
+<th>Newer versions</th>
+<td style="text-align: left;"><b>3.1.2</b>&#160;<i>Latest Incremental</i></td></tr></table></section><section>
 <h2>Plugin org.apache.maven.plugins:maven-install-plugin</h2>
 <table class="table table-striped">
 <tr class="a">
@@ -564,7 +571,7 @@
 <td style="text-align: left;">2.4</td></tr>
 <tr class="a">
 <th>Newer versions</th>
-<td style="text-align: left;">2.5<br />2.5.1<br /><b>2.5.2</b>&#160;<i>Latest Minor</i><br />3.0.0-M1<br />3.0.0<br />3.0.1<br />3.1.0<br /><b>3.1.1</b>&#160;<i>Latest Major</i></td></tr></table></section><section>
+<td style="text-align: left;">2.5<br />2.5.1<br /><b>2.5.2</b>&#160;<i>Latest Minor</i><br />3.0.0-M1<br />3.0.0<br />3.0.1<br />3.1.0<br />3.1.1<br /><b>3.1.2</b>&#160;<i>Latest Major</i></td></tr></table></section><section>
 <h2>Plugin org.apache.maven.plugins:maven-jar-plugin</h2>
 <table class="table table-striped">
 <tr class="a">

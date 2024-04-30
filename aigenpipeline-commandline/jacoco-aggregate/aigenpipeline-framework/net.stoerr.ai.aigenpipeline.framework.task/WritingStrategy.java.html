@@ -35,97 +35,107 @@ public interface WritingStrategy {
         public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws UnsupportedOperationException {
 <span class="nc" id="L36">            throw new UnsupportedOperationException(&quot;Cannot read version marker from file without version comment.&quot;);</span>
         }
+
+
+        @Override
+        public String toString() {
+<span class="nc" id="L42">            return &quot;WritingStrategy.WITHOUTVERSION&quot;;</span>
+        }
     };
 
     /**
      * Writes the file with the version comment.
      */
-<span class="nc" id="L43">    WritingStrategy WITHVERSION = new WritingStrategy() {</span>
+<span class="nc" id="L49">    WritingStrategy WITHVERSION = new WritingStrategy() {</span>
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
-<span class="nc" id="L46">            Files.write(output.toPath(), embedComment(output, content, versionComment).getBytes(StandardCharsets.UTF_8));</span>
-<span class="nc" id="L47">        }</span>
+<span class="nc" id="L52">            Files.write(output.toPath(), embedComment(output, content, versionComment).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L53">        }</span>
 
         @Override
         public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws IOException {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">            if (!output.exists()) {</span>
-<span class="nc" id="L52">                return null;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (!output.exists()) {</span>
+<span class="nc" id="L58">                return null;</span>
             }
-<span class="nc" id="L54">            String content = Files.readString(output.toPath(), StandardCharsets.UTF_8);</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (content == null) {</span>
-<span class="nc" id="L56">                return null;</span>
+<span class="nc" id="L60">            String content = Files.readString(output.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (content == null) {</span>
+<span class="nc" id="L62">                return null;</span>
             }
-<span class="nc" id="L58">            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
-<span class="nc bnc" id="L59" title="All 2 branches missed.">            if (aiVersionMarker == null) {</span>
-<span class="nc" id="L60">                throw new IllegalStateException(&quot;Could not find version marker in &quot; + output);</span>
+<span class="nc" id="L64">            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            if (aiVersionMarker == null) {</span>
+<span class="nc" id="L66">                throw new IllegalStateException(&quot;Could not find version marker in &quot; + output);</span>
             }
-<span class="nc" id="L62">            return aiVersionMarker;</span>
+<span class="nc" id="L68">            return aiVersionMarker;</span>
         }
 
         protected String embedComment(@Nonnull File outputFile, String content, String comment) {
             String result;
-<span class="nc" id="L67">            String extension = outputFile.getName().substring(outputFile.getName().lastIndexOf('.') + 1);</span>
-<span class="nc bnc" id="L68" title="All 6 branches missed.">            switch (extension) {</span>
+<span class="nc" id="L73">            String extension = outputFile.getName().substring(outputFile.getName().lastIndexOf('.') + 1);</span>
+<span class="nc bnc" id="L74" title="All 6 branches missed.">            switch (extension) {</span>
                 case &quot;java&quot;:
                 case &quot;txt&quot;: // there is no real comment syntax for txt, but that might be obvious to a human reader
-<span class="nc" id="L71">                    result = &quot;// &quot; + comment + &quot;\n\n&quot; + content;</span>
-<span class="nc" id="L72">                    break;</span>
+<span class="nc" id="L77">                    result = &quot;// &quot; + comment + &quot;\n\n&quot; + content;</span>
+<span class="nc" id="L78">                    break;</span>
                 case &quot;html&quot;:
                 case &quot;htm&quot;:
                 case &quot;xml&quot;:
                 case &quot;jsp&quot;:
-<span class="nc" id="L77">                    result = content + &quot;\n\n&lt;!-- &quot; + comment + &quot; --&gt;\n&quot;;</span>
-<span class="nc" id="L78">                    break;</span>
+<span class="nc" id="L83">                    result = content + &quot;\n\n&lt;!-- &quot; + comment + &quot; --&gt;\n&quot;;</span>
+<span class="nc" id="L84">                    break;</span>
                 case &quot;css&quot;:
                 case &quot;js&quot;:
                 case &quot;json&quot;: // json is a problem, no comment syntax. Let's see whether this makes sense.
-<span class="nc" id="L82">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
-<span class="nc" id="L83">                    break;</span>
+<span class="nc" id="L88">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+<span class="nc" id="L89">                    break;</span>
                 case &quot;md&quot;:
-<span class="nc bnc" id="L85" title="All 2 branches missed.">                    if (content.startsWith(&quot;---\n&quot;)) {</span>
-<span class="nc" id="L86">                        result = content.replaceFirst(&quot;---\n&quot;, &quot;---\nversion: &quot; + comment + &quot;\n&quot;);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    if (content.startsWith(&quot;---\n&quot;)) {</span>
+<span class="nc" id="L92">                        result = content.replaceFirst(&quot;---\n&quot;, &quot;---\nversion: &quot; + comment + &quot;\n&quot;);</span>
                     } else {
-<span class="nc" id="L88">                        result = &quot;---\nversion: &quot; + comment + &quot;\n---\n\n&quot; + content;</span>
+<span class="nc" id="L94">                        result = &quot;---\nversion: &quot; + comment + &quot;\n---\n\n&quot; + content;</span>
                     }
-<span class="nc" id="L90">                    break;</span>
+<span class="nc" id="L96">                    break;</span>
                 case &quot;sh&quot;:
                 case &quot;yaml&quot;:
-<span class="nc" id="L93">                    result = &quot;# &quot; + comment + &quot;\n&quot; + content;</span>
-<span class="nc" id="L94">                    break;</span>
+<span class="nc" id="L99">                    result = &quot;# &quot; + comment + &quot;\n&quot; + content;</span>
+<span class="nc" id="L100">                    break;</span>
                 default:
-<span class="nc" id="L96">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+<span class="nc" id="L102">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
                     break;
             }
-<span class="nc bnc" id="L99" title="All 2 branches missed.">            if (!result.endsWith(&quot;\n&quot;)) {</span>
-<span class="nc" id="L100">                result += &quot;\n&quot;;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if (!result.endsWith(&quot;\n&quot;)) {</span>
+<span class="nc" id="L106">                result += &quot;\n&quot;;</span>
             }
-<span class="nc" id="L102">            return result;</span>
+<span class="nc" id="L108">            return result;</span>
         }
 
+        @Override
+        public String toString() {
+<span class="nc" id="L113">            return &quot;WritingStrategy.WITHVERSION&quot;;</span>
+        }
     };
 
     class WritePartStrategy implements WritingStrategy {
         private final String marker;
 
-<span class="nc" id="L110">        public WritePartStrategy(String marker) {</span>
-<span class="nc" id="L111">            this.marker = marker;</span>
-<span class="nc" id="L112">        }</span>
+<span class="nc" id="L120">        public WritePartStrategy(String marker) {</span>
+<span class="nc" id="L121">            this.marker = marker;</span>
+<span class="nc" id="L122">        }</span>
 
         /**
          * Find the first line of the file that contains the marker - that should also contain the version comment.
          */
         @Override
         public AIVersionMarker getRecordedVersionMarker(@Nonnull File output) throws IOException {
-<span class="nc" id="L119">            try (Stream&lt;String&gt; lines = Files.lines(output.toPath())) {</span>
-<span class="nc" id="L120">                String markerLine = lines</span>
-<span class="nc" id="L121">                        .filter(line -&gt; line.contains(marker))</span>
-<span class="nc" id="L122">                        .findFirst()</span>
-<span class="nc" id="L123">                        .orElseThrow(() -&gt; new IllegalStateException(&quot;Could not find marker &quot; + marker + &quot; in &quot; + output));</span>
-<span class="nc" id="L124">                AIVersionMarker versionMarker = AIVersionMarker.find(markerLine);</span>
-<span class="nc bnc" id="L125" title="All 2 branches missed.">                if (versionMarker == null) {</span>
-<span class="nc" id="L126">                    throw new IllegalStateException(&quot;Could not find version marker in &quot; + output + &quot; line &quot; + markerLine);</span>
+<span class="nc" id="L129">            try (Stream&lt;String&gt; lines = Files.lines(output.toPath())) {</span>
+<span class="nc" id="L130">                String markerLine = lines</span>
+<span class="nc" id="L131">                        .filter(line -&gt; line.contains(marker))</span>
+<span class="nc" id="L132">                        .findFirst()</span>
+<span class="nc" id="L133">                        .orElseThrow(() -&gt; new IllegalStateException(&quot;Could not find marker &quot; + marker + &quot; in &quot; + output));</span>
+<span class="nc" id="L134">                AIVersionMarker versionMarker = AIVersionMarker.find(markerLine);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                if (versionMarker == null) {</span>
+<span class="nc" id="L136">                    throw new IllegalStateException(&quot;Could not find version marker in &quot; + output + &quot; line &quot; + markerLine);</span>
                 }
-<span class="nc" id="L128">                return versionMarker;</span>
+<span class="nc" id="L138">                return versionMarker;</span>
             }
         }
 
@@ -141,30 +151,34 @@ public interface WritingStrategy {
          */
         @Override
         public void write(@Nonnull File output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
-<span class="nc bnc" id="L144" title="All 2 branches missed.">            if (!output.exists()) {</span>
-<span class="nc" id="L145">                throw new IllegalArgumentException(&quot;File &quot; + output + &quot; does not exist. Required for WritePartStrategy.&quot;);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">            if (!output.exists()) {</span>
+<span class="nc" id="L155">                throw new IllegalArgumentException(&quot;File &quot; + output + &quot; does not exist. Required for WritePartStrategy.&quot;);</span>
             }
-<span class="nc" id="L147">            List&lt;String&gt; lines = Files.readAllLines(output.toPath(), StandardCharsets.UTF_8);</span>
-<span class="nc bnc" id="L148" title="All 2 branches missed.">            if (lines.stream().filter(line -&gt; line.contains(marker)).count() != 2) {</span>
-<span class="nc" id="L149">                throw new IllegalArgumentException(&quot;Marker &quot; + marker + &quot; is not exactly twice in &quot; + output);</span>
+<span class="nc" id="L157">            List&lt;String&gt; lines = Files.readAllLines(output.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (lines.stream().filter(line -&gt; line.contains(marker)).count() != 2) {</span>
+<span class="nc" id="L159">                throw new IllegalArgumentException(&quot;Marker &quot; + marker + &quot; is not exactly twice in &quot; + output);</span>
             }
-<span class="nc" id="L151">            int firstMarker = lines.indexOf(lines.stream().filter(line -&gt; line.contains(marker)).findFirst().get());</span>
-<span class="nc" id="L152">            List&lt;String&gt; rest = lines.subList(firstMarker + 1, lines.size());</span>
-<span class="nc" id="L153">            int secondMarker = rest.indexOf(rest.stream().filter(line -&gt; line.contains(marker)).findFirst().get()) + firstMarker + 1;</span>
-<span class="nc bnc" id="L154" title="All 2 branches missed.">            if (content.contains(marker)) {</span>
-<span class="nc" id="L155">                throw new IllegalArgumentException(&quot;Content contains marker &quot; + marker + &quot;. That would lead to trouble next time.&quot;);</span>
+<span class="nc" id="L161">            int firstMarker = lines.indexOf(lines.stream().filter(line -&gt; line.contains(marker)).findFirst().get());</span>
+<span class="nc" id="L162">            List&lt;String&gt; rest = lines.subList(firstMarker + 1, lines.size());</span>
+<span class="nc" id="L163">            int secondMarker = rest.indexOf(rest.stream().filter(line -&gt; line.contains(marker)).findFirst().get()) + firstMarker + 1;</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">            if (content.contains(marker)) {</span>
+<span class="nc" id="L165">                throw new IllegalArgumentException(&quot;Content contains marker &quot; + marker + &quot;. That would lead to trouble next time.&quot;);</span>
             }
-<span class="nc" id="L157">            String firstMarkerLineNew = AIVersionMarker.replaceMarkerIn(lines.get(firstMarker), versionComment);</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (AIVersionMarker.find(firstMarkerLineNew) == null) {</span>
-<span class="nc" id="L159">                throw new IllegalArgumentException(&quot;Bug: cannot find new version marker in new first marker line&quot; + firstMarkerLineNew);</span>
+<span class="nc" id="L167">            String firstMarkerLineNew = AIVersionMarker.replaceMarkerIn(lines.get(firstMarker), versionComment);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (AIVersionMarker.find(firstMarkerLineNew) == null) {</span>
+<span class="nc" id="L169">                throw new IllegalArgumentException(&quot;Bug: cannot find new version marker in new first marker line&quot; + firstMarkerLineNew);</span>
             }
-<span class="nc" id="L161">            List&lt;String&gt; newLines = new ArrayList&lt;&gt;(lines.subList(0, firstMarker));</span>
-<span class="nc" id="L162">            newLines.add(firstMarkerLineNew);</span>
-<span class="nc" id="L163">            newLines.add(content);</span>
-<span class="nc" id="L164">            newLines.addAll(lines.subList(secondMarker, lines.size()));</span>
-<span class="nc" id="L165">            Files.write(output.toPath(), newLines, StandardCharsets.UTF_8);</span>
-<span class="nc" id="L166">        }</span>
+<span class="nc" id="L171">            List&lt;String&gt; newLines = new ArrayList&lt;&gt;(lines.subList(0, firstMarker));</span>
+<span class="nc" id="L172">            newLines.add(firstMarkerLineNew);</span>
+<span class="nc" id="L173">            newLines.add(content);</span>
+<span class="nc" id="L174">            newLines.addAll(lines.subList(secondMarker, lines.size()));</span>
+<span class="nc" id="L175">            Files.write(output.toPath(), newLines, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L176">        }</span>
 
+        @Override
+        public String toString() {
+<span class="nc" id="L180">            return &quot;WritingStrategy.WritePartStrategy(&quot; + marker + &quot;)&quot;;</span>
+        }
     }
 
 }

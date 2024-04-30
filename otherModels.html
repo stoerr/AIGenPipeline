@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="generator" content="#generatedBy()" />
+    <title>AIGenPipeline - command line tool and framework for generating code and documentation with AI – Using various large language models (LLM)</title>
+    <link rel="icon" href="./img/favicons/favicon.ico">
+    <!-- CSS Stylesheets, site.css is included so downstream projects can override them as appropriate. -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/bootstrap-icons.css" />
+    <link rel="stylesheet" href="./css/maven-base.css" />
+    <link rel="stylesheet" href="./css/prettify.css" />
+    <link rel="stylesheet" href="https://bootswatch.com/5/cerulean/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/maven-theme.css" />
+    <link rel="stylesheet" href="./css/site.css" />
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+            <!-- Facebook Meta Tags -->
+            <meta property="og:url" content="https://aigenpipeline.stoerr.net/">
+            <meta property="og:type" content="website">
+            <meta property="og:title" content="AIGenPipeline - systematic file generation with AI">
+            <meta property="og:description" content="A command line tool and Java framework to generate code or documentation using LLM - either ChatGPT or a model with a similar chat completion interface">
+            <meta property="og:image" content="https://aigenpipeline.stoerr.net/images/AIGenPipelineLogo.png">
+
+            <!-- Twitter Meta Tags -->
+            <meta name="twitter:card" content="summary_large_image">
+            <meta property="twitter:domain" content="aigenpipeline.stoerr.net">
+            <meta property="twitter:url" content="https://aigenpipeline.stoerr.net/">
+            <meta name="twitter:title" content="AIGenPipeline - systematic file generation with AI">
+            <meta name="twitter:description" content="A command line tool and Java framework to generate code or documentation using LLM - either ChatGPT or a model with a similar chat completion interface">
+            <meta name="twitter:image" content="https://aigenpipeline.stoerr.net/images/AIGenPipelineLogo.png">
+
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-SL01MYCNDC"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-SL01MYCNDC');
+            </script>
+<meta name="description" content="How to use other LLM with the AI Generation Pipeline" />  </head>
+  <body class="d-flex flex-column h-100">
+
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+        <div id="projectBarContainer" class="container-fluid justify-content-center">
+<a href="#" id="navbarIconLink" title="Navbar Brand Icon" class="navbar-brand text-wrap ps-2"> AIGenPipeline Project
+</a>          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div id="navbarCollapse" class="collapse navbar-collapse flex-grow-0">
+            <ul id="navbarList" class="navbar-nav">
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="OverviewMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Overview <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="OverviewMenuDropdown">
+                 <li class="nav-item dropdown-item" id="IntroductionDropdown">
+                   <a href="index.html" id="IntroductionDropdownLink" title="Introduction"  class="dropdown-item" >Introduction</a>                 </li>
+                 <li class="nav-item dropdown-item" id="Using other LLMDropdown">
+                   <a title="Using other LLM" class="dropdown-item">Using other LLM</a>                 </li>
+               </ul>
+             </li>
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="ModulesMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Modules <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="ModulesMenuDropdown">
+                 <li class="nav-item dropdown-item" id="AIGenPipeline Command Line ToolDropdown">
+                   <a href="aigenpipeline-commandline/index.html" id="AIGenPipeline Command Line ToolDropdownLink" title="AIGenPipeline Command Line Tool"  class="dropdown-item" >AIGenPipeline Command Line Tool</a>                 </li>
+                 <li class="nav-item dropdown-item" id="AIGenPipeline FrameworkDropdown">
+                   <a href="aigenpipeline-framework/index.html" id="AIGenPipeline FrameworkDropdownLink" title="AIGenPipeline Framework"  class="dropdown-item" >AIGenPipeline Framework</a>                 </li>
+               </ul>
+             </li>
+             <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="Project DocumentationMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Project Documentation <b class="caret"></b></a>
+               <ul class="dropdown-menu" aria-labelledby="Project DocumentationMenuDropdown">
+                 <li class="nav-item dropdown-item dropdown-submenu">
+                   <a href="project-info.html" id="Project InformationDropdownLink" title="Project Information"  class="dropdown-item" >Project Information</a>
+                   <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-convergence.html" id="Dependency ConvergenceDropdownLink" title="Dependency Convergence"  class="dropdown-item" >Dependency Convergence</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-info.html" id="Dependency InformationDropdownLink" title="Dependency Information"  class="dropdown-item" >Dependency Information</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-management.html" id="Dependency ManagementDropdownLink" title="Dependency Management"  class="dropdown-item" >Dependency Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="distribution-management.html" id="Distribution ManagementDropdownLink" title="Distribution Management"  class="dropdown-item" >Distribution Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="index.html" id="AboutDropdownLink" title="About"  class="dropdown-item" >About</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="issue-management.html" id="Issue ManagementDropdownLink" title="Issue Management"  class="dropdown-item" >Issue Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="licenses.html" id="LicensesDropdownLink" title="Licenses"  class="dropdown-item" >Licenses</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="modules.html" id="Project ModulesDropdownLink" title="Project Modules"  class="dropdown-item" >Project Modules</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-management.html" id="Plugin ManagementDropdownLink" title="Plugin Management"  class="dropdown-item" >Plugin Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugins.html" id="PluginsDropdownLink" title="Plugins"  class="dropdown-item" >Plugins</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="scm.html" id="Source Code ManagementDropdownLink" title="Source Code Management"  class="dropdown-item" >Source Code Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="summary.html" id="SummaryDropdownLink" title="Summary"  class="dropdown-item" >Summary</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="team.html" id="TeamDropdownLink" title="Team"  class="dropdown-item" >Team</a>                     </li>
+                   </ul>
+                 </li>
+                 <li class="nav-item dropdown-item dropdown-submenu">
+                   <a href="project-reports.html" id="Project ReportsDropdownLink" title="Project Reports"  class="dropdown-item" >Project Reports</a>
+                   <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
+                     <li class="nav-item dropdown-item">
+                       <a href="surefire-report.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="jacoco-aggregate/index.html" id="JaCoCo AggregateDropdownLink" title="JaCoCo Aggregate"  class="dropdown-item" >JaCoCo Aggregate</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="apidocs/index.html" id="JavadocDropdownLink" title="Javadoc"  class="dropdown-item" >Javadoc</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="testapidocs/index.html" id="Test JavadocDropdownLink" title="Test Javadoc"  class="dropdown-item" >Test Javadoc</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-updates-aggregate-report.html" id="Dependency Updates Aggregate ReportDropdownLink" title="Dependency Updates Aggregate Report"  class="dropdown-item" >Dependency Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="dependency-updates-report.html" id="Dependency Updates ReportDropdownLink" title="Dependency Updates Report"  class="dropdown-item" >Dependency Updates Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-updates-aggregate-report.html" id="Plugin Updates Aggregate ReportDropdownLink" title="Plugin Updates Aggregate Report"  class="dropdown-item" >Plugin Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="plugin-updates-report.html" id="Plugin Updates ReportDropdownLink" title="Plugin Updates Report"  class="dropdown-item" >Plugin Updates Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="property-updates-aggregate-report.html" id="Property Updates Aggregate ReportDropdownLink" title="Property Updates Aggregate Report"  class="dropdown-item" >Property Updates Aggregate Report</a>                     </li>
+                     <li class="nav-item dropdown-item">
+                       <a href="property-updates-report.html" id="Property Updates ReportDropdownLink" title="Property Updates Report"  class="dropdown-item" >Property Updates Report</a>                     </li>
+                   </ul>
+                 </li>
+               </ul>
+             </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <nav id="projectBar" class="navbar py-0 navbar-dark bg-primary" aria-label="projectBarList">
+        <div id="projectBarContainer" class="container-fluid">
+
+          <div id="projectBaDateVersionContainer" class="justify-content-start">
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-04-30</span>
+            <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 1.1.0</span>
+          </div>
+          <div id="breadcrumbSpacer" ></div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-shrink-0" role="main">
+      <div class="container mt-3 rounded">
+<section>
+<h1>Using various large language models (LLM)</h1>
+<p>While the AIGenPipeline uses the OpenAI chat completion API as default, it's easy to configure it to use different
+models. Here is a description how to configure OpenAI, <a href="https://www.anthropic.com/claude" class="externalLink">Anthropic Claude</a>
+<a href="https://docs.anthropic.com/claude/docs/text-generation" class="externalLink">text generation</a> and local models e.g. run
+with <a href="https://lmstudio.ai/" class="externalLink">LM Studio</a>. Many similar services use an API that is similar or even mostly compatible
+to OpenAI's chat completion interface, so you can probably use them with few or no changes in the tool - please
+contact me if you need something else, or make a PR.</p>
+<p>Configuring the model needs setting some command line options. If you don't want to give them in every call of the
+command line tool, you can either put them into the <code>AIGENPIPELINE_CONFIG</code> environment variable, or create a
+<code>.aigenpipeline</code> file that contains them. The tool searches from the current directory upwards, so this can be done
+in the project directory where you run the tool or even into your home directory.</p>
+<p>The directory <a href="https://github.com/stoerr/AIGenPipeline/tree/develop/examples/variousModels" class="externalLink">examples/variousModels</a>
+contains several examples.</p><section>
+<h2>OpenAI chat completion API</h2>
+<p>This is the default, so you don't need to specify the API key. If you just put it into an environment variable
+<code>OPENAI_API_KEY</code> you don't need any special options. Otherwise, you could create a <code>.aigenpipeline</code> file like this:</p>
+
+<div class="verbatim">
+<pre><code># for completeness you could give the URL, but that URL hasn't to be set since it's the default.
+# -u https://api.openai.com/v1/chat/completions
+-a $OPENAI_API_KEY
+# optional, if you need that
+-org $OPENAI_ORG_ID
+-m gpt-3.5-turbo 
+
+# Don't look for configuration files in our parent directories
+-cn
+</code></pre></div>
+<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section>
+<h2>Anthropic claude</h2>
+<p>The <a href="https://www.anthropic.com/claude" class="externalLink">Anthropic Claude</a>
+<a href="https://docs.anthropic.com/claude/docs/text-generation" class="externalLink">text generation</a> service needs the following arguments in
+a <code>.aigenpipeline</code> file. If the key is in an environment variable <code>ANTHROPIC_API_VERSION</code>, the -a line with the key
+can be omitted.</p>
+
+<div class="verbatim">
+<pre><code>-u https://api.anthropic.com/v1/messages
+-m $ANTHROPIC_DEFAULT_MODEL
+-a $ANTHROPIC_API_KEY
+
+# Don't look for further configuration files
+-cn
+</code></pre></div>
+<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section>
+<h2>Local models</h2>
+<p>For <a href="https://lmstudio.ai/" class="externalLink">LM Studio</a> the configuration file <code>.aigenpipeline</code> can look like this:</p>
+
+<div class="verbatim">
+<pre><code># for completeness, but that URL hasn't to be set since it's the default.
+-u http://localhost:1234/v1/chat/completions
+
+# Don't look for further configuration files
+-cn
+</code></pre></div>
+<p>Or you could put <code>-u http://localhost:1234/v1/chat/completions</code> into <code>AIGENPIPELINE_CONFIG</code> if you always use that.</p></section></section>
+      </div>
+    </main>
+
+  <footer class="footer mt-auto py-4 bg-light text-dark">
+    <div class="container-fluid text-md-left">
+        <div class="row">
+          <div id="socialMediaDiv" class="col-md-5 col-lg-4 col-xl-4 mx-auto mb-md-0">
+
+            <div id="copyrightDiv" class="pt-3">
+              <p>&#169;
+      2024
+Dr. Hans-Peter Störr
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./js/jquery.slim.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/prettify.js"></script>
+
+    <!-- Used to enable the code-prettify running on the view. -->
+    <script>
+        addEventListener('load', function(event) { PR.prettyPrint(); }, false);
+    </script>
+  </body>

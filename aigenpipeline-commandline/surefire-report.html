@@ -63,6 +63,8 @@
                      <li class="nav-item dropdown-item">
                        <a href="dependency-info.html" id="Dependency InformationDropdownLink" title="Dependency Information"  class="dropdown-item" >Dependency Information</a>                     </li>
                      <li class="nav-item dropdown-item">
+                       <a href="dependency-management.html" id="Dependency ManagementDropdownLink" title="Dependency Management"  class="dropdown-item" >Dependency Management</a>                     </li>
+                     <li class="nav-item dropdown-item">
                        <a href="distribution-management.html" id="Distribution ManagementDropdownLink" title="Distribution Management"  class="dropdown-item" >Distribution Management</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="index.html" id="AboutDropdownLink" title="About"  class="dropdown-item" >About</a>                     </li>
@@ -92,6 +94,8 @@
                      <li class="nav-item dropdown-item">
                        <a href="apidocs/index.html" id="JavadocDropdownLink" title="Javadoc"  class="dropdown-item" >Javadoc</a>                     </li>
                      <li class="nav-item dropdown-item">
+                       <a href="testapidocs/index.html" id="Test JavadocDropdownLink" title="Test Javadoc"  class="dropdown-item" >Test Javadoc</a>                     </li>
+                     <li class="nav-item dropdown-item">
                        <a href="dependency-updates-report.html" id="Dependency Updates ReportDropdownLink" title="Dependency Updates Report"  class="dropdown-item" >Dependency Updates Report</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="plugin-updates-report.html" id="Plugin Updates ReportDropdownLink" title="Plugin Updates Report"  class="dropdown-item" >Plugin Updates Report</a>                     </li>
@@ -107,9 +111,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-04-28</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-04-30</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 1.0.0</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 1.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -136,7 +140,8 @@ function toggleDisplay(elementId) {
  }
  }</script><section>
 <h1>Surefire Report</h1></section><section><a id="Summary"></a>
-<h1>Summary</h1><br />
+<h1>Summary</h1>
+<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><br />
 <table class="table table-striped">
 <tr class="a">
 <th>Tests</th>
@@ -146,13 +151,61 @@ function toggleDisplay(elementId) {
 <th>Success Rate</th>
 <th>Time</th></tr>
 <tr class="b">
-<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>0%</td>
-<td>0 s</td></tr></table><br />
-<p>Note: failures are anticipated and checked for with assertions while errors are unanticipated.</p><br /></section>
+<td>100%</td>
+<td>0.023 s</td></tr></table><br />
+<p>Note: failures are anticipated and checked for with assertions while errors are unanticipated.</p><br /></section><section><a id="Package_List"></a>
+<h1>Package List</h1>
+<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><br />
+<table class="table table-striped">
+<tr class="a">
+<th>Package</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th>Skipped</th>
+<th>Success Rate</th>
+<th>Time</th></tr>
+<tr class="b">
+<td style="text-align: left;"><a href="#net.stoerr.ai.aigenpipeline.commandline">net.stoerr.ai.aigenpipeline.commandline</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>0.023 s</td></tr></table><br />
+<p>Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.</p><section><a id="net.stoerr.ai.aigenpipeline.commandline"></a>
+<h2>net.stoerr.ai.aigenpipeline.commandline</h2>
+<table class="table table-striped">
+<tr class="a">
+<th>-</th>
+<th>Class</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th>Skipped</th>
+<th>Success Rate</th>
+<th>Time</th></tr>
+<tr class="b">
+<td style="text-align: left;"><a href="#net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest"><img src="images/icon_success_sml.gif" /></a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest">AIGenPipelineTest</a></td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>0.023 s</td></tr></table></section><br /></section><section><a id="Test_Cases"></a>
+<h1>Test Cases</h1>
+<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><section><a id="net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest"></a>
+<h2>AIGenPipelineTest</h2>
+<table class="table table-striped">
+<tr class="a">
+<td style="text-align: left;"><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest.readArguments"></a>readArguments</td>
+<td>0.023 s</td></tr></table></section><br /></section>
       </div>
     </main>
 

@@ -212,53 +212,61 @@ import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 <span class="nc" id="L212">        return this;</span>
     }
 
+    @Nullable
     protected String getFileContent(@Nonnull File file) {
-<span class="nc bnc" id="L216" title="All 2 branches missed.">        if (!file.exists()) {</span>
-<span class="nc" id="L217">            return null;</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (!file.exists()) {</span>
+<span class="nc" id="L218">            return null;</span>
         }
         try {
-<span class="nc" id="L220">            return Files.readString(file.toPath(), StandardCharsets.UTF_8);</span>
-<span class="nc" id="L221">        } catch (IOException e) {</span>
-<span class="nc" id="L222">            throw new IllegalArgumentException(&quot;Error reading file &quot; + file, e);</span>
+<span class="nc" id="L221">            return Files.readString(file.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L222">        } catch (IOException e) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;Error reading file &quot; + file, e);</span>
         }
     }
 
     /* Remove some clutter that is not relevant and might even confuse the AI */
     protected static String unclutter(String content) {
-<span class="nc" id="L228">        Matcher matcher = PATTERN_LICENCE.matcher(content);</span>
-<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (matcher.find()) {</span>
-<span class="nc" id="L230">            content = matcher.replaceFirst(&quot;&quot;);</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (content == null) {</span>
+<span class="nc" id="L230">            return null;</span>
         }
-<span class="nc" id="L232">        matcher = AIVersionMarker.VERSION_MARKER_PATTERN.matcher(content);</span>
+<span class="nc" id="L232">        Matcher matcher = PATTERN_LICENCE.matcher(content);</span>
 <span class="nc bnc" id="L233" title="All 2 branches missed.">        if (matcher.find()) {</span>
 <span class="nc" id="L234">            content = matcher.replaceFirst(&quot;&quot;);</span>
         }
-<span class="nc" id="L236">        return content;</span>
+<span class="nc" id="L236">        matcher = AIVersionMarker.VERSION_MARKER_PATTERN.matcher(content);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L238">            content = matcher.replaceFirst(&quot;&quot;);</span>
+        }
+<span class="nc" id="L240">        return content;</span>
     }
 
     public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
-<span class="nc" id="L240">        String newSystemMessage = unclutter(getFileContent(systemMessageFile));</span>
-<span class="nc" id="L241">        requireNonNull(newSystemMessage, &quot;Could not read system message file &quot; + systemMessageFile);</span>
-<span class="nc" id="L242">        this.systemMessage = newSystemMessage;</span>
-<span class="nc" id="L243">        this.systemMessageFile = systemMessageFile;</span>
-<span class="nc" id="L244">        return this;</span>
+<span class="nc" id="L244">        String fileContent = getFileContent(systemMessageFile);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (fileContent == null) {</span>
+<span class="nc" id="L246">            throw new IllegalArgumentException(&quot;Could not read system message file &quot; + systemMessageFile);</span>
+        }
+<span class="nc" id="L248">        String newSystemMessage = unclutter(fileContent);</span>
+<span class="nc" id="L249">        requireNonNull(newSystemMessage, &quot;Could not read system message file &quot; + systemMessageFile);</span>
+<span class="nc" id="L250">        this.systemMessage = newSystemMessage;</span>
+<span class="nc" id="L251">        this.systemMessageFile = systemMessageFile;</span>
+<span class="nc" id="L252">        return this;</span>
     }
 
     protected String relativePath(@Nullable File file, @Nonnull File rootDirectory) {
-<span class="nc bnc" id="L248" title="All 2 branches missed.">        if (file == null) {</span>
-<span class="nc" id="L249">            return null;</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (file == null) {</span>
+<span class="nc" id="L257">            return null;</span>
         }
-<span class="nc" id="L251">        requireNonNull(rootDirectory, &quot;Root directory must not be null&quot;);</span>
+<span class="nc" id="L259">        requireNonNull(rootDirectory, &quot;Root directory must not be null&quot;);</span>
         String rootPath;
         try {
-<span class="nc" id="L254">            rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
-<span class="nc" id="L255">            String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
-<span class="nc bnc" id="L256" title="All 2 branches missed.">            if (!filePath.startsWith(rootPath)) {</span>
-<span class="nc" id="L257">                throw new IllegalArgumentException(&quot;File &quot; + file + &quot; is not in root directory &quot; + rootDirectory);</span>
+<span class="nc" id="L262">            rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
+<span class="nc" id="L263">            String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">            if (!filePath.startsWith(rootPath)) {</span>
+<span class="nc" id="L265">                throw new IllegalArgumentException(&quot;File &quot; + file + &quot; is not in root directory &quot; + rootDirectory);</span>
             }
-<span class="nc" id="L259">            return filePath.substring(rootPath.length() + 1);</span>
-<span class="nc" id="L260">        } catch (IOException e) {</span>
-<span class="nc" id="L261">            throw new IllegalArgumentException(&quot;Error getting canonical path for &quot; + rootDirectory + &quot; or &quot; + file, e);</span>
+<span class="nc" id="L267">            return filePath.substring(rootPath.length() + 1);</span>
+<span class="nc" id="L268">        } catch (IOException e) {</span>
+<span class="nc" id="L269">            throw new IllegalArgumentException(&quot;Error getting canonical path for &quot; + rootDirectory + &quot; or &quot; + file, e);</span>
         }
     }
 
@@ -266,70 +274,80 @@ import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
      * Execute the task if necessary. If the output file is already there and up to date, nothing is done.
      */
     public AIGenerationTask execute(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory) throws IOException {
-<span class="nc" id="L269">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
-<span class="nc bnc" id="L270" title="All 2 branches missed.">        if (!hasToBeRun()) {</span>
-<span class="nc" id="L271">            LOG.info(() -&gt; &quot;Task does not have to be run for: &quot; + outputRelPath);</span>
-<span class="nc" id="L272">            return this;</span>
+<span class="nc" id="L277">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if (!hasToBeRun()) {</span>
+<span class="nc" id="L279">            LOG.info(() -&gt; &quot;Task does not have to be run for: &quot; + outputRelPath);</span>
+<span class="nc" id="L280">            return this;</span>
         }
-<span class="nc" id="L274">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
-<span class="nc" id="L275">        String result = chat.execute();</span>
-<span class="nc" id="L276">        LOG.fine(() -&gt; &quot;Result for task execution for: &quot; + outputRelPath + &quot;\n&quot; + result);</span>
-<span class="nc" id="L277">        String outputVersion = shaHash(result);</span>
+<span class="nc" id="L282">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
+<span class="nc" id="L283">        String result = chat.execute();</span>
+<span class="nc" id="L284">        LOG.fine(() -&gt; &quot;Result for task execution for: &quot; + outputRelPath + &quot;\n&quot; + result);</span>
+<span class="nc" id="L285">        String outputVersion = shaHash(result);</span>
 
-<span class="nc" id="L279">        List&lt;String&gt; allInputMarkers = AIVersionMarker.calculateInputMarkers(getAllInputFiles(), getAdditionalMarkers());</span>
-<span class="nc" id="L280">        String versionComment = new AIVersionMarker(outputVersion, allInputMarkers).toString();</span>
+<span class="nc" id="L287">        List&lt;String&gt; allInputMarkers = AIVersionMarker.calculateInputMarkers(getAllInputFiles(), getAdditionalMarkers());</span>
+<span class="nc" id="L288">        String versionComment = new AIVersionMarker(outputVersion, allInputMarkers).toString();</span>
 
-<span class="nc" id="L282">        writingStrategy.write(outputFile, result, versionComment);</span>
+<span class="nc" id="L290">        writingStrategy.write(outputFile, result, versionComment);</span>
 
         // We check that after writing since that likely makes it easier to check.
-<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
-<span class="nc" id="L286">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
+<span class="nc" id="L294">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
         }
-<span class="nc" id="L288">        return this;</span>
+<span class="nc" id="L296">        return this;</span>
     }
 
     /**
      * For debugging purposes: returns the JSON that would be sent to the AI.
      */
     public String toJson(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory) {
-<span class="nc" id="L295">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
-<span class="nc" id="L296">        return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();</span>
+<span class="nc" id="L303">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc" id="L304">        return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();</span>
     }
 
     @Nonnull
     protected AIChatBuilder makeChatBuilder(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory, String outputRelPath) {
-<span class="nc" id="L301">        requireNonNull(outputFile, &quot;No writeable output file given! &quot; + outputFile);</span>
-<span class="nc bnc" id="L302" title="All 4 branches missed.">        if (null != outputFile.getParentFile() &amp;&amp; !outputFile.getParentFile().isDirectory()) {</span>
-<span class="nc" id="L303">            outputFile.getParentFile().mkdirs();</span>
+<span class="nc" id="L309">        requireNonNull(outputFile, &quot;Output file not writeable: &quot; + outputFile);</span>
+<span class="nc bnc" id="L310" title="All 4 branches missed.">        if (null != outputFile.getParentFile() &amp;&amp; !outputFile.getParentFile().isDirectory()) {</span>
+<span class="nc" id="L311">            outputFile.getParentFile().mkdirs();</span>
         }
-<span class="nc bnc" id="L305" title="All 4 branches missed.">        if (outputFile.exists() &amp;&amp; !outputFile.canWrite()) {</span>
-<span class="nc" id="L306">            throw new IllegalArgumentException(&quot;No writeable output file given! &quot; + outputFile);</span>
+<span class="nc bnc" id="L313" title="All 4 branches missed.">        if (outputFile.exists() &amp;&amp; !outputFile.canWrite()) {</span>
+<span class="nc" id="L314">            throw new IllegalArgumentException(&quot;No writeable output file given! &quot; + outputFile);</span>
         }
-<span class="nc bnc" id="L308" title="All 4 branches missed.">        if (prompt == null || prompt.isBlank()) {</span>
-<span class="nc" id="L309">            throw new IllegalArgumentException(&quot;No prompt given!&quot;);</span>
+<span class="nc bnc" id="L316" title="All 10 branches missed.">        if ((prompt == null || prompt.isBlank()) &amp;&amp; (systemMessage == null || systemMessage.isBlank()) &amp;&amp; systemMessageFile == null) {</span>
+<span class="nc" id="L317">            throw new IllegalArgumentException(&quot;No prompt given!&quot;);</span>
         }
-<span class="nc" id="L311">        AIChatBuilder chat = chatBuilderFactory.get();</span>
-<span class="nc bnc" id="L312" title="All 2 branches missed.">        if (maxTokens != null) {</span>
-<span class="nc" id="L313">            chat.maxTokens(maxTokens);</span>
+<span class="nc" id="L319">        AIChatBuilder chat = chatBuilderFactory.get();</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (maxTokens != null) {</span>
+<span class="nc" id="L321">            chat.maxTokens(maxTokens);</span>
         }
-<span class="nc bnc" id="L315" title="All 4 branches missed.">        if (systemMessage != null &amp;&amp; !systemMessage.isBlank()) {</span>
-<span class="nc" id="L316">            chat.systemMsg(systemMessage);</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">        if (systemMessage != null) {</span>
+<span class="nc" id="L324">            chat.systemMsg(systemMessage);</span>
         } else {
-<span class="nc" id="L318">            try (InputStream defaultprompt = AIGenerationTask.class.getResourceAsStream(&quot;/defaultsystemprompt.txt&quot;)) {</span>
-<span class="nc" id="L319">                String defaultSysPrompt = new String(requireNonNull(defaultprompt).readAllBytes(), StandardCharsets.UTF_8);</span>
-<span class="nc" id="L320">                chat.systemMsg(defaultSysPrompt);</span>
-<span class="nc" id="L321">            } catch (IOException e) {</span>
-<span class="nc" id="L322">                throw new IllegalStateException(&quot;Error reading default system message&quot;, e);</span>
-<span class="nc" id="L323">            }</span>
+<span class="nc" id="L326">            try (InputStream defaultprompt = AIGenerationTask.class.getResourceAsStream(&quot;/defaultsystemprompt.txt&quot;)) {</span>
+<span class="nc" id="L327">                String defaultSysPrompt = new String(requireNonNull(defaultprompt).readAllBytes(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L328">                chat.systemMsg(defaultSysPrompt);</span>
+<span class="nc" id="L329">            } catch (IOException e) {</span>
+<span class="nc" id="L330">                throw new IllegalStateException(&quot;Error reading default system message&quot;, e);</span>
+<span class="nc" id="L331">            }</span>
         }
-<span class="nc" id="L325">        inputFiles.forEach(file -&gt; {</span>
+<span class="nc" id="L333">        inputFiles.forEach(file -&gt; {</span>
             // &quot;Put it into the AI's mouth&quot; pattern https://www.stoerr.net/blog/aimouth
-<span class="nc" id="L327">            chat.userMsg(&quot;Retrieve the content of the input file &quot; + relativePath(file, rootDirectory));</span>
-<span class="nc" id="L328">            chat.assistantMsg(unclutter(getFileContent(file)));</span>
-<span class="nc" id="L329">        });</span>
-<span class="nc" id="L330">        chat.userMsg(prompt);</span>
-<span class="nc" id="L331">        LOG.fine(() -&gt; &quot;Executing chat for: &quot; + outputRelPath + &quot;\n&quot; + chat.toJson());</span>
-<span class="nc" id="L332">        return chat;</span>
+<span class="nc" id="L335">            String path = relativePath(file, rootDirectory);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">            String usermsg = !file.getAbsolutePath().equals(outputFile.getAbsolutePath()) ?</span>
+<span class="nc" id="L337">                            &quot;Retrieve the content of the input file &quot; + path :</span>
+                            &quot;Retrieve the current content of the output file &quot; + path +
+<span class="nc" id="L339">                                    &quot; Later you will take this file as basis for the output, check it and possibly modify it, &quot; +</span>
+                                    &quot;but minimize changes.&quot;;
+<span class="nc" id="L341">            chat.userMsg(usermsg);</span>
+<span class="nc" id="L342">            String fileContent = getFileContent(file);</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">            if (fileContent == null) {</span>
+<span class="nc" id="L344">                throw new IllegalArgumentException(&quot;Could not read input file &quot; + file);</span>
+            }
+<span class="nc" id="L346">            chat.assistantMsg(unclutter(fileContent));</span>
+<span class="nc" id="L347">        });</span>
+<span class="nc" id="L348">        chat.userMsg(prompt);</span>
+<span class="nc" id="L349">        LOG.fine(() -&gt; &quot;Executing chat for: &quot; + outputRelPath + &quot;\n&quot; + chat.toJson());</span>
+<span class="nc" id="L350">        return chat;</span>
     }
 
     /**
@@ -340,26 +358,30 @@ import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
      * @return the answer of the AI - not written to a file!
      */
     public String explain(@Nonnull Supplier&lt;AIChatBuilder&gt; chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) throws IOException {
-<span class="nc" id="L343">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
-<span class="nc bnc" id="L344" title="All 2 branches missed.">        if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake</span>
-<span class="nc" id="L345">            throw new IllegalStateException(&quot;Task has to be already run for: &quot; + outputRelPath);</span>
+<span class="nc" id="L361">        String outputRelPath = relativePath(this.outputFile, rootDirectory);</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">        if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake</span>
+<span class="nc" id="L363">            throw new IllegalStateException(&quot;Task has to be already run for: &quot; + outputRelPath);</span>
         }
-<span class="nc" id="L347">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
-<span class="nc" id="L348">        String previousOutput = unclutter(getFileContent(outputFile));</span>
-<span class="nc" id="L349">        requireNonNull(previousOutput, &quot;Could not read any content from file &quot; + outputFile);</span>
-<span class="nc" id="L350">        chat.assistantMsg(previousOutput);</span>
-<span class="nc" id="L351">        chat.userMsg(question);</span>
-<span class="nc" id="L352">        String result = chat.execute();</span>
-<span class="nc" id="L353">        LOG.info(() -&gt; &quot;Explanation result for &quot; + outputRelPath + &quot; with question &quot; + question + &quot; is:\n&quot; + result);</span>
-<span class="nc bnc" id="L354" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
-<span class="nc" id="L355">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
+<span class="nc" id="L365">        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);</span>
+<span class="nc" id="L366">        String outputFileContent = getFileContent(outputFile);</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        if (outputFileContent == null) {</span>
+<span class="nc" id="L368">            throw new IllegalStateException(&quot;Usage error - no previous call? Could not read output file &quot; + outputFile);</span>
         }
-<span class="nc" id="L357">        return result;</span>
+<span class="nc" id="L370">        String previousOutput = unclutter(outputFileContent);</span>
+<span class="nc" id="L371">        requireNonNull(previousOutput, &quot;Could not read any content from file &quot; + outputFile);</span>
+<span class="nc" id="L372">        chat.assistantMsg(previousOutput);</span>
+<span class="nc" id="L373">        chat.userMsg(question);</span>
+<span class="nc" id="L374">        String result = chat.execute();</span>
+<span class="nc" id="L375">        LOG.info(() -&gt; &quot;Explanation result for &quot; + outputRelPath + &quot; with question &quot; + question + &quot; is:\n&quot; + result);</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        if (result.contains(FIXME)) {</span>
+<span class="nc" id="L377">            throw new IllegalStateException(&quot;AI returned FIXME for &quot; + outputRelPath + &quot; :\n&quot; + result);</span>
+        }
+<span class="nc" id="L379">        return result;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L362">        return &quot;AIGenerationTask{&quot; + &quot;inputFiles=&quot; + inputFiles +</span>
+<span class="nc" id="L384">        return &quot;AIGenerationTask{&quot; + &quot;inputFiles=&quot; + inputFiles +</span>
                 &quot;, outputFile=&quot; + outputFile +
                 &quot;, systemMessageFile=&quot; + systemMessageFile +
                 &quot;, systemMessage='&quot; + systemMessage + '\'' +
