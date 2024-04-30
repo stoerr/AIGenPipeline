@@ -8,4 +8,9 @@ if [ -f "$OUTFILE" ]; then
   EXISTINGOUTFILE="$OUTFILE"
 fi
 set -x -e
-$CMD -p codeRules.prompt -p createcode.prompt -o ChatGPTPromptExecutorImpl.java $EXISTINGOUTFILE ChatGPTPromptExecutor.java request.json response.json
+
+# Minimize changes if requirements are changed
+$CMD -v -p codeRules.prompt -p createcode.prompt -o ChatGPTPromptExecutorImpl.java $EXISTINGOUTFILE ChatGPTPromptExecutor.java request.json response.json
+
+# Or just regenerate
+# $CMD -p codeRules.prompt -p createcode.prompt -o ChatGPTPromptExecutorImpl.java ChatGPTPromptExecutor.java request.json response.json

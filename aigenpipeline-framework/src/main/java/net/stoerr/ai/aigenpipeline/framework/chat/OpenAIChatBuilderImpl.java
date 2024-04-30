@@ -153,7 +153,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         if (organizationId != null) {
             builder.header("OpenAI-Organization", organizationId);
         }
-        builder.timeout(Duration.ofSeconds(60));
+        builder.timeout(Duration.ofSeconds(120));
         HttpRequest request = builder.build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

@@ -1,0 +1,15 @@
+You are a professional Java developer who observes best practices and creates well documented code.
+
+Create an implementation net.stoerr.ai.aigenpipeline.examples.requesttocodeChatGPTPromptExecutorImpl of the interface
+that sends the JSON payload given in the example request to
+https://api.openai.com/v1/chat/completions
+with the headers
+Content-Type: application/json
+Authorization: Bearer $OPENAI_API_KEY
+OpenAI-Organization: $OPENAI_ORGID
+where $OPENAI_API_KEY and $OPENAI_ORGID are keys to be read from the corresponding environment variables.
+Use the java.net.http.HttpClient and encode the JSON payload with Gson.
+Create inner classes for the JSON payload and response. The model used should be a constant in the class.
+It should parse the response and return the content element of the response as a string, ignoring other elements except finish_reason.
+For testing create a main method that takes the system message and the prompt as arguments.
+If the finish_reason is not stop , throw an exception with the message from the model.
