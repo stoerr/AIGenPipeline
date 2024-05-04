@@ -55,7 +55,9 @@ public class AIGenerationTaskTest {
     protected void checkOutputExistsAndIsAsExpected(Path outFile) throws IOException {
         assertTrue(Files.exists(outFile));
         String outputContent = Files.readString(outFile);
-        assertEquals(Files.readString(expectsDir.resolve(outFile.getFileName())), outputContent);
+        Path expectedFile = expectsDir.resolve(outFile.getFileName());
+        assertEquals("Files are different: " + outFile + " and " + expectedFile,
+                Files.readString(expectedFile), outputContent);
     }
 
     @Test
@@ -77,7 +79,7 @@ public class AIGenerationTaskTest {
         Assert.assertFalse(task.hasToBeRun());
 
         String result = task.explain(MockAIChatBuilder::new, new File("."), "Why oh why oh why?");
-        assertEquals(result.trim(), Files.readString(expectsDir.resolve("explanation.txt")).trim());
+        assertEquals(Files.readString(expectsDir.resolve("explanation.txt")).trim(), result.trim());
     }
 
     @Test
@@ -98,7 +100,9 @@ public class AIGenerationTaskTest {
         Assert.assertFalse(task.hasToBeRun());
     }
 
-    /** Checks whether the deep copy works. */
+    /**
+     * Checks whether the deep copy works.
+     */
     @Test
     public void testCopy() {
         AIGenerationTask task = new AIGenerationTask();

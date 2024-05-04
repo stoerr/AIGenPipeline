@@ -39,7 +39,9 @@ public class AIGenPipeline {
      */
     public static final String CONFIGFILE = ".aigenpipeline";
 
-    /** Pattern for accessing an environment variable, e.g. $FOO or ${FOO} */
+    /**
+     * Pattern for accessing an environment variable, e.g. $FOO or ${FOO}
+     */
     protected final Pattern ENVVARIABLE_PATTERN = Pattern.compile("\\$[A-Za-z_][A-Za-z0-9_]*|\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}");
 
     protected boolean help, verbose, dryRun, check, version;
@@ -81,6 +83,9 @@ public class AIGenPipeline {
             run();
         } catch (IllegalArgumentException e) {
             System.err.println("Usage error: " + e.getMessage());
+            if (verbose) {
+                e.printStackTrace();
+            }
 //            System.err.println();
 //            printHelpAndExit(true);
             System.exit(1);
@@ -162,8 +167,16 @@ public class AIGenPipeline {
 
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? System.out : System.err;
-        inputFiles.stream().map(this::toFile).forEach(task::addInputFile);
-        task.setOutputFile(toFile(Objects.requireNonNull(output, "No output file given.")));
+        File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
+        task.setOutputFile(outputFile);
+        for (String inputFile : inputFiles) {
+            File file = toFile(inputFile);
+            if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
+                task.addOptionalInputFile(file);
+            } else {
+                task.addInputFile(file);
+            }
+        }
         promptFiles.stream()
                 .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
@@ -193,7 +206,8 @@ public class AIGenPipeline {
     }
 
     protected File toFile(String filename) {
-        return rootDir.toPath().relativize(Path.of(filename)).toFile();
+        return rootDir.toPath().toAbsolutePath().relativize(
+                Path.of(filename).toAbsolutePath()).toFile();
     }
 
     protected void printHelpAndExit(boolean onerror) {
@@ -241,7 +255,6 @@ public class AIGenPipeline {
                 "    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.\n" +
                 "\n" +
                 "  AI backend settings:\n" +
-                "\n" +
                 "    -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .\n" +
                 "                             In the case of OpenAI the API key is expected to be in the environment variable \n" +
                 "                             OPENAI_API_KEY, or given with the -a option.\n" +

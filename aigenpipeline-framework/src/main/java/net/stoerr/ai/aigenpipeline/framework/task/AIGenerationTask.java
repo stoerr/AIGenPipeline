@@ -257,17 +257,7 @@ public class AIGenerationTask implements Cloneable {
             return null;
         }
         requireNonNull(rootDirectory, "Root directory must not be null");
-        String rootPath;
-        try {
-            rootPath = rootDirectory.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
-            String filePath = file.getAbsoluteFile().getCanonicalFile().getAbsolutePath();
-            if (!filePath.startsWith(rootPath)) {
-                throw new IllegalArgumentException("File " + file + " is not in root directory " + rootDirectory);
-            }
-            return filePath.substring(rootPath.length() + 1);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error getting canonical path for " + rootDirectory + " or " + file, e);
-        }
+        return rootDirectory.toPath().toAbsolutePath().relativize(file.toPath().toAbsolutePath()).toString();
     }
 
     /**
@@ -334,10 +324,10 @@ public class AIGenerationTask implements Cloneable {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
             String path = relativePath(file, rootDirectory);
             String usermsg = !file.getAbsolutePath().equals(outputFile.getAbsolutePath()) ?
-                            "Retrieve the content of the input file " + path :
-                            "Retrieve the current content of the output file " + path +
-                                    " Later you will take this file as basis for the output, check it and possibly modify it, " +
-                                    "but minimize changes.";
+                    "Retrieve the content of the input file '" + path + "'" :
+                    "Retrieve the current content of the output file '" + path +
+                            "'. Later you will take this file as basis for the output, check it and possibly modify it, " +
+                            "but minimize changes.";
             chat.userMsg(usermsg);
             String fileContent = getFileContent(file);
             if (fileContent == null) {

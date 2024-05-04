@@ -1,4 +1,4 @@
-// AIGenVersion(387321b3, promptWithVersion.txt-17, input.txt-7e10dd2a, inputWithVersion.txt-1.1)
+// AIGenVersion(1f77deb5, promptWithVersion.txt-17, input.txt-7e10dd2a, inputWithVersion.txt-1.1)
 
 Response to:
 {
@@ -10,7 +10,7 @@ Response to:
     },
     {
       "role": "user",
-      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Retrieve the content of the input file 'src/test/resources/aigenpipeline-test/input.txt'"
     },
     {
       "role": "assistant",
@@ -18,7 +18,7 @@ Response to:
     },
     {
       "role": "user",
-      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/inputWithVersion.txt"
+      "content": "Retrieve the content of the input file 'src/test/resources/aigenpipeline-test/inputWithVersion.txt'"
     },
     {
       "role": "assistant",

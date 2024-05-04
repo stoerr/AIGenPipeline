@@ -1,4 +1,4 @@
-// AIGenVersion(4c07e3b5, sysmsg.txt-2c4ed9f2, prompt.txt-45366fcf, input.txt-7e10dd2a)
+// AIGenVersion(395d0d0e, sysmsg.txt-2c4ed9f2, prompt.txt-45366fcf, input.txt-7e10dd2a)
 
 Response to:
 {
@@ -10,7 +10,7 @@ Response to:
     },
     {
       "role": "user",
-      "content": "Retrieve the content of the input file src/test/resources/aigenpipeline-test/input.txt"
+      "content": "Retrieve the content of the input file 'src/test/resources/aigenpipeline-test/input.txt'"
     },
     {
       "role": "assistant",
