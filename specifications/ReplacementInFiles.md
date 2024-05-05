@@ -33,8 +33,11 @@ Parts of the file:
 - generated text
 
 The AIGenVersion tag, prompt and generated text can be in one comment block at the start, and the rest of the file the
-generated text. Evtl. mehrere generierte parts mit -wp?
-Eventuelles Problem: reformatierung darf nix kaputt machen.
+generated text. Perhaps we can have several generated parts with -wp?
+One problem: reformatting with the IDE shouldn't destroy anything.
+
+Basic idea: we put something into a file that says "insert here the output that is generated the following prompt 
+based on the following files."
 
 Idea:
 

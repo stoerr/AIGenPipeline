@@ -142,6 +142,11 @@ about the result or have it make suggestions how to improve the prompt. This mod
 recreate the conversation that lead to the output file and ask the AI for a clarification or suggestion in form of a
 chat continuation.
 
+It's also possible to ask the tool questions about itself - use the `-ha` / `--helpai` option with a question, and it 
+tries to answer that from this documentation. There is also an 
+[OpenAI GPT](https://chatgpt.com/g/g-zheGoARkR-ai-based-code-generation-pipeline-helper)
+that can be asked.
+
 ## Limitations and additional ideas (not implemented yet)
 
 - This means the resulting file is always completely regenerated or not at all. How to make differential changes? One
@@ -157,6 +162,7 @@ Options:
 
   General options:
     -h, --help               Show this help message and exit.
+    -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.
     --version                Show the version of the AIGenPipeline tool and exit.
     -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                              generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
