@@ -2,6 +2,7 @@ package net.stoerr.ai.aigenpipeline.commandline;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,6 +47,7 @@ public class AIGenPipeline {
     protected final Pattern ENVVARIABLE_PATTERN = Pattern.compile("\\$[A-Za-z_][A-Za-z0-9_]*|\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}");
 
     protected boolean help, verbose, dryRun, check, version;
+    protected String helpAIquestion;
     protected String output, explain;
     protected String url;
     protected String apiKey;
@@ -74,9 +77,12 @@ public class AIGenPipeline {
                 System.out.println(getVersion());
             }
             if (help || args.length == 0) {
-                printHelpAndExit(false);
+                printHelp(false);
             }
-            if (version || help) {
+            if (helpAIquestion != null) {
+                helpAIquestion();
+            }
+            if (version || help || helpAIquestion != null) {
                 System.exit(0);
             }
 
@@ -210,7 +216,7 @@ public class AIGenPipeline {
                 Path.of(filename).toAbsolutePath()).toFile();
     }
 
-    protected void printHelpAndExit(boolean onerror) {
+    protected void printHelp(boolean onerror) {
         (onerror ? System.err : System.out).println("" +
                 "Usage:\n" +
                 "aigenpipeline [options] [<input_files>...]\n" +
@@ -219,6 +225,7 @@ public class AIGenPipeline {
                 "\n" +
                 "  General options:\n" +
                 "    -h, --help               Show this help message and exit.\n" +
+                "    -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.\n" +
                 "    --version                Show the version of the AIGenPipeline tool and exit.\n" +
                 "    -c, --check              Only check if the output needs to be regenerated based on input versions without actually \n" +
                 "                             generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
@@ -289,7 +296,6 @@ public class AIGenPipeline {
                 "  It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. \n" +
                 "  More detailed instructions and explanations can be found at https://aigenpipeline.stoerr.net/ .\n"
         );
-        System.exit(onerror ? 1 : 0);
     }
 
     protected void parseArguments(String[] args) throws IOException {
@@ -313,6 +319,9 @@ public class AIGenPipeline {
                 case "--help":
                     help = true;
                     break;
+                case "-ha":
+                case "--help-ai":
+                    helpAIquestion = args[++i];
                 case "--version":
                     version = true;
                     break;
@@ -424,6 +433,39 @@ public class AIGenPipeline {
         properties.load(AIGenPipeline.class.getResourceAsStream("/git.properties"));
         return "AIGenPipeline Version " + properties.get("git.build.version") + "-" +
                 properties.getProperty("git.commit.id.describe") + " from " + properties.getProperty("git.build.time");
+    }
+
+    /**
+     * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
+     * answer the #helpAIquestion from that.
+     */
+    protected void helpAIquestion() throws IOException {
+        StringBuilder helptext = new StringBuilder();
+        try (InputStream is = AIGenPipeline.class.getResourceAsStream("/helpaitexts.md")) {
+            Scanner scanner = new Scanner(is);
+            while (scanner.hasNextLine()) {
+                helptext.append(scanner.nextLine());
+                helptext.append("\n");
+            }
+        }
+        try {
+            System.out.println("Trying to get an answer from the AI...\n");
+            AIChatBuilder aiChatBuilder = makeChatBuilder();
+            aiChatBuilder.userMsg("Print the collected help texts for the aigenpipeline tool.");
+            aiChatBuilder.assistantMsg(helptext.toString());
+            aiChatBuilder.userMsg("From this help texts, please answer the following question:\n\n" + helpAIquestion);
+            String answer = aiChatBuilder.execute();
+            System.out.println(answer);
+        } catch (Exception e) {
+            System.out.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
+            System.out.println("You need a working access to an AI service to get an answer from the AI.");
+            System.out.println("Here are the web pages describing the tool:\n");
+            System.out.println(helptext);
+            System.out.println("\n");
+            printHelp(false);
+            System.out.println("You can repeat asking your question if you give keys etc. to have access to an AI service.\n");
+            System.out.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
+        }
     }
 
 }
