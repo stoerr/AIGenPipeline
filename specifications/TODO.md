@@ -1,14 +1,14 @@
 # Todos for the application
 
-## Command line / framework improvements
+- put information / command line into the generated file.
+
+## Ideas for command line / framework improvements
 - prompt on command line? stdin? unclear what filename!
   - (idea: -p - = stdin , versioning from tag)
-- automatically push to master
-- improve automated deployment with GitHub Actions
-- read configuration from .apgenpipeline config file(s)
-- better document usage of various backends
+- improve automated deployment with GitHub Actions ; automatically push to master
 
 ## Site improvements
+- better document usage of various backends
 - split into several pages
 - examples
   - json prompts to page
