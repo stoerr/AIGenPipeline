@@ -40,6 +40,8 @@ public class AIGenPipeline {
      * Name of configuration files we scan upwards from the output directory.
      */
     public static final String CONFIGFILE = ".aigenpipeline";
+    public static final PrintStream OUT = System.out;
+    public static final PrintStream ERR = System.err;
 
     /**
      * Pattern for accessing an environment variable, e.g. $FOO or ${FOO}
@@ -62,6 +64,7 @@ public class AIGenPipeline {
     protected Integer tokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
+    protected boolean printconfig;
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -74,21 +77,25 @@ public class AIGenPipeline {
             readArguments(args, new File("."));
 
             if (version) {
-                System.out.println(getVersion());
+                OUT.println(getVersion());
             }
             if (help || args.length == 0) {
                 printHelp(false);
             }
             if (helpAIquestion != null) {
-                helpAIquestion();
+                answerHelpAIQuestion();
             }
-            if (version || help || helpAIquestion != null) {
+            OUT.flush();
+            ERR.flush();
+            if (version || help || helpAIquestion != null || printconfig) {
                 System.exit(0);
             }
 
             run();
         } catch (IllegalArgumentException e) {
-            System.err.println("Usage error: " + e.getMessage());
+            ERR.println("Usage error: " + e.getMessage());
+            OUT.flush();
+            ERR.flush();
             if (verbose) {
                 e.printStackTrace();
             }
@@ -102,6 +109,7 @@ public class AIGenPipeline {
         String[] envargs = System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
                 System.getenv(AIGENPIPELINE_CONFIG).split("\\s+");
         List<String[]> argumentSets = new ArrayList<>();
+        List<File> configFiles = new ArrayList<>();
         argumentSets.add(args);
 
         // If no -cn option is given, scan for .aigenpipeline files upwards from the output file directory.
@@ -112,6 +120,7 @@ public class AIGenPipeline {
                 if (configFile.exists()) {
                     String[] argumentsFromFile = parseConfigFile(configFile.getAbsolutePath());
                     argumentSets.add(argumentsFromFile);
+                    configFiles.add(configFile);
                     if (!isContinueScan(argumentsFromFile)) break;
                 }
                 currentDir = currentDir.getParentFile();
@@ -119,13 +128,29 @@ public class AIGenPipeline {
         }
 
         // read the arguments from the environment variable only if no -cne option was given
-        if (argumentSets.stream().anyMatch(this::isReadEnvironmentVariableArguments)) {
+        boolean useEnvironmentArgs = argumentSets.stream().anyMatch(this::isReadEnvironmentVariableArguments);
+        if (useEnvironmentArgs) {
             argumentSets.add(envargs);
         }
 
         Collections.reverse(argumentSets);
         for (String[] argumentsFromFile : argumentSets) {
             parseArguments(argumentsFromFile);
+        }
+
+        if (printconfig) {
+            Collections.reverse(configFiles);
+            if (useEnvironmentArgs) {
+                OUT.println("Arguments from environment:\n" + Arrays.toString(argumentSets.get(0)));
+                argumentSets.remove(0);
+            }
+            for (File configFile : configFiles) {
+                OUT.println(configFile.getAbsolutePath());
+                OUT.println(Arrays.toString(argumentSets.get(0)));
+                argumentSets.remove(0);
+            }
+            OUT.println("Arguments from command line:\n" + Arrays.toString(argumentSets.get(0)));
+            OUT.println(argumentSets.size());
         }
     }
 
@@ -145,8 +170,7 @@ public class AIGenPipeline {
                     .map(String::trim)
                     .filter(line -> !line.startsWith("#"))
                     .collect(Collectors.joining(" "));
-            String[] arguments = content.split("\\s+");
-            return arguments;
+            return content.split("\\s+");
         }
     }
 
@@ -172,7 +196,7 @@ public class AIGenPipeline {
     }
 
     protected void run() throws IOException {
-        this.logStream = output == null || output.isBlank() ? System.out : System.err;
+        this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
         task.setOutputFile(outputFile);
         for (String inputFile : inputFiles) {
@@ -205,7 +229,7 @@ public class AIGenPipeline {
         }
         if (explain != null && !explain.isBlank()) {
             String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
-            System.out.println(explanation);
+            OUT.println(explanation);
         } else {
             task.execute(this::makeChatBuilder, rootDir);
         }
@@ -217,7 +241,7 @@ public class AIGenPipeline {
     }
 
     protected void printHelp(boolean onerror) {
-        (onerror ? System.err : System.out).println("" +
+        (onerror ? ERR : OUT).println("" +
                 "Usage:\n" +
                 "aigenpipeline [options] [<input_files>...]\n" +
                 "\n" +
@@ -260,6 +284,7 @@ public class AIGenPipeline {
                 "    -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.\n" +
                 "    -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.\n" +
                 "    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.\n" +
+                "    -cp, --configprint       Print the collected configurations and exit.\n" +
                 "\n" +
                 "  AI backend settings:\n" +
                 "    -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .\n" +
@@ -322,6 +347,7 @@ public class AIGenPipeline {
                 case "-ha":
                 case "--help-ai":
                     helpAIquestion = args[++i];
+                    break;
                 case "--version":
                     version = true;
                     break;
@@ -412,6 +438,10 @@ public class AIGenPipeline {
                     String filename = args[++i];
                     parseArguments(parseConfigFile(filename));
                     break;
+                case "-cp":
+                case "--configprint":
+                    printconfig = true;
+                    break;
                 case "-cn":
                 case "--confignoscan":
                 case "-cne":
@@ -439,7 +469,7 @@ public class AIGenPipeline {
      * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
      * answer the #helpAIquestion from that.
      */
-    protected void helpAIquestion() throws IOException {
+    protected void answerHelpAIQuestion() throws IOException {
         StringBuilder helptext = new StringBuilder();
         try (InputStream is = AIGenPipeline.class.getResourceAsStream("/helpaitexts.md")) {
             Scanner scanner = new Scanner(is);
@@ -449,22 +479,22 @@ public class AIGenPipeline {
             }
         }
         try {
-            System.out.println("Trying to get an answer from the AI...\n");
+            OUT.println("Trying to get an answer from the AI...\n");
             AIChatBuilder aiChatBuilder = makeChatBuilder();
             aiChatBuilder.userMsg("Print the collected help texts for the aigenpipeline tool.");
             aiChatBuilder.assistantMsg(helptext.toString());
             aiChatBuilder.userMsg("From this help texts, please answer the following question:\n\n" + helpAIquestion);
             String answer = aiChatBuilder.execute();
-            System.out.println(answer);
+            OUT.println(answer);
         } catch (Exception e) {
-            System.out.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
-            System.out.println("You need a working access to an AI service to get an answer from the AI.");
-            System.out.println("Here are the web pages describing the tool:\n");
-            System.out.println(helptext);
-            System.out.println("\n");
+            OUT.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
+            OUT.println("You need a working access to an AI service to get an answer from the AI.");
+            OUT.println("Here are the web pages describing the tool:\n");
+            OUT.println(helptext);
+            OUT.println("\n");
             printHelp(false);
-            System.out.println("You can repeat asking your question if you give keys etc. to have access to an AI service.\n");
-            System.out.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
+            OUT.println("You can repeat asking your question if you give keys etc. to have access to an AI service.\n");
+            OUT.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
         }
     }
 
