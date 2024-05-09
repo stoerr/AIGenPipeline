@@ -97,5 +97,9 @@ public class SegmentedFile {
         return String.join("", segments);
     }
 
+    @Override
+    public String toString() {
+        return "SegmentedFile [file=" + file + ", separatorPatterns=" + separatorPatterns + "]";
+    }
 
 }
