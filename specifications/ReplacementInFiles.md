@@ -39,6 +39,8 @@ One problem: reformatting with the IDE shouldn't destroy anything.
 Basic idea: we put something into a file that says "insert here the output that is generated the following prompt 
 based on the following files."
 
+
+
 Idea:
 
 /* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0)
@@ -46,3 +48,52 @@ AIGenCmdline(input.txt)
 AIGenPromptStart(foo)
 bla bla bla
 AIGenPromptEnd(foo) */
+
+/* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0)
+AIGenPromptStart(foo,input.txt)
+bla bla bla
+AIGenPromptEnd(foo) */
+
+- the version generator writes the version comment into the generated code -> after prompt
+
+### Szenario 1 file completely generated from prompt
+
+/* AIGenPromptStart(foo)
+bla bla bla
+AIGenPromptEnd(foo,input.txt) */
+/* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0) */
+generated stuff
+
+Unclear: what to do when prompt is not at start of file?
+
+### Szenario 2 part of file generated from prompt
+
+blabla
+/* AIGenPromptStart(foobartable)
+bla bla bla
+AIGenPromptEnd(foobartable,-wp foobartable input.txt) */
+/* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0) */
+generated stuff
+/* End generated code foobartable */
+blabla
+
+### Szenario 3 several parts of file generated from prompt
+
+problem: unclear whether to run all generations or only one. We'll need several AIGenerationTasks for this
+-> we need an identifier!
+
+blabla
+/* AIGenPromptStart(foobartable)
+bla bla bla
+AIGenPromptEnd(foobartable,-wp foobartable input.txt) */
+/* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0) */
+generated stuff
+/* End generated code foobartable */
+blublu
+/* AIGenPromptStart(baztable)
+bla bla bla
+AIGenPromptEnd(baztable,-wp baztable input.txt) */
+/* AIGenVersion(4684af8d, 0dialogelements.prompt-54ed1022, README.md-1.0) */
+generated stuff
+/* End generated code baztable */
+blabla
