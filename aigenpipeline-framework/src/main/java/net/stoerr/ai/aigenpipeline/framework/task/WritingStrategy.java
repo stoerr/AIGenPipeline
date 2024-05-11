@@ -9,19 +9,19 @@ import javax.annotation.Nonnull;
  */
 public interface WritingStrategy {
 
-    void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) throws IOException;
+    void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment);
 
     /**
      * Version of current output file.
      */
-    AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) throws IOException;
+    AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output);
 
     /**
      * Writes the raw file without the cersion comment.
      */
     WritingStrategy WITHOUTVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
             output.write(content);
         }
 
@@ -42,7 +42,7 @@ public interface WritingStrategy {
      */
     WritingStrategy WITHVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) throws IOException {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
             output.write(embedComment(output, content, versionComment));
         }
 
@@ -51,7 +51,7 @@ public interface WritingStrategy {
             String content;
             try {
                 content = output.read();
-            } catch (IOException e) {
+            } catch (RuntimeException e) {
                 return null;
             }
             if (content == null) {

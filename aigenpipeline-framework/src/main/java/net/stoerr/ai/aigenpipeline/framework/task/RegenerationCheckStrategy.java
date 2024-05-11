@@ -21,7 +21,7 @@ public interface RegenerationCheckStrategy {
      * @return true if the output file needs to be regenerated.
      */
     boolean needsRegeneration(@Nonnull AIInOut output, @Nonnull List<AIInOut> inputs,
-                              @Nonnull WritingStrategy writingStrategy, @Nonnull List<String> inputVersions) throws IOException;
+                              @Nonnull WritingStrategy writingStrategy, @Nonnull List<String> inputVersions);
 
     RegenerationCheckStrategy ALWAYS = (output, inputs, writingStrategy, inputVersions) -> true;
 
@@ -46,7 +46,7 @@ public interface RegenerationCheckStrategy {
 
         @Override
         public boolean needsRegeneration(@Nonnull AIInOut output, @Nonnull List<AIInOut> inputs,
-                                         @Nonnull WritingStrategy writingStrategy, @Nonnull List<String> inputVersions) throws IOException {
+                                         @Nonnull WritingStrategy writingStrategy, @Nonnull List<String> inputVersions) {
             AIVersionMarker outputVersionMarker = writingStrategy.getRecordedVersionMarker(output);
             if (outputVersionMarker == null) {
                 return true;

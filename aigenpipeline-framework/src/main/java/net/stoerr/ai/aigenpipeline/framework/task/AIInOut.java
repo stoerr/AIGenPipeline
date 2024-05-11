@@ -20,17 +20,16 @@ public interface AIInOut {
      * Reads the input and returns it as a string.
      *
      * @return the input as a string
-     * @throws IOException if an I/O error occurs
+     * @throws IllegalStateException if the input cannot be read
      */
-    String read() throws IOException;
+    String read() throws IllegalStateException;
 
     /**
      * Writes a string to the output.
      *
      * @param content the string to write
-     * @throws IOException if an I/O error occurs
      */
-    void write(String content) throws IOException;
+    void write(String content)  ;
 
 
     /**
@@ -89,21 +88,27 @@ public interface AIInOut {
          * Reads the file and returns its content as a string.
          *
          * @return the file content as a string
-         * @throws IOException if an I/O error occurs
          */
-        public String read() throws IOException {
-            return Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        public String read() throws IllegalStateException {
+            try {
+                return Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not read " + file, e);
+            }
         }
 
         /**
          * Writes a string to the file.
          *
          * @param content the string to write
-         * @throws IOException if an I/O error occurs
          */
         @Override
-        public void write(String content) throws IOException {
-            Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+        public void write(String content)   {
+            try {
+                Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not write " + file, e);
+            }
         }
 
         public File getFile() {
@@ -139,9 +144,8 @@ public interface AIInOut {
          * Reads the segment from the segmented file and returns its content as a string.
          *
          * @return the segment content as a string
-         * @throws IOException if an I/O error occurs
          */
-        public String read() throws IOException {
+        public String read()   {
             return segmentedFile.getSegment(segmentIndex);
         }
 
@@ -149,11 +153,14 @@ public interface AIInOut {
          * Writes a string to the segment of the segmented file.
          *
          * @param content the string to write
-         * @throws IOException if an I/O error occurs
          */
         @Override
-        public void write(String content) throws IOException {
-            segmentedFile.writeSegment(segmentIndex, content);
+        public void write(String content)   {
+            try {
+                segmentedFile.writeSegment(segmentIndex, content);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not write segment " + segmentIndex + " of " + segmentedFile, e);
+            }
         }
 
         @Override

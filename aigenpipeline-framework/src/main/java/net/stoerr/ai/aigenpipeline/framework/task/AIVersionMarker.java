@@ -68,12 +68,7 @@ public class AIVersionMarker {
      * Determine the version marker for input files / prompt files.
      */
     public static String determineFileVersionMarker(@Nonnull AIInOut inOut) {
-        String content;
-        try {
-            content = inOut.read();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not read " + inOut, e);
-        }
+        String content = inOut.read();
         requireNonNull(content, "Could not read file " + inOut);
         AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
         String version;
