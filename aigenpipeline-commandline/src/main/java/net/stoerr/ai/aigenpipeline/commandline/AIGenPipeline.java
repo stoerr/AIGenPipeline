@@ -26,7 +26,9 @@ import javax.annotation.Nonnull;
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
+import net.stoerr.ai.aigenpipeline.framework.task.AIInOut;
 import net.stoerr.ai.aigenpipeline.framework.task.RegenerationCheckStrategy;
+import net.stoerr.ai.aigenpipeline.framework.task.SegmentedFile;
 import net.stoerr.ai.aigenpipeline.framework.task.WritingStrategy;
 
 public class AIGenPipeline {
@@ -64,6 +66,7 @@ public class AIGenPipeline {
     protected Integer tokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
+    protected String writePart;
     protected boolean printconfig;
 
     public static void main(String[] args) throws IOException {
@@ -198,6 +201,12 @@ public class AIGenPipeline {
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
+        if (writePart != null) {
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, writePart, writePart);
+            task.setOutput(AIInOut.of(segmentedFile, 1));
+        } else {
+            task.setOutput(AIInOut.of(outputFile));
+        }
         task.setOutputFile(outputFile);
         for (String inputFile : inputFiles) {
             File file = toFile(inputFile);
@@ -407,7 +416,7 @@ public class AIGenPipeline {
                     break;
                 case "-wp":
                 case "--write-part":
-                    writingStrategy = new WritingStrategy.WritePartStrategy(args[++i]);
+                    writePart = args[++i];
                     break;
                 case "-e":
                 case "--explain":

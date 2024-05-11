@@ -75,6 +75,13 @@ public class SegmentedFile {
         Files.write(file.toPath(), joinSegments().getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * The basic file we write into.
+     */
+    public File getFile() {
+        return file;
+    }
+
     protected void sanityCheck(String content) {
         if (segments.size() != 2 * separatorPatterns.size() + 1) { // sanity check
             throw new IllegalStateException("Bug: parsed " + segments.size() + " segments, but expected "

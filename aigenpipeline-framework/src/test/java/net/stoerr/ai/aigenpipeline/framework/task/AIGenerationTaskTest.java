@@ -64,11 +64,11 @@ public class AIGenerationTaskTest {
     public void testCompleteAIGenerationProcess() throws Exception {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
-        task.addInputFile(inputDir.resolve("input.txt").toFile());
+        task.addPrompt(AIInOut.of(inputDir.resolve("prompt.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("input.txt").toFile()));
         Path outFile = tempDir.resolve("output.txt");
-        task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
-        task.setOutputFile(outFile.toFile());
+        task.setSystemMessage(AIInOut.of(inputDir.resolve("sysmsg.txt").toFile()));
+        task.setOutput(AIInOut.of(outFile.toFile()));
         task.maxTokens(1000);
 
         Assert.assertTrue(task.hasToBeRun());
@@ -86,11 +86,11 @@ public class AIGenerationTaskTest {
     public void testVersionExtraction() throws Exception {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.addPrompt(inputDir.resolve("promptWithVersion.txt").toFile());
-        task.addInputFile(inputDir.resolve("input.txt").toFile());
-        task.addInputFile(inputDir.resolve("inputWithVersion.txt").toFile());
+        task.addPrompt(AIInOut.of(inputDir.resolve("promptWithVersion.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("input.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("inputWithVersion.txt").toFile()));
         Path outFile = tempDir.resolve("outputWithVersion.txt");
-        task.setOutputFile(outFile.toFile());
+        task.setOutput(AIInOut.of(outFile.toFile()));
 
         Assert.assertTrue(task.hasToBeRun());
         task.execute(MockAIChatBuilder::new, new File("."));
@@ -104,14 +104,14 @@ public class AIGenerationTaskTest {
      * Checks whether the deep copy works.
      */
     @Test
-    public void testCopy() {
+    public void testCopy() throws IOException {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
-        task.addInputFile(inputDir.resolve("input.txt").toFile());
+        task.addPrompt(AIInOut.of(inputDir.resolve("prompt.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("input.txt").toFile()));
         Path outFile = tempDir.resolve("output.txt");
-        task.setSystemMessage(inputDir.resolve("sysmsg.txt").toFile());
-        task.setOutputFile(outFile.toFile());
+        task.setSystemMessage(AIInOut.of(inputDir.resolve("sysmsg.txt").toFile()));
+        task.setOutput(AIInOut.of(outFile.toFile()));
         task.maxTokens(1000);
 
         AIGenerationTask copy = task.copy();
@@ -122,14 +122,13 @@ public class AIGenerationTaskTest {
     public void testReplacePart() throws IOException {
         AIGenerationTask task = new AIGenerationTask();
 
-        task.addPrompt(inputDir.resolve("prompt.txt").toFile());
-        task.addInputFile(inputDir.resolve("input.txt").toFile());
-        task.addInputFile(inputDir.resolve("inputWithVersion.txt").toFile());
+        task.addPrompt(AIInOut.of(inputDir.resolve("prompt.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("input.txt").toFile()));
+        task.addInput(AIInOut.of(inputDir.resolve("inputWithVersion.txt").toFile()));
         Path outFile = tempDir.resolve("outputWithReplacement.txt");
         Files.copy(inputDir.resolve("outputWithReplacement.txt"), outFile);
-        task.setOutputFile(outFile.toFile());
-        task.setWritingStrategy(new WritingStrategy.WritePartStrategy("thereplacedpart"));
-
+        SegmentedFile segmentedFile = new SegmentedFile(outFile.toFile(), new String[]{"thereplacedpart", "thereplacedpart"});
+        task.setOutput(AIInOut.of(segmentedFile, 1));
 
         Assert.assertTrue(task.hasToBeRun());
         task.execute(MockAIChatBuilder::new, new File("."));
