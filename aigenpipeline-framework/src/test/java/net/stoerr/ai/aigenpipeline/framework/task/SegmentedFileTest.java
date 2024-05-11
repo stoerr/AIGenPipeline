@@ -2,6 +2,7 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +75,38 @@ public class SegmentedFileTest {
         SegmentedFile segmentedFile = new SegmentedFile(testFile, separators);
         assertEquals("Segment1\n", segmentedFile.getSegment(0));
         assertEquals("Segment2", segmentedFile.getSegment(1));
+    }
+
+    @Test
+    public void wholeLineRegex() {
+        assertEquals(".*===.*\n", SegmentedFile.wholeLineRegex("==="));
+    }
+
+    @Test
+    public void testInfilePrompt() throws IOException {
+        File withprompts = new File("src/test/resources/infileprompt-test/withprompts.md");
+        assertTrue("Doesn't exist: " + withprompts.getAbsolutePath(), withprompts.exists());
+        String[] separators = SegmentedFile.infilePrompting("tablefromdata");
+        SegmentedFile segmentedFile = new SegmentedFile(withprompts, separators);
+
+        assertEquals("Start of the file\n", segmentedFile.getSegment(0));
+        assertEquals("Make a markdown table from the data, with columns \"Name\" and \"Profession\".\n", segmentedFile.getSegment(1));
+        assertEquals("data.txt\n", segmentedFile.getSegment(2));
+        assertEquals("Here is the generated content\n", segmentedFile.getSegment(3));
+        assertEquals("End of the file\n", segmentedFile.getSegment(4));
+    }
+
+    @Test
+    public void testInfilePromptNoEndMarker() throws IOException {
+        File noendmarker = new File("src/test/resources/infileprompt-test/noendmarker.md");
+        assertTrue("Doesn't exist: " + noendmarker.getAbsolutePath(), noendmarker.exists());
+        String[] separators = SegmentedFile.infilePrompting("tablefromdata");
+        SegmentedFile segmentedFile = new SegmentedFile(noendmarker, separators);
+
+        assertEquals("Start of the file\n", segmentedFile.getSegment(0));
+        assertEquals("Make a markdown table from the data, with columns \"Name\" and \"Profession\".\n", segmentedFile.getSegment(1));
+        assertEquals("data.txt\n", segmentedFile.getSegment(2));
+        assertEquals("Here is the generated content\n", segmentedFile.getSegment(3));
     }
 
 }

@@ -90,8 +90,10 @@ public class SegmentedFile {
         // check that the separatorRegexes do not match any of the segments other than the separators.
         for (int i = 0; i < segments.size(); i += 2) {
             for (Pattern separator : separatorPatterns) {
-                if (separator.matcher(segments.get(i)).find()) {
-                    throw new IllegalStateException("Likely a usage error: separator " + separator + " matches segment " + i / 2 + " in " + file);
+                String segment = segments.get(i);
+                Matcher matcher = separator.matcher(segment);
+                if (matcher.find() && matcher.start() < segment.length() - 1) {
+                    throw new IllegalStateException("Likely a usage error: separator " + separator + " matches segment " + i + " in " + file);
                 }
             }
         }
@@ -111,6 +113,18 @@ public class SegmentedFile {
 
     public static String wholeLineRegex(String separator) {
         return ".*" + separator + ".*\n";
+    }
+
+    /**
+     * Generates the patterns for storing prompt and generated data within one file.
+     */
+    public static String[] infilePrompting(String id) {
+        return new String[]{
+                wholeLineRegex("AIGenPromptStart\\(" + id + "\\)"),
+                wholeLineRegex("AIGenCommand\\(" + id + "\\)"),
+                wholeLineRegex("AIGenPromptEnd\\(" + id + "\\)"),
+                wholeLineRegex("AIGenEnd\\(" + id + "\\)") + "|\\z"
+        };
     }
 
 }
