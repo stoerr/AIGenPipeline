@@ -109,4 +109,8 @@ public class SegmentedFile {
         return "SegmentedFile [file=" + file + ", separatorPatterns=" + separatorPatterns + "]";
     }
 
+    public static String wholeLineRegex(String separator) {
+        return ".*" + separator + ".*\n";
+    }
+
 }

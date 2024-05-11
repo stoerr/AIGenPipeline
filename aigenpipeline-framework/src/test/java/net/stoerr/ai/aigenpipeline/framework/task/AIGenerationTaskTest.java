@@ -127,7 +127,10 @@ public class AIGenerationTaskTest {
         task.addInput(AIInOut.of(inputDir.resolve("inputWithVersion.txt").toFile()));
         Path outFile = tempDir.resolve("outputWithReplacement.txt");
         Files.copy(inputDir.resolve("outputWithReplacement.txt"), outFile);
-        SegmentedFile segmentedFile = new SegmentedFile(outFile.toFile(), new String[]{"thereplacedpart", "thereplacedpart"});
+        SegmentedFile segmentedFile = new SegmentedFile(outFile.toFile(), new String[]{
+                SegmentedFile.wholeLineRegex("thereplacedpart"),
+                SegmentedFile.wholeLineRegex("thereplacedpart")
+        });
         task.setOutput(AIInOut.of(segmentedFile, 1));
 
         Assert.assertTrue(task.hasToBeRun());

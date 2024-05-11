@@ -58,9 +58,9 @@ public interface WritingStrategy {
                 return null;
             }
             AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
-            if (aiVersionMarker == null) {
+            /* if (aiVersionMarker == null) {
                 throw new IllegalStateException("Could not find version marker in " + output);
-            }
+            } probably invalid heuristic. */
             return aiVersionMarker;
         }
 
