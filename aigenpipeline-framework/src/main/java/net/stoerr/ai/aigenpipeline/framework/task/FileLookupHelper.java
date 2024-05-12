@@ -2,10 +2,10 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ public class FileLookupHelper {
     protected final File directory;
 
     protected FileLookupHelper(String path) {
-        sanityCheck();
         try {
             directory = new File(path).getAbsoluteFile().getCanonicalFile();
         } catch (IOException e) {
@@ -37,13 +36,6 @@ public class FileLookupHelper {
         }
         if (!directory.isDirectory()) {
             throw new IllegalStateException("Directory " + directory + " does not exist");
-        }
-    }
-
-    protected static void sanityCheck() {
-        if (!new File("src/main/java").isDirectory() || !new File("pom.xml").isFile()) {
-            // This might be actually OK, but seems more likely to be a mistake. Let's see.
-            throw new IllegalStateException("Something is wrong - we are not started in the maven project, but " + new File(".").getAbsolutePath());
         }
     }
 
@@ -64,7 +56,7 @@ public class FileLookupHelper {
             throw new IllegalStateException("Environment variable " + envVar + " not set");
         }
         if (relativePath != null) {
-            path = path + "/" + relativePath;
+            path = path + File.pathSeparator + relativePath;
         }
         return new FileLookupHelper(path);
     }
@@ -77,17 +69,26 @@ public class FileLookupHelper {
     }
 
     /**
-     * Files in a directory, matching a regex.
+     * Files in a directory, matching an ant style pattern - more specifically like
+     * {@link java.nio.file.FileSystem#getPathMatcher(String)}.
+     *
+     * @param relpathDirectory the directory relative to the repository root
+     * @param filePathPattern  the file pattern to match, see {@link java.nio.file.FileSystem#getPathMatcher(String)}
+     * @param recursive        whether to recurse into subdirectories
+     * @return a list of files
+     * @see java.nio.file.FileSystem#getPathMatcher(String)
      */
-    public List<File> files(@Nonnull String relpathDirectory, @Nullable String filePathRegex, boolean recursive) {
+    @Nonnull
+    public List<File> files(@Nonnull String relpathDirectory, @Nullable String filePathPattern, boolean recursive) {
         File dir = new File(directory, relpathDirectory);
         if (!dir.isDirectory()) {
             throw new IllegalStateException("Directory " + dir + " does not exist");
         }
+        PathMatcher pathMatcher = null != filePathPattern && !filePathPattern.isEmpty() ?
+                dir.toPath().getFileSystem().getPathMatcher(filePathPattern) : null;
         List<File> result = new ArrayList<>();
-        Pattern filePathPattern = filePathRegex != null ? Pattern.compile(filePathRegex) : Pattern.compile(".*");
         if (!recursive) {
-            File[] files = dir.listFiles((dir1, name) -> filePathPattern.matcher(dir1 + "/" + name).matches());
+            File[] files = dir.listFiles(file -> pathMatcher == null || pathMatcher.matches(file.toPath()));
             Arrays.stream(Objects.requireNonNull(files, dir.toString()))
                     .filter(File::isFile).forEach(result::add);
         } else {
@@ -95,7 +96,7 @@ public class FileLookupHelper {
                 Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (filePathPattern.matcher(file.getFileName().toString()).matches()) {
+                        if (pathMatcher == null || pathMatcher.matches(file.getFileName())) {
                             result.add(file.toFile());
                         }
                         return super.visitFile(file, attrs);
@@ -110,9 +111,16 @@ public class FileLookupHelper {
 
     /**
      * All files matching a filePathRegex that contain a pattern.
+     *
+     * @param relpathDirectory the directory relative to the repository root
+     * @param filePathPattern  the file pattern to match
+     * @param pattern          the regex to look for in the file content
+     * @param recursive        whether to recurse into subdirectories
+     * @return a list of files
      */
-    public List<File> filesContaining(@Nonnull String relpathDirectory, @Nonnull String filePathRegex, @Nonnull String pattern, boolean recursive) {
-        List<File> candidates = files(relpathDirectory, filePathRegex, recursive);
+    @Nonnull
+    public List<File> filesContaining(@Nonnull String relpathDirectory, @Nonnull String filePathPattern, @Nonnull String pattern, boolean recursive) {
+        List<File> candidates = files(relpathDirectory, filePathPattern, recursive);
         List<File> result = new ArrayList<>();
         Pattern patternPattern = Pattern.compile(pattern);
         for (File file : candidates) {
