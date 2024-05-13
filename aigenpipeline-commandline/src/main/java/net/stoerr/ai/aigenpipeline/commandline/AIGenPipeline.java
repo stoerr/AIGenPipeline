@@ -109,7 +109,7 @@ public class AIGenPipeline {
             if (outputScan == null) {
                 run();
             } else {
-                runOutputScan();
+                runWithOutputScan();
             }
         } catch (IllegalArgumentException e) {
             ERR.println("Usage error: " + e.getMessage());
@@ -124,10 +124,81 @@ public class AIGenPipeline {
         }
     }
 
+    public AIChatBuilder makeChatBuilder() {
+        AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
+        if (null != url) {
+            chatBuilder.url(url);
+        }
+        if (null != apiKey) {
+            chatBuilder.key(apiKey);
+        }
+        if (null != organizationId) {
+            chatBuilder.organizationId(organizationId);
+        }
+        if (null != model) {
+            chatBuilder.model(model);
+        }
+        if (null != tokens) {
+            chatBuilder.maxTokens(tokens);
+        }
+        return chatBuilder;
+    }
+
+    protected void run() throws IOException {
+        this.logStream = output == null || output.isBlank() ? OUT : ERR;
+        File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
+        if (infilePromptMarker != null) {
+            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
+            task.addPrompt(AIInOut.of(segmentedFile, 1));
+            task.setOutput(AIInOut.of(segmentedFile, 3));
+        } else if (writePart != null) {
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, writePart, writePart);
+            task.setOutput(AIInOut.of(segmentedFile, 1));
+        } else {
+            task.setOutput(AIInOut.of(outputFile));
+        }
+        task.setOutputFile(outputFile);
+        for (String inputFile : inputFiles) {
+            File file = toFile(inputFile);
+            if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
+                task.addOptionalInputFile(file);
+            } else {
+                task.addInputFile(file);
+            }
+        }
+        promptFiles.stream()
+                .map(this::toFile)
+                .forEach(f -> task.addPrompt(f, keyValues));
+        task.setRegenerationCheckStrategy(regenerationCheckStrategy);
+        task.setWritingStrategy(writingStrategy);
+        if (check) {
+            boolean hasToBeRun = task.hasToBeRun();
+            if (verbose) {
+                logStream.println("Needs running: " + hasToBeRun);
+            }
+            System.exit(hasToBeRun ? 0 : 1); // command line like: 0 is "OK" = file is up to date.
+        }
+        if (verbose) {
+            logStream.println(task.toJson(this::makeChatBuilder, rootDir));
+        }
+        if (dryRun) {
+            boolean hasToBeRun = task.hasToBeRun();
+            logStream.println("Dryrun - not executed; needs executing: " + hasToBeRun);
+            return;
+        }
+        if (explain != null && !explain.isBlank()) {
+            String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
+            OUT.println(explanation);
+        } else {
+            task.execute(this::makeChatBuilder, rootDir);
+        }
+    }
+
     /**
      * Scans for files in {@link #outputScan} and processes them.
      */
-    protected void runOutputScan() {
+    protected void runWithOutputScan() {
         FileLookupHelper helper = FileLookupHelper.fromPath(".");
         List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
         if (files.isEmpty()) {
@@ -227,78 +298,6 @@ public class AIGenPipeline {
                     .filter(line -> !line.startsWith("#"))
                     .collect(Collectors.joining(" "));
             return content.split("\\s+");
-        }
-    }
-
-
-    public AIChatBuilder makeChatBuilder() {
-        AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
-        if (null != url) {
-            chatBuilder.url(url);
-        }
-        if (null != apiKey) {
-            chatBuilder.key(apiKey);
-        }
-        if (null != organizationId) {
-            chatBuilder.organizationId(organizationId);
-        }
-        if (null != model) {
-            chatBuilder.model(model);
-        }
-        if (null != tokens) {
-            chatBuilder.maxTokens(tokens);
-        }
-        return chatBuilder;
-    }
-
-    protected void run() throws IOException {
-        this.logStream = output == null || output.isBlank() ? OUT : ERR;
-        File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
-        if (infilePromptMarker != null) {
-            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
-            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
-            task.addPrompt(AIInOut.of(segmentedFile, 1));
-            task.setOutput(AIInOut.of(segmentedFile, 3));
-        } else if (writePart != null) {
-            SegmentedFile segmentedFile = new SegmentedFile(outputFile, writePart, writePart);
-            task.setOutput(AIInOut.of(segmentedFile, 1));
-        } else {
-            task.setOutput(AIInOut.of(outputFile));
-        }
-        task.setOutputFile(outputFile);
-        for (String inputFile : inputFiles) {
-            File file = toFile(inputFile);
-            if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
-                task.addOptionalInputFile(file);
-            } else {
-                task.addInputFile(file);
-            }
-        }
-        promptFiles.stream()
-                .map(this::toFile)
-                .forEach(f -> task.addPrompt(f, keyValues));
-        task.setRegenerationCheckStrategy(regenerationCheckStrategy);
-        task.setWritingStrategy(writingStrategy);
-        if (check) {
-            boolean hasToBeRun = task.hasToBeRun();
-            if (verbose) {
-                logStream.println("Needs running: " + hasToBeRun);
-            }
-            System.exit(hasToBeRun ? 0 : 1); // command line like: 0 is "OK" = file is up to date.
-        }
-        if (verbose) {
-            logStream.println(task.toJson(this::makeChatBuilder, rootDir));
-        }
-        if (dryRun) {
-            boolean hasToBeRun = task.hasToBeRun();
-            logStream.println("Dryrun - not executed; needs executing: " + hasToBeRun);
-            return;
-        }
-        if (explain != null && !explain.isBlank()) {
-            String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
-            OUT.println(explanation);
-        } else {
-            task.execute(this::makeChatBuilder, rootDir);
         }
     }
 
@@ -540,13 +539,6 @@ public class AIGenPipeline {
         }
     }
 
-    protected String getVersion() throws IOException {
-        Properties properties = new Properties();
-        properties.load(AIGenPipeline.class.getResourceAsStream("/git.properties"));
-        return "AIGenPipeline Version " + properties.get("git.build.version") + "-" +
-                properties.getProperty("git.commit.id.describe") + " from " + properties.getProperty("git.build.time");
-    }
-
     /**
      * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
      * answer the #helpAIquestion from that.
@@ -578,6 +570,13 @@ public class AIGenPipeline {
             OUT.println("You can repeat asking your question if you give keys etc. to have access to an AI service.\n");
             OUT.println("Failed to get an answer from the AI, possibly because of missing configuration: " + e);
         }
+    }
+
+    protected String getVersion() throws IOException {
+        Properties properties = new Properties();
+        properties.load(AIGenPipeline.class.getResourceAsStream("/git.properties"));
+        return "AIGenPipeline Version " + properties.get("git.build.version") + "-" +
+                properties.getProperty("git.commit.id.describe") + " from " + properties.getProperty("git.build.time");
     }
 
 }
