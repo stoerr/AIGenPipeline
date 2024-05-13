@@ -70,10 +70,10 @@ public class FileLookupHelper {
 
     /**
      * Files in a directory, matching an ant style pattern - more specifically like
-     * {@link java.nio.file.FileSystem#getPathMatcher(String)}.
+     * {@link java.nio.file.FileSystem#getPathMatcher(String)} glob patterns (without "glob:" prefix).
      *
      * @param relpathDirectory the directory relative to the repository root
-     * @param filePathPattern  the file pattern to match, see {@link java.nio.file.FileSystem#getPathMatcher(String)}
+     * @param filePathPattern  the file pattern to match, see {@link java.nio.file.FileSystem#getPathMatcher(String)} glob pattern
      * @param recursive        whether to recurse into subdirectories
      * @return a list of files
      * @see java.nio.file.FileSystem#getPathMatcher(String)
@@ -84,19 +84,23 @@ public class FileLookupHelper {
         if (!dir.isDirectory()) {
             throw new IllegalStateException("Directory " + dir + " does not exist");
         }
+        Path dirPath = dir.toPath();
         PathMatcher pathMatcher = null != filePathPattern && !filePathPattern.isEmpty() ?
-                dir.toPath().getFileSystem().getPathMatcher(filePathPattern) : null;
+                dirPath.getFileSystem().getPathMatcher("glob:" + filePathPattern) : null;
         List<File> result = new ArrayList<>();
         if (!recursive) {
-            File[] files = dir.listFiles(file -> pathMatcher == null || pathMatcher.matches(file.toPath()));
+            File[] files = dir.listFiles(file -> pathMatcher == null || pathMatcher.matches(file.toPath())
+                    || pathMatcher.matches(dirPath.relativize(file.toPath())));
             Arrays.stream(Objects.requireNonNull(files, dir.toString()))
                     .filter(File::isFile).forEach(result::add);
         } else {
             try {
-                Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<>() {
+                Files.walkFileTree(dirPath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (pathMatcher == null || pathMatcher.matches(file.getFileName())) {
+                        Path relativePath = dirPath.relativize(file);
+                        if (Files.isRegularFile(file) &&
+                                (pathMatcher == null || pathMatcher.matches(relativePath) || pathMatcher.matches(file))) {
                             result.add(file.toFile());
                         }
                         return super.visitFile(file, attrs);
@@ -119,14 +123,13 @@ public class FileLookupHelper {
      * @return a list of files
      */
     @Nonnull
-    public List<File> filesContaining(@Nonnull String relpathDirectory, @Nonnull String filePathPattern, @Nonnull String pattern, boolean recursive) {
+    public List<File> filesContaining(@Nonnull String relpathDirectory, @Nonnull String filePathPattern, @Nonnull Pattern pattern, boolean recursive) {
         List<File> candidates = files(relpathDirectory, filePathPattern, recursive);
         List<File> result = new ArrayList<>();
-        Pattern patternPattern = Pattern.compile(pattern);
         for (File file : candidates) {
             try {
                 String content = Files.readString(file.toPath());
-                if (patternPattern.matcher(content).find()) {
+                if (pattern.matcher(content).find()) {
                     result.add(file);
                 }
             } catch (IOException e) {

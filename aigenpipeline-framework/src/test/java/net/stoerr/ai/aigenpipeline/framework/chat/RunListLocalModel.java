@@ -1,4 +1,4 @@
-package net.stoerr.ai.aigenpipeline.framework.task;
+package net.stoerr.ai.aigenpipeline.framework.chat;
 
 import java.io.IOException;
 import java.net.URI;

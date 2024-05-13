@@ -27,10 +27,20 @@ import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
 import net.stoerr.ai.aigenpipeline.framework.task.AIInOut;
+import net.stoerr.ai.aigenpipeline.framework.task.FileLookupHelper;
 import net.stoerr.ai.aigenpipeline.framework.task.RegenerationCheckStrategy;
 import net.stoerr.ai.aigenpipeline.framework.task.SegmentedFile;
 import net.stoerr.ai.aigenpipeline.framework.task.WritingStrategy;
 
+/**
+ * <p>
+ * The main entry point of the AI Generation Pipeline.
+ * </p>
+ * <p>
+ * This class reads the command line arguments, reads the configuration files, and then executes the AI generation task.
+ *
+ * </p>
+ */
 public class AIGenPipeline {
 
     /**
@@ -68,6 +78,8 @@ public class AIGenPipeline {
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
     protected String writePart;
     protected boolean printconfig;
+    protected String infilePromptMarker;
+    protected String outputScan;
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -88,13 +100,17 @@ public class AIGenPipeline {
             if (helpAIquestion != null) {
                 answerHelpAIQuestion();
             }
-            OUT.flush();
-            ERR.flush();
             if (version || help || helpAIquestion != null || printconfig) {
+                OUT.flush();
+                ERR.flush();
                 System.exit(0);
             }
 
-            run();
+            if (outputScan == null) {
+                run();
+            } else {
+                runOutputScan();
+            }
         } catch (IllegalArgumentException e) {
             ERR.println("Usage error: " + e.getMessage());
             OUT.flush();
@@ -105,6 +121,34 @@ public class AIGenPipeline {
 //            System.err.println();
 //            printHelpAndExit(true);
             System.exit(1);
+        }
+    }
+
+    /**
+     * Scans for files in {@link #outputScan} and processes them.
+     */
+    protected void runOutputScan() {
+        FileLookupHelper helper = FileLookupHelper.fromPath(".");
+        List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
+        if (files.isEmpty()) {
+            throw new IllegalArgumentException("No files with AIGenPromptStart found for pattern " + outputScan);
+        } else if (verbose) {
+            OUT.println("Found " + files.size() + " files: " + files);
+        }
+        for (File file : files) {
+            String content = AIInOut.of(file).read();
+            Matcher promptStartMatch = SegmentedFile.REGEX_AIGENPROMPTSTART.matcher(content);
+            while (promptStartMatch.find()) {
+                String marker = promptStartMatch.group("id");
+                try {
+                    SegmentedFile segmentedFile = new SegmentedFile(file, SegmentedFile.infilePrompting(marker));
+                    String infileArguments = segmentedFile.getSegment(2);
+                    parseArguments(infileArguments.split("\\s+"));
+                    run(); // FIXME XXX this is wrong yet
+                } catch (IOException e) {
+                    ERR.println("Error processing file " + file + ": " + e);
+                }
+            }
         }
     }
 
@@ -155,6 +199,15 @@ public class AIGenPipeline {
             OUT.println("Arguments from command line:\n" + Arrays.toString(argumentSets.get(0)));
             OUT.println(argumentSets.size());
         }
+
+        if (infilePromptMarker != null) {
+            File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
+            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
+            String infileArguments = segmentedFile.getSegment(2);
+            parseArguments(infileArguments.split("\\s+"));
+            // FIXME directory of inputs should be relative to the output file, not the current directory!
+        }
     }
 
     protected boolean isContinueScan(String[] argumentsFromFile) {
@@ -201,7 +254,12 @@ public class AIGenPipeline {
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
-        if (writePart != null) {
+        if (infilePromptMarker != null) {
+            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
+            task.addPrompt(AIInOut.of(segmentedFile, 1));
+            task.setOutput(AIInOut.of(segmentedFile, 3));
+        } else if (writePart != null) {
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, writePart, writePart);
             task.setOutput(AIInOut.of(segmentedFile, 1));
         } else {
@@ -270,8 +328,11 @@ public class AIGenPipeline {
                 "  Input / outputs:\n" +
                 "    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
                 "    -p, --prompt <file>      Reads a prompt from the given file.\n" +
+                "    -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.\n" +
                 "    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
                 "    -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. \n" +
+                "    -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers." +
+                "                             The infile prompts in these files are processed.\n" +
                 "\n" +
                 "  AI Generation control:\n" +
                 "    -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.\n" +
@@ -362,11 +423,23 @@ public class AIGenPipeline {
                     break;
                 case "-o":
                 case "--output":
+                    if (output != null) {
+                        throw new IllegalArgumentException("Output file already given: " + output);
+                    }
                     output = args[++i];
+                    break;
+                case "-os":
+                case "--outputscan":
+                    outputScan = args[++i];
                     break;
                 case "-p":
                 case "--prompt":
                     promptFiles.add(args[++i]);
+                    break;
+                case "-ifp":
+                case "--infileprompt":
+                    infilePromptMarker = args[++i];
+                    output = args[++i];
                     break;
                 case "-k":
                     String[] kv = args[++i].split("=", 2);

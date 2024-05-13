@@ -127,4 +127,9 @@ public class SegmentedFile {
         };
     }
 
+    /**
+     * Start pattern for {@link #infilePrompting(String)}, group "id" is the id.
+     */
+    public static final Pattern REGEX_AIGENPROMPTSTART = Pattern.compile("AIGenPromptStart\\((?<id>[^\\)]+)\\)");
+
 }
