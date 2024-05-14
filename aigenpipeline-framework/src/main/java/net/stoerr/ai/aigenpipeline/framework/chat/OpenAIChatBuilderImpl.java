@@ -44,7 +44,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     protected final Pattern CODEBLOCK_PATTERN = Pattern.compile("\\A\\s*```\\w*\\n?(.*?)\\n*```\\s*\\Z", Pattern.DOTALL);
 
-    protected String model = "gpt-4-turbo-preview";
+    protected String model = "gpt-4o";
     protected final List<Message> messages = new ArrayList<>();
     protected String apiKey;
     protected String organizationId;

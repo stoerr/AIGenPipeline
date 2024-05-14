@@ -207,7 +207,7 @@ Options:
                              OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
                              an API key. Used in "Authorization: Bearer <key>" header.
     -org, --organization <id> The optional organization id in case of the OpenAI server.
-    -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
+    -m, --model <model>      The model to use for the AI. Default is gpt-4o .
     -t <maxtokens>           The maximum number of tokens to generate.
 
 Arguments:

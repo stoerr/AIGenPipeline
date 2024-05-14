@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 CMD="../../bin/aigenpipeline"
-CMD="$CMD -m gpt-4-turbo-preview"
+CMD="$CMD -m gpt-4o"
 # CMD="$CMD -v"
 OUTFILE="ChatGPTPromptExecutorImpl.java"
 EXISTINGOUTFILE=""
