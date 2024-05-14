@@ -10,7 +10,6 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -74,7 +72,7 @@ public class AIGenPipeline {
     protected List<AIInOut> promptFiles = new ArrayList<>();
     protected Map<String, String> keyValues = new LinkedHashMap<>();
     protected String model = "gpt-3.5-turbo"; // "gpt-4-turbo-preview";
-    protected AIGenerationTask task;
+    protected AIGenerationTask task = new AIGenerationTask();
     protected File rootDir = new File(".");
     protected PrintStream logStream;
     protected Integer tokens;
@@ -90,8 +88,6 @@ public class AIGenPipeline {
     }
 
     protected void run(String[] args) throws IOException {
-        task = new AIGenerationTask();
-
         try {
             readArguments(args, rootDir);
 
@@ -113,7 +109,7 @@ public class AIGenPipeline {
             if (outputScan == null) {
                 run();
             } else {
-                runWithOutputScan();
+                runWithOutputScan(args);
             }
         } catch (IllegalArgumentException e) {
             ERR.println("Usage error: " + e.getMessage());
@@ -162,7 +158,6 @@ public class AIGenPipeline {
         } else {
             task.setOutput(AIInOut.of(outputFile));
         }
-        task.setOutputFile(outputFile);
         for (AIInOut inputFile : inputFiles) {
             File file = inputFile.getFile();
             if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
@@ -201,7 +196,7 @@ public class AIGenPipeline {
     /**
      * Scans for files in {@link #outputScan} and processes them.
      */
-    protected void runWithOutputScan() {
+    protected void runWithOutputScan(String[] args) {
         FileLookupHelper helper = FileLookupHelper.fromPath(".");
         List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
         if (files.isEmpty()) {
@@ -218,8 +213,12 @@ public class AIGenPipeline {
                     SegmentedFile segmentedFile = new SegmentedFile(file, SegmentedFile.infilePrompting(marker));
                     String infileArguments = segmentedFile.getSegment(2);
                     parseArguments(infileArguments.split("\\s+"), file.getParentFile());
-                    run(); // FIXME XXX this is wrong yet
-                    throw new UnsupportedOperationException("Not implemented yet."); // FIXME hps 24/05/14 not implemented
+                    AIGenPipeline subPipeline = new AIGenPipeline();
+                    List<String> subArgs = new ArrayList<>(Arrays.asList(args));
+                    subArgs.addAll(List.of("-ifp", marker, file.getAbsolutePath()));
+                    subPipeline.readArguments(subArgs.toArray(new String[0]), rootDir);
+                    subPipeline.rootDir = file.getParentFile();
+                    subPipeline.run();
                 } catch (IOException e) {
                     ERR.println("Error processing file " + file + ": " + e);
                 }

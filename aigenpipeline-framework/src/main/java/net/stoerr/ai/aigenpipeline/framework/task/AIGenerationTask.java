@@ -348,7 +348,7 @@ public class AIGenerationTask implements Cloneable {
                 String defaultSysPrompt = new String(requireNonNull(defaultprompt).readAllBytes(), StandardCharsets.UTF_8);
                 chat.systemMsg(defaultSysPrompt);
             } catch (IOException e) {
-                throw new IllegalStateException("Error reading default system message", e);
+                throw new IllegalStateException("Bug: Error reading default system message", e);
             }
         }
         for (AIInOut file : inputFiles) {
