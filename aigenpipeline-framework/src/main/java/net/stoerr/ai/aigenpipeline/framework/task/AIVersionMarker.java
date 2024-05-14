@@ -2,10 +2,8 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -66,15 +64,12 @@ public class AIVersionMarker {
         return matcher.replaceFirst(newMarker);
     }
 
-    /** Determine the version marker for input files / prompt files. */
-    public static String determineFileVersionMarker(@Nonnull File file) {
-        String content;
-        try {
-            content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not read file " + file, e);
-        }
-        requireNonNull(content, "Could not read file " + file);
+    /**
+     * Determine the version marker for input files / prompt files.
+     */
+    public static String determineFileVersionMarker(@Nonnull AIInOut inOut) {
+        String content = inOut.read();
+        requireNonNull(content, "Could not read file " + inOut);
         AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
         String version;
         if (aiVersionMarker != null) {
@@ -82,7 +77,7 @@ public class AIVersionMarker {
         } else {
             version = shaHash(content);
         }
-        return file.getName() + "-" + version;
+        return inOut.getFile().getName() + "-" + version;
     }
 
     public static String shaHash(String content) {
@@ -99,7 +94,7 @@ public class AIVersionMarker {
         }
     }
 
-    public static List<String> calculateInputMarkers(List<File> inputs, List<String> additionalMarkers) {
+    public static List<String> calculateInputMarkers(List<AIInOut> inputs, List<String> additionalMarkers) {
         List<String> inputVersions = inputs.stream()
                 .map(AIVersionMarker::determineFileVersionMarker)
                 .collect(Collectors.toList());

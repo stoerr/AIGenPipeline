@@ -3,7 +3,7 @@ CMDRAW="../../bin/aigenpipeline"
 # CMDRAW="$CMDRAW -v"
 # CMDRAW="$CMDRAW -n" # dry run
 CMD="$CMDRAW -m gpt-3.5-turbo"
-CMD4="$CMDRAW -m gpt-4-turbo-preview"
+CMD4="$CMDRAW -m gpt-4o"
 
 # If using Anthropic Claude-3: Haiku doesn't work, but Sonnet and Opus do
 # https://docs.anthropic.com/claude/docs/models-overview#model-comparison

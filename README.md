@@ -133,7 +133,8 @@ the scanning further upwards in the directory tree.
 
 The order these configurations are processed is: environment variable, `.aigenpipeline` files from top to bottom,
 command line arguments. Thus, the later override the earlier one. Explicitly given configuration files are
-processed at the point where the argument occurs when processing the command line arguments.
+processed at the point where the argument occurs when processing the command line arguments. The option `-cp` / 
+`--configprint` gives an overview of the used files / sources of configuration.
 
 ## Other features
 
@@ -184,7 +185,7 @@ Options:
     -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
     -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
     -wv, --write-version     Write the output file with a version comment. (Default.)
-    -wo, --write-noversion   Write the output file without a version comment.
+    -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .
     -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.                             If a version marker is written, it has to be in the first of those lines and is changed there.                             It is an error if the marker does not occur exactly twice; the output file has to exist.
     -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
                              that was given to generate the output file, and the additional --explain <question> option.
@@ -195,6 +196,7 @@ Options:
     -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
     -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.
     -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.
+    -cp, --configprint       Print the collected configurations and exit.
 
   AI backend settings:
 
@@ -205,7 +207,7 @@ Options:
                              OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need
                              an API key. Used in "Authorization: Bearer <key>" header.
     -org, --organization <id> The optional organization id in case of the OpenAI server.
-    -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .
+    -m, --model <model>      The model to use for the AI. Default is gpt-4o .
     -t <maxtokens>           The maximum number of tokens to generate.
 
 Arguments:

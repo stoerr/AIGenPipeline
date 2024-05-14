@@ -64,18 +64,18 @@ public class AIGenerationTask implements Cloneable {
             Pattern.compile("\\A<!--(?s).*?Copyright.*?Adobe.*?Licensed under.*?-->");
 
 
-    protected List<File> inputFiles = new ArrayList<>();
-    protected File outputFile;
+    protected List<AIInOut> inputFiles = new ArrayList<>();
+    protected AIInOut output;
 
     /**
      * The actual prompt created from prompt files and parameters.
      */
     protected String prompt;
-    protected List<File> promptFiles = new ArrayList<>();
+    protected List<AIInOut> promptInputs = new ArrayList<>();
     protected Map<String, String> placeholdersAndValues = new LinkedHashMap<>();
 
     protected String systemMessage;
-    protected File systemMessageFile;
+    protected AIInOut systemMessageInput;
     protected Integer maxTokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
@@ -98,13 +98,17 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    public AIGenerationTask addOptionalInputFile(@Nullable File file) {
-        if (file != null && file.exists()) {
-            inputFiles.add(file);
+    public AIGenerationTask addOptionalInput(@Nullable AIInOut input) {
+        if (input != null && input.exists()) {
+            inputFiles.add(input);
         } else {
-            LOG.fine(() -> "Optional file not there: " + file);
+            LOG.fine(() -> "Optional file not there: " + input);
         }
         return this;
+    }
+
+    public AIGenerationTask addOptionalInputFile(@Nullable File file) {
+        return addOptionalInput(AIInOut.of(file));
     }
 
     public AIGenerationTask addInputFiles(List<File> files) {
@@ -114,18 +118,33 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    public AIGenerationTask addInputFile(File file) {
-        if (!file.exists()) {
-            throw new IllegalArgumentException("File " + file + " does not exist");
+    public AIGenerationTask addInputs(List<AIInOut> inputs) {
+        for (AIInOut input : inputs) {
+            addInput(input);
         }
-        inputFiles.add(file);
+        return this;
+    }
+
+    public AIGenerationTask addInput(AIInOut input) {
+        if (!input.exists()) {
+            throw new IllegalArgumentException("File " + input + " does not exist");
+        }
+        inputFiles.add(input);
+        return this;
+    }
+
+    public AIGenerationTask addInputFile(File file) {
+        return addInput(AIInOut.of(file));
+    }
+
+    public AIGenerationTask setOutput(@Nonnull AIInOut output) {
+        requireNonNull(output, "Ouput must not be null");
+        this.output = output;
         return this;
     }
 
     public AIGenerationTask setOutputFile(@Nonnull File file) {
-        requireNonNull(file, "File must not be null");
-        outputFile = file;
-        return this;
+        return setOutput(AIInOut.of(file));
     }
 
     /**
@@ -144,11 +163,11 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    public boolean hasToBeRun() throws IOException {
-        List<File> allInputs = getAllInputFiles();
+    public boolean hasToBeRun()  {
+        List<AIInOut> allInputs = getAllInputs();
         List<String> additionalMarkers = getAdditionalMarkers();
         List<String> inputVersions = AIVersionMarker.calculateInputMarkers(allInputs, additionalMarkers);
-        return regenerationCheckStrategy.needsRegeneration(outputFile, allInputs, writingStrategy, inputVersions);
+        return regenerationCheckStrategy.needsRegeneration(output, allInputs, writingStrategy, inputVersions);
     }
 
     protected List<String> getAdditionalMarkers() {
@@ -159,17 +178,15 @@ public class AIGenerationTask implements Cloneable {
         return additionalMarkers;
     }
 
-    protected List<File> getAllInputFiles() {
-        List<File> allInputs = new ArrayList<>();
-        if (systemMessageFile != null) {
-            allInputs.add(systemMessageFile);
+    protected List<AIInOut> getAllInputs() {
+        List<AIInOut> allInputs = new ArrayList<>();
+        if (systemMessageInput != null) {
+            allInputs.add(systemMessageInput);
         }
-        promptFiles.stream()
-                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
-                .forEach(allInputs::add);
+        allInputs.addAll(promptInputs);
         inputFiles.stream()
                 // don't introduce circular dependencies when updating an existing output file:
-                .filter(f -> !f.getAbsolutePath().equals(outputFile.getAbsolutePath()))
+                .filter(f -> !f.sameFile(output))
                 .forEach(allInputs::add);
         return allInputs;
     }
@@ -179,12 +196,21 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull File promptFile, String... placeholdersAndValues) {
+    public AIGenerationTask addPrompt(@Nonnull AIInOut promptInput, String... placeholdersAndValues)  {
         Map<String, String> map = new LinkedHashMap<>();
         for (int i = 0; i < placeholdersAndValues.length; i += 2) {
             map.put(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
         }
-        return addPrompt(promptFile, map);
+        return addPrompt(promptInput, map);
+    }
+
+    /**
+     * The actual prompt to be executed. The prompt file content can contain placeholders that are replaced by the values given: placeholdersAndValues contain alternatingly placeholder names and values for them.
+     *
+     * @return this
+     */
+    public AIGenerationTask addPrompt(@Nonnull File promptInput, String... placeholdersAndValues)  {
+        return addPrompt(AIInOut.of(promptInput), placeholdersAndValues);
     }
 
     /**
@@ -192,8 +218,8 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues) {
-        String fileContent = getFileContent(promptFile);
+    public AIGenerationTask addPrompt(@Nonnull AIInOut promptFile, Map<String, String> placeholdersAndValues)  {
+        String fileContent = promptFile.read();
         if (fileContent == null) {
             throw new IllegalArgumentException("Could not read prompt file " + promptFile);
         }
@@ -207,9 +233,18 @@ public class AIGenerationTask implements Cloneable {
         } else {
             this.prompt += "\n\n" + newPrompt;
         }
-        this.promptFiles.add(promptFile);
+        this.promptInputs.add(promptFile);
         this.placeholdersAndValues.putAll(placeholdersAndValues);
         return this;
+    }
+
+    /**
+     * The actual prompt to be executed. The prompt file content can contain placeholders that are replaced by the values given.
+     *
+     * @return this
+     */
+    public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues)  {
+        return addPrompt(AIInOut.of(promptFile), placeholdersAndValues);
     }
 
     @Nullable
@@ -240,16 +275,20 @@ public class AIGenerationTask implements Cloneable {
         return content;
     }
 
-    public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
-        String fileContent = getFileContent(systemMessageFile);
+    public AIGenerationTask setSystemMessage(@Nonnull AIInOut systemMessageFile)  {
+        String fileContent = systemMessageFile.read();
         if (fileContent == null) {
             throw new IllegalArgumentException("Could not read system message file " + systemMessageFile);
         }
         String newSystemMessage = unclutter(fileContent);
         requireNonNull(newSystemMessage, "Could not read system message file " + systemMessageFile);
         this.systemMessage = newSystemMessage;
-        this.systemMessageFile = systemMessageFile;
+        this.systemMessageInput = systemMessageFile;
         return this;
+    }
+
+    public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile)  {
+        return setSystemMessage(AIInOut.of(systemMessageFile));
     }
 
     protected String relativePath(@Nullable File file, @Nonnull File rootDirectory) {
@@ -263,25 +302,24 @@ public class AIGenerationTask implements Cloneable {
     /**
      * Execute the task if necessary. If the output file is already there and up to date, nothing is done.
      */
-    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) throws IOException {
-        String outputRelPath = relativePath(this.outputFile, rootDirectory);
+    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
         if (!hasToBeRun()) {
-            LOG.info(() -> "Task does not have to be run for: " + outputRelPath);
+            LOG.info(() -> "Task does not have to be run for: " + output);
             return this;
         }
-        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
+        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory);
         String result = chat.execute();
-        LOG.fine(() -> "Result for task execution for: " + outputRelPath + "\n" + result);
+        LOG.fine(() -> "Result for task execution for: " + output + "\n" + result);
         String outputVersion = shaHash(result);
 
-        List<String> allInputMarkers = AIVersionMarker.calculateInputMarkers(getAllInputFiles(), getAdditionalMarkers());
+        List<String> allInputMarkers = AIVersionMarker.calculateInputMarkers(getAllInputs(), getAdditionalMarkers());
         String versionComment = new AIVersionMarker(outputVersion, allInputMarkers).toString();
 
-        writingStrategy.write(outputFile, result, versionComment);
+        writingStrategy.write(output, result, versionComment);
 
         // We check that after writing since that likely makes it easier to check.
         if (result.contains(FIXME)) {
-            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
+            throw new IllegalStateException("AI returned FIXME for " + output + " :\n" + result);
         }
         return this;
     }
@@ -289,21 +327,14 @@ public class AIGenerationTask implements Cloneable {
     /**
      * For debugging purposes: returns the JSON that would be sent to the AI.
      */
-    public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
-        String outputRelPath = relativePath(this.outputFile, rootDirectory);
-        return makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath).toJson();
+    public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
+        return makeChatBuilder(chatBuilderFactory, rootDirectory).toJson();
     }
 
     @Nonnull
-    protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, String outputRelPath) {
-        requireNonNull(outputFile, "Output file not writeable: " + outputFile);
-        if (null != outputFile.getParentFile() && !outputFile.getParentFile().isDirectory()) {
-            outputFile.getParentFile().mkdirs();
-        }
-        if (outputFile.exists() && !outputFile.canWrite()) {
-            throw new IllegalArgumentException("No writeable output file given! " + outputFile);
-        }
-        if ((prompt == null || prompt.isBlank()) && (systemMessage == null || systemMessage.isBlank()) && systemMessageFile == null) {
+    protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
+        requireNonNull(output, "Output file not writeable: " + output);
+        if ((prompt == null || prompt.isBlank()) && (systemMessage == null || systemMessage.isBlank()) && systemMessageInput == null) {
             throw new IllegalArgumentException("No prompt given!");
         }
         AIChatBuilder chat = chatBuilderFactory.get();
@@ -317,26 +348,26 @@ public class AIGenerationTask implements Cloneable {
                 String defaultSysPrompt = new String(requireNonNull(defaultprompt).readAllBytes(), StandardCharsets.UTF_8);
                 chat.systemMsg(defaultSysPrompt);
             } catch (IOException e) {
-                throw new IllegalStateException("Error reading default system message", e);
+                throw new IllegalStateException("Bug: Error reading default system message", e);
             }
         }
-        inputFiles.forEach(file -> {
+        for (AIInOut file : inputFiles) {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
-            String path = relativePath(file, rootDirectory);
-            String usermsg = !file.getAbsolutePath().equals(outputFile.getAbsolutePath()) ?
+            String path = relativePath(file.getFile(), rootDirectory);
+            String usermsg = !file.sameFile(output) ? // XXX WRONG
                     "Retrieve the content of the input file '" + path + "'" :
                     "Retrieve the current content of the output file '" + path +
                             "'. Later you will take this file as basis for the output, check it and possibly modify it, " +
                             "but minimize changes.";
             chat.userMsg(usermsg);
-            String fileContent = getFileContent(file);
+            String fileContent = file.read();
             if (fileContent == null) {
                 throw new IllegalArgumentException("Could not read input file " + file);
             }
             chat.assistantMsg(unclutter(fileContent));
-        });
+        }
         chat.userMsg(prompt);
-        LOG.fine(() -> "Executing chat for: " + outputRelPath + "\n" + chat.toJson());
+        LOG.fine(() -> "Executing chat for: " + output + "\n" + chat.toJson());
         return chat;
     }
 
@@ -347,35 +378,39 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return the answer of the AI - not written to a file!
      */
-    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) throws IOException {
-        String outputRelPath = relativePath(this.outputFile, rootDirectory);
+    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question)  {
         if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake
-            throw new IllegalStateException("Task has to be already run for: " + outputRelPath);
+            throw new IllegalStateException("Task has to be already run for: " + output);
         }
-        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory, outputRelPath);
-        String outputFileContent = getFileContent(outputFile);
+        AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory);
+        String outputFileContent = output.read();
         if (outputFileContent == null) {
-            throw new IllegalStateException("Usage error - no previous call? Could not read output file " + outputFile);
+            throw new IllegalStateException("Usage error - no previous call? Could not read output file " + output);
         }
         String previousOutput = unclutter(outputFileContent);
-        requireNonNull(previousOutput, "Could not read any content from file " + outputFile);
+        requireNonNull(previousOutput, "Could not read any content from file " + output);
         chat.assistantMsg(previousOutput);
         chat.userMsg(question);
         String result = chat.execute();
-        LOG.info(() -> "Explanation result for " + outputRelPath + " with question " + question + " is:\n" + result);
+        LOG.info(() -> "Explanation result for " + outputFileContent + " with question " + question + " is:\n" + result);
         if (result.contains(FIXME)) {
-            throw new IllegalStateException("AI returned FIXME for " + outputRelPath + " :\n" + result);
+            throw new IllegalStateException("AI returned FIXME for " + output + " :\n" + result);
         }
         return result;
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
     public String toString() {
         return "AIGenerationTask{" + "inputFiles=" + inputFiles +
-                ", outputFile=" + outputFile +
-                ", systemMessageFile=" + systemMessageFile +
+                ", outputFile=" + output +
+                ", systemMessageFile=" + systemMessageInput +
                 ", systemMessage='" + systemMessage + '\'' +
-                ", promptFiles=" + promptFiles +
+                ", promptFiles=" + promptInputs +
                 ", placeholdersAndValues=" + placeholdersAndValues +
                 ", prompt='" + prompt + '\'' +
                 '}';

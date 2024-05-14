@@ -1,8 +1,6 @@
 package net.stoerr.ai.aigenpipeline.framework.chat;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,13 +24,21 @@ import com.google.gson.GsonBuilder;
  */
 public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
-    /** Environment variable for the Anthropic API version. */
+    /**
+     * Environment variable for the Anthropic API version.
+     */
     public static final String ENV_ANTHROPIC_VERSION = "ANTHROPIC_API_VERSION";
-    /** Environment variable for the OpenAI API key. */
+    /**
+     * Environment variable for the OpenAI API key.
+     */
     public static final String ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
-    /** Environment variable for the Anthropic API key. */
+    /**
+     * Environment variable for the Anthropic API key.
+     */
     public static final String ENV_ANTHROPIC_API_KEY = "ANTHROPIC_API_KEY";
-    /** Default version for the Anthropic API, of not overridden with environment variable {@link #ENV_ANTHROPIC_VERSION}  . */
+    /**
+     * Default version for the Anthropic API, of not overridden with environment variable {@link #ENV_ANTHROPIC_VERSION}  .
+     */
     public static final String ANTHROPIC_DEFAULT_VERSION = "2023-06-01";
 
     public static final int DEFAULT_MAX_TOKENS = 2048;
@@ -44,7 +50,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     protected final Pattern CODEBLOCK_PATTERN = Pattern.compile("\\A\\s*```\\w*\\n?(.*?)\\n*```\\s*\\Z", Pattern.DOTALL);
 
-    protected String model = "gpt-4-turbo-preview";
+    protected String model = "gpt-4o";
     protected final List<Message> messages = new ArrayList<>();
     protected String apiKey;
     protected String organizationId;
