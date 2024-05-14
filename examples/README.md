@@ -60,3 +60,7 @@ the working application.
 
 This gives examples how to run the AIGenPipeline with OpenAI GPT-*, Anthropic Claude or local LLM models by using 
 an appropriate configuration file `.aigenpipeline`. 
+
+## [Infile Prompting](infileprompt/)
+
+This contains some examples where the prompt is contained in the output file as a comment.

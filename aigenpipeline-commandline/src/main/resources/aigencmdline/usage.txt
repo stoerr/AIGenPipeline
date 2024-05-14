@@ -67,7 +67,25 @@ Examples:
     aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
-    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
+    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"
+
+  Scan for files with infile prompts and (re-)generate the AI generated parts of those files:
+    aigenpipeline -os "src/site/**/*.md"
+
+Infile prompts:
+  The idea is that files can contain both the prompt that has been used to generate their AI generated part(s) in a
+  comment, and also instructions like the used input files or other settings. In such a file you would have e.g. 
+  
+  <!-- AIGenPromptStart(somemarker)
+  (Here would come the prompt for the AI)
+  AIGenCommand(somemarker)
+  data.txt
+  AIGenPromptEnd(somemarker) -->
+  (Here is the generated content placed after calling aigenpipeline.)
+  <!-- AIGenEnd(somemarker) -->
+  
+  That also means that it's not necessary to write a script that processes each of those files, but the tool can scan
+  for AIGenPromptStart markers, as in the example `aigenpipeline -os "src/site/**/*.md"` above.
 
 Configuration files:
   These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.

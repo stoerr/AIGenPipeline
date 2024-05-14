@@ -193,8 +193,11 @@ Options:
   Input / outputs:
     -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
     -p, --prompt <file>      Reads a prompt from the given file.
+    -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.
     -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
     -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
+    -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers.
+                             The infile prompts in these files are processed.
 
   AI Generation control:
     -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
@@ -204,7 +207,9 @@ Options:
     -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
     -wv, --write-version     Write the output file with a version comment. (Default.)
     -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .
-    -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.                             If a version marker is written, it has to be in the first of those lines and is changed there.                             It is an error if the marker does not occur exactly twice; the output file has to exist.
+    -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.
+                             If a version marker is written, it has to be in the first of those lines and is changed there.
+                             It is an error if the marker does not occur exactly twice; the output file has to exist.
     -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_
                              that was given to generate the output file, and the additional --explain <question> option.
                              It recreates the conversation that lead to the output file and asks the AI for a 
@@ -238,7 +243,25 @@ Examples:
     aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java
 
   Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:
-    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"  
+    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain "Why did you not use annotations?"
+
+  Scan for files with infile prompts and (re-)generate the AI generated parts of those files:
+    aigenpipeline -os "src/site/**/*.md"
+
+Infile prompts:
+  The idea is that files can contain both the prompt that has been used to generate their AI generated part(s) in a
+  comment, and also instructions like the used input files or other settings. In such a file you would have e.g. 
+  
+  <!-- AIGenPromptStart(somemarker)
+  (Here would come the prompt for the AI)
+  AIGenCommand(somemarker)
+  data.txt
+  AIGenPromptEnd(somemarker) -->
+  (Here is the generated content placed after calling aigenpipeline.)
+  <!-- AIGenEnd(somemarker) -->
+  
+  That also means that it's not necessary to write a script that processes each of those files, but the tool can scan
+  for AIGenPromptStart markers, as in the example `aigenpipeline -os "src/site/**/*.md"` above.
 
 Configuration files:
   These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.

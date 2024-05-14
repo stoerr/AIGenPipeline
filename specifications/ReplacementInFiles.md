@@ -23,7 +23,10 @@ This is a hand generated part
 needs calling the tool with `-r aipart123` . There should be a AIGenVersion marker from the very start so that
 the tool knows where to place that marker.
 
-## Extension (not implemented yet): both prompt and generated text are in the same file
+## Extension: both prompt and generated text are in the same file
+
+Basic idea: we put something into a file that says "insert here the output that is generated the following prompt 
+based on the following files."
 
 Parts of the file:
 
@@ -35,11 +38,6 @@ Parts of the file:
 The AIGenVersion tag, prompt and generated text can be in one comment block at the start, and the rest of the file the
 generated text. Perhaps we can have several generated parts with -wp?
 One problem: reformatting with the IDE shouldn't destroy anything.
-
-Basic idea: we put something into a file that says "insert here the output that is generated the following prompt 
-based on the following files."
-
-
 
 Idea:
 
