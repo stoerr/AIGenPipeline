@@ -488,7 +488,7 @@ public class AIGenPipeline {
     }
 
     protected void printHelp(boolean onerror) {
-        try (InputStream usageFile = getClass().getResourceAsStream("aigencmdline/usage.txt");
+        try (InputStream usageFile = getClass().getResourceAsStream("/aigencmdline/usage.txt");
              InputStreamReader reader = new InputStreamReader(
                      requireNonNull(usageFile), StandardCharsets.UTF_8)) {
             Writer writer = new StringWriter();
