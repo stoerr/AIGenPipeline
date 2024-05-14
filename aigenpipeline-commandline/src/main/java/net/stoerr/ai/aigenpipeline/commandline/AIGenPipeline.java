@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -39,7 +40,6 @@ import net.stoerr.ai.aigenpipeline.framework.task.WritingStrategy;
  * </p>
  * <p>
  * This class reads the command line arguments, reads the configuration files, and then executes the AI generation task.
- *
  * </p>
  */
 public class AIGenPipeline {
@@ -147,27 +147,27 @@ public class AIGenPipeline {
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = Path.of(".").resolve(requireNonNull(output, "No output file given.")).toFile();
+        AIInOut taskOutput;
         if (infilePromptMarker != null) {
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
             task.addPrompt(AIInOut.of(segmentedFile, 1));
-            task.setOutput(AIInOut.of(segmentedFile, 3));
+            taskOutput = AIInOut.of(segmentedFile, 3);
         } else if (writePart != null) {
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, writePart, writePart);
-            task.setOutput(AIInOut.of(segmentedFile, 1));
+            taskOutput = AIInOut.of(segmentedFile, 1);
         } else {
-            task.setOutput(AIInOut.of(outputFile));
+            taskOutput = AIInOut.of(outputFile);
         }
+        task.setOutput(taskOutput);
         for (AIInOut inputFile : inputFiles) {
-            File file = inputFile.getFile();
-            if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
+            if (inputFile.sameFile(taskOutput)) {
                 task.addOptionalInput(inputFile);
             } else {
                 task.addInput(inputFile);
             }
         }
-        promptFiles.stream()
-                .forEach(f -> task.addPrompt(f, keyValues));
+        promptFiles.forEach(f -> task.addPrompt(f, keyValues));
         task.setRegenerationCheckStrategy(regenerationCheckStrategy);
         task.setWritingStrategy(writingStrategy);
         if (check) {
@@ -451,7 +451,7 @@ public class AIGenPipeline {
     protected void answerHelpAIQuestion() throws IOException {
         StringBuilder helptext = new StringBuilder();
         try (InputStream is = AIGenPipeline.class.getResourceAsStream("/helpaitexts.md")) {
-            Scanner scanner = new Scanner(is);
+            Scanner scanner = new Scanner(requireNonNull(is), StandardCharsets.UTF_8);
             while (scanner.hasNextLine()) {
                 helptext.append(scanner.nextLine());
                 helptext.append("\n");
@@ -485,11 +485,12 @@ public class AIGenPipeline {
     }
 
     protected void printHelp(boolean onerror) {
-        try (InputStream helpfile = getClass().getResourceAsStream("aigencmdline/usage.txt");
-             InputStreamReader reader = new InputStreamReader(helpfile, StandardCharsets.UTF_8)) {
+        try (InputStream usageFile = getClass().getResourceAsStream("aigencmdline/usage.txt");
+             InputStreamReader reader = new InputStreamReader(
+                     requireNonNull(usageFile), StandardCharsets.UTF_8)) {
             Writer writer = new StringWriter();
             reader.transferTo(writer);
-            (onerror ? ERR : OUT).println(writer.toString());
+            (onerror ? ERR : OUT).println(writer);
         } catch (IOException e) {
             throw new IllegalStateException("Bug: cannot read usage file.");
         }

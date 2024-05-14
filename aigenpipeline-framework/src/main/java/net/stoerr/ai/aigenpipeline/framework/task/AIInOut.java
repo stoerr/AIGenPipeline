@@ -84,7 +84,7 @@ public interface AIInOut {
     /**
      * AIFileInOut is an implementation of AIInOut that reads from a file.
      */
-    static class AIFileInOut implements AIInOut {
+    class AIFileInOut implements AIInOut {
 
         private final File file;
 
@@ -137,7 +137,7 @@ public interface AIInOut {
     /**
      * AIFileSegmentInOut is an implementation of AIInOut that reads from a segment of a segmented file.
      */
-    static class AIFileSegmentInOut implements AIInOut {
+    class AIFileSegmentInOut implements AIInOut {
 
         protected final SegmentedFile segmentedFile;
         protected final int segmentIndex;
