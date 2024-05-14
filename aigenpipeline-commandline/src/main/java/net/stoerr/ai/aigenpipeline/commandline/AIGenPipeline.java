@@ -1,9 +1,14 @@
 package net.stoerr.ai.aigenpipeline.commandline;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,8 +23,6 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -62,12 +65,13 @@ public class AIGenPipeline {
 
     protected boolean help, verbose, dryRun, check, version;
     protected String helpAIquestion;
-    protected String output, explain;
+    protected String output;
+    protected String explain;
     protected String url;
     protected String apiKey;
     protected String organizationId; // for OpenAI
-    protected List<String> inputFiles = new ArrayList<>();
-    protected List<String> promptFiles = new ArrayList<>();
+    protected List<AIInOut> inputFiles = new ArrayList<>();
+    protected List<AIInOut> promptFiles = new ArrayList<>();
     protected Map<String, String> keyValues = new LinkedHashMap<>();
     protected String model = "gpt-3.5-turbo"; // "gpt-4-turbo-preview";
     protected AIGenerationTask task;
@@ -89,7 +93,7 @@ public class AIGenPipeline {
         task = new AIGenerationTask();
 
         try {
-            readArguments(args, new File("."));
+            readArguments(args, rootDir);
 
             if (version) {
                 OUT.println(getVersion());
@@ -146,7 +150,7 @@ public class AIGenPipeline {
 
     protected void run() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
-        File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
+        File outputFile = Path.of(".").resolve(requireNonNull(output, "No output file given.")).toFile();
         if (infilePromptMarker != null) {
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
@@ -159,16 +163,15 @@ public class AIGenPipeline {
             task.setOutput(AIInOut.of(outputFile));
         }
         task.setOutputFile(outputFile);
-        for (String inputFile : inputFiles) {
-            File file = toFile(inputFile);
+        for (AIInOut inputFile : inputFiles) {
+            File file = inputFile.getFile();
             if (file.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
-                task.addOptionalInputFile(file);
+                task.addOptionalInput(inputFile);
             } else {
-                task.addInputFile(file);
+                task.addInput(inputFile);
             }
         }
         promptFiles.stream()
-                .map(this::toFile)
                 .forEach(f -> task.addPrompt(f, keyValues));
         task.setRegenerationCheckStrategy(regenerationCheckStrategy);
         task.setWritingStrategy(writingStrategy);
@@ -214,8 +217,9 @@ public class AIGenPipeline {
                 try {
                     SegmentedFile segmentedFile = new SegmentedFile(file, SegmentedFile.infilePrompting(marker));
                     String infileArguments = segmentedFile.getSegment(2);
-                    parseArguments(infileArguments.split("\\s+"));
+                    parseArguments(infileArguments.split("\\s+"), file.getParentFile());
                     run(); // FIXME XXX this is wrong yet
+                    throw new UnsupportedOperationException("Not implemented yet."); // FIXME hps 24/05/14 not implemented
                 } catch (IOException e) {
                     ERR.println("Error processing file " + file + ": " + e);
                 }
@@ -224,21 +228,46 @@ public class AIGenPipeline {
     }
 
     protected void readArguments(String[] args, @Nonnull File startDir) throws IOException {
-        String[] envargs = System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
-                System.getenv(AIGENPIPELINE_CONFIG).split("\\s+");
-        List<String[]> argumentSets = new ArrayList<>();
-        List<File> configFiles = new ArrayList<>();
-        argumentSets.add(args);
+        List<AIGenArgumentList> argLists = collectArgLists(args, startDir);
+        for (AIGenArgumentList argumentsFromFile : argLists) {
+            parseArguments(argumentsFromFile.getArgs(), startDir);
+        }
+
+        if (printconfig) {
+            OUT.println("Collected argument lists from environment, configuration files and arguments:");
+            for (AIGenArgumentList argumentsFromFile : argLists) {
+                File configFile = argumentsFromFile.getCfgFile();
+                if (null != configFile) {
+                    OUT.println(configFile.getAbsolutePath());
+                }
+                OUT.println(Arrays.toString(argumentsFromFile.getArgs()));
+            }
+        }
+
+        if (infilePromptMarker != null) {
+            File outputFile = startDir.toPath().resolve(
+                    requireNonNull(output, "No output file given.")).toFile();
+            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
+            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
+            String infileArguments = segmentedFile.getSegment(2);
+            parseArguments(infileArguments.split("\\s+"), outputFile.getParentFile());
+        }
+    }
+
+    protected List<AIGenArgumentList> collectArgLists(String[] args, File startDir) {
+        List<AIGenArgumentList> argLists = new ArrayList<>();
+
+        AIGenArgumentList argsConfig = new AIGenArgumentList(args);
+        argLists.add(argsConfig);
 
         // If no -cn option is given, scan for .aigenpipeline files upwards from the output file directory.
-        if (isContinueScan(args)) {
+        if (isContinueScan(argsConfig)) {
             File currentDir = startDir;
             while (currentDir != null) {
                 File configFile = new File(currentDir, CONFIGFILE);
                 if (configFile.exists()) {
-                    String[] argumentsFromFile = parseConfigFile(configFile.getAbsolutePath());
-                    argumentSets.add(argumentsFromFile);
-                    configFiles.add(configFile);
+                    AIGenArgumentList argumentsFromFile = new AIGenArgumentList(configFile);
+                    argLists.add(argumentsFromFile);
                     if (!isContinueScan(argumentsFromFile)) break;
                 }
                 currentDir = currentDir.getParentFile();
@@ -246,153 +275,26 @@ public class AIGenPipeline {
         }
 
         // read the arguments from the environment variable only if no -cne option was given
-        boolean useEnvironmentArgs = argumentSets.stream().anyMatch(this::isReadEnvironmentVariableArguments);
-        if (useEnvironmentArgs) {
-            argumentSets.add(envargs);
+        boolean ignoreEnvironmentArgs = argLists.stream().anyMatch(this::isIgnoreEnvironmentArgs);
+        if (!ignoreEnvironmentArgs) {
+            AIGenArgumentList envConfig = new AIGenArgumentList(System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
+                            System.getenv(AIGENPIPELINE_CONFIG).split("\\s+"));
+            argLists.add(envConfig);
         }
 
-        Collections.reverse(argumentSets);
-        for (String[] argumentsFromFile : argumentSets) {
-            parseArguments(argumentsFromFile);
-        }
-
-        if (printconfig) {
-            Collections.reverse(configFiles);
-            if (useEnvironmentArgs) {
-                OUT.println("Arguments from environment:\n" + Arrays.toString(argumentSets.get(0)));
-                argumentSets.remove(0);
-            }
-            for (File configFile : configFiles) {
-                OUT.println(configFile.getAbsolutePath());
-                OUT.println(Arrays.toString(argumentSets.get(0)));
-                argumentSets.remove(0);
-            }
-            OUT.println("Arguments from command line:\n" + Arrays.toString(argumentSets.get(0)));
-            OUT.println(argumentSets.size());
-        }
-
-        if (infilePromptMarker != null) {
-            File outputFile = toFile(Objects.requireNonNull(output, "No output file given."));
-            String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
-            SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
-            String infileArguments = segmentedFile.getSegment(2);
-            parseArguments(infileArguments.split("\\s+"));
-            // FIXME directory of inputs should be relative to the output file, not the current directory!
-        }
+        Collections.reverse(argLists);
+        return argLists;
     }
 
-    protected boolean isContinueScan(String[] argumentsFromFile) {
-        return null == argumentsFromFile || !Arrays.asList(argumentsFromFile).contains("-cn")
-                && !Arrays.asList(argumentsFromFile).contains("--confignoscan");
+    protected boolean isContinueScan(AIGenArgumentList args) {
+        return args.hasArgument("-cn", "--confignoscan");
     }
 
-    protected boolean isReadEnvironmentVariableArguments(String[] argumentsFromFile) {
-        return null == argumentsFromFile || !Arrays.asList(argumentsFromFile).contains("-cne")
-                && !Arrays.asList(argumentsFromFile).contains("--configignoreenv");
+    protected boolean isIgnoreEnvironmentArgs(AIGenArgumentList args) {
+        return args.hasArgument("-cne", "--configignoreenv");
     }
 
-    protected String[] parseConfigFile(String filename) throws IOException {
-        try (Stream<String> lines = Files.lines(Path.of(filename), StandardCharsets.UTF_8)) {
-            String content = lines
-                    .map(String::trim)
-                    .filter(line -> !line.startsWith("#"))
-                    .collect(Collectors.joining(" "));
-            return content.split("\\s+");
-        }
-    }
-
-    protected File toFile(String filename) {
-        return rootDir.toPath().toAbsolutePath().relativize(
-                Path.of(filename).toAbsolutePath()).toFile();
-    }
-
-    protected void printHelp(boolean onerror) {
-        (onerror ? ERR : OUT).println("" +
-                "Usage:\n" +
-                "aigenpipeline [options] [<input_files>...]\n" +
-                "\n" +
-                "Options:\n" +
-                "\n" +
-                "  General options:\n" +
-                "    -h, --help               Show this help message and exit.\n" +
-                "    -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.\n" +
-                "    --version                Show the version of the AIGenPipeline tool and exit.\n" +
-                "    -c, --check              Only check if the output needs to be regenerated based on input versions without actually \n" +
-                "                             generating it. The exit code is 0 if the output is up to date, 1 if it needs to be \n" +
-                "                             regenerated.\n" +
-                "    -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without \n" +
-                "                             actually calling the AI or writing any files.\n" +
-                "    -v, --verbose            Enable verbose output to stderr, providing more details about the process.\n" +
-                "\n" +
-                "  Input / outputs:\n" +
-                "    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.\n" +
-                "    -p, --prompt <file>      Reads a prompt from the given file.\n" +
-                "    -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.\n" +
-                "    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. \n" +
-                "    -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. \n" +
-                "    -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers." +
-                "                             The infile prompts in these files are processed.\n" +
-                "\n" +
-                "  AI Generation control:\n" +
-                "    -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.\n" +
-                "    -ga, --gen-always        Generate the output file always, ignoring version checks.\n" +
-                "    -gn, --gen-notexists     Generate the output file only if it does not exist.\n" +
-                "    -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.\n" +
-                "    -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)\n" +
-                "    -wv, --write-version     Write the output file with a version comment. (Default.)\n" +
-                "    -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .\n" +
-                "    -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence." +
-                "                             If a version marker is written, it has to be in the first of those lines and is changed there." +
-                "                             It is an error if the marker does not occur exactly twice; the output file has to exist.\n" +
-                "    -e, --explain <question> Asks the AI a question about the generated result. This needs _exactly_the_same_command_line_\n" +
-                "                             that was given to generate the output file, and the additional --explain <question> option.\n" +
-                "                             It recreates the conversation that lead to the output file and asks the AI for a \n" +
-                "                             clarification. The output file is not written, but read to recreate the conversation.\n" +
-                "\n" +
-                "  Configuration files:\n" +
-                "    -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.\n" +
-                "    -cn, --confignoscan      Do not scan for `.aigenpipeline` config files.\n" +
-                "    -cne, --configignoreenv  Ignore the environment variable `AIGENPIPELINE_CONFIG`.\n" +
-                "    -cp, --configprint       Print the collected configurations and exit.\n" +
-                "\n" +
-                "  AI backend settings:\n" +
-                "    -u, --url <url>          The URL of the AI server. Default is https://api.openai.com/v1/chat/completions .\n" +
-                "                             In the case of OpenAI the API key is expected to be in the environment variable \n" +
-                "                             OPENAI_API_KEY, or given with the -a option.\n" +
-                "    -a, --api-key <key>      The API key for the AI server. If not given, it's expected to be in the environment variable \n" +
-                "                             OPENAI_API_KEY, or you could use a -u option to specify a different server that doesnt need\n" +
-                "                             an API key. Used in \"Authorization: Bearer <key>\" header.\n" +
-                "    -org, --organization <id> The optional organization id in case of the OpenAI server.\n" +
-                "    -m, --model <model>      The model to use for the AI. Default is gpt-4-turbo-preview .\n" +
-                "    -t <maxtokens>           The maximum number of tokens to generate.\n" +
-                "\n" +
-                "Arguments:\n" +
-                "  [<input_files>...]       Input files to be processed into the output file. \n" +
-                "\n" +
-                "Examples:\n" +
-                "  Generate documentation from a prompt file:\n" +
-                "    aigenpipeline -p prompts/documentation_prompt.txt -o generated_documentation.md src/foo/bar.java src/foo/baz.java\n" +
-                "\n" +
-                "  Force regenerate an interface from an OpenAPI document, ignoring version checks:\n" +
-                "    aigenpipeline -f -o specs/openapi.yaml -p prompts/api_interface_prompt.txt src/main/java/foo/MyInterface.java\n" +
-                "\n" +
-                "  Ask how to improve a prompt after viewing the initial generation of specs/openapi.yaml:\n" +
-                "    aigenpipeline -o PreviousOutput.java -p prompts/promptGenertaion.txt specs/openapi.yaml --explain \"Why did you not use annotations?\"  \n" +
-                "\n" +
-                "Configuration files:\n" +
-                "  These contain options like on the command line. The environment variable `AIGENPIPELINE_CONFIG` can contain options.\n" +
-                "  If -cn is not given, the tool scans for files named .aigenpipeline upwards from the output file directory.\n" +
-                "  The order these configurations are processed is: environment variable, .aigenpipeline files from top to bottom,\n" +
-                "  command line arguments. Thus the later override the earlier one, as these get more specific to the current call.\n" +
-                "  Lines starting with a # are ignored in configuration files (comments).\n" +
-                "\n" +
-                "Note:\n" +
-                "  It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. \n" +
-                "  More detailed instructions and explanations can be found at https://aigenpipeline.stoerr.net/ .\n"
-        );
-    }
-
-    protected void parseArguments(String[] args) throws IOException {
+    protected void parseArguments(String[] args, File dir) throws IOException {
         // replace environment variables
         for (int i = 0; i < args.length; i++) {
             if (args[i].contains("$")) {
@@ -433,7 +335,8 @@ public class AIGenPipeline {
                     break;
                 case "-p":
                 case "--prompt":
-                    promptFiles.add(args[++i]);
+                    AIInOut path = AIInOut.of(dir.toPath().resolve(Path.of(args[++i])));
+                    promptFiles.add(path);
                     break;
                 case "-ifp":
                 case "--infileprompt":
@@ -517,7 +420,9 @@ public class AIGenPipeline {
                 case "-cf":
                 case "--configfile":
                     String filename = args[++i];
-                    parseArguments(parseConfigFile(filename));
+                    Path cfgFilePath = dir.toPath().resolve(filename);
+                    AIGenArgumentList cfgFileArgs = new AIGenArgumentList(cfgFilePath.toFile());
+                    parseArguments(cfgFileArgs.getArgs(), cfgFilePath.getParent().toFile());
                     break;
                 case "-cp":
                 case "--configprint":
@@ -533,7 +438,8 @@ public class AIGenPipeline {
                     if (args[i].startsWith("-")) {
                         throw new IllegalArgumentException("Unknown option: " + args[i]);
                     }
-                    inputFiles.add(args[i]);
+                    Path inputArg = dir.toPath().resolve(args[i]);
+                    inputFiles.add(AIInOut.of(inputArg));
                     break;
             }
         }
@@ -577,6 +483,17 @@ public class AIGenPipeline {
         properties.load(AIGenPipeline.class.getResourceAsStream("/git.properties"));
         return "AIGenPipeline Version " + properties.get("git.build.version") + "-" +
                 properties.getProperty("git.commit.id.describe") + " from " + properties.getProperty("git.build.time");
+    }
+
+    protected void printHelp(boolean onerror) {
+        try (InputStream helpfile = getClass().getResourceAsStream("aigencmdline/usage.txt");
+             InputStreamReader reader = new InputStreamReader(helpfile, StandardCharsets.UTF_8)) {
+            Writer writer = new StringWriter();
+            reader.transferTo(writer);
+            (onerror ? ERR : OUT).println(writer.toString());
+        } catch (IOException e) {
+            throw new IllegalStateException("Bug: cannot read usage file.");
+        }
     }
 
 }

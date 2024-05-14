@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,6 +55,18 @@ public interface AIInOut {
     @Nullable
     static AIInOut of(@Nullable File file) {
         return file != null ? new AIFileInOut(requireNonNull(file)) : null;
+    }
+
+
+    /**
+     * Creates an AIInOut instance that reads from a file.
+     *
+     * @param path the path to the file to read from
+     * @return an AIInOut instance
+     */
+    @Nullable
+    static AIInOut of(@Nullable Path path) {
+        return path != null ? new AIFileInOut(requireNonNull(path.toFile())) : null;
     }
 
     /**
