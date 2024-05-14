@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 import net.stoerr.ai.aigenpipeline.framework.chat.AIChatBuilder;
+import net.stoerr.ai.aigenpipeline.framework.chat.CopyPseudoAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImpl;
 import net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask;
 import net.stoerr.ai.aigenpipeline.framework.task.AIInOut;
@@ -125,7 +126,10 @@ public class AIGenPipeline {
     }
 
     public AIChatBuilder makeChatBuilder() {
-        AIChatBuilder chatBuilder = new OpenAIChatBuilderImpl();
+        AIChatBuilder chatBuilder =
+                CopyPseudoAIChatBuilderImpl.MODEL_COPY.equals(model) ?
+                new CopyPseudoAIChatBuilderImpl() :
+                new OpenAIChatBuilderImpl();
         if (null != url) {
             chatBuilder.url(url);
         }

@@ -55,7 +55,7 @@ public class AIGenerationTask implements Cloneable {
      * A marker that can be inserted by the AI when something is wrong / unclear. We will make sure the user
      * sees that by aborting.
      */
-    public static final String FIXME = "FIXME";
+    public static final String FIXME = "FIXME(GenAIPipeline)";
 
     /**
      * A pattern that matches the license header, which we want to remove to avoid clutter.
@@ -163,7 +163,7 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    public boolean hasToBeRun()  {
+    public boolean hasToBeRun() {
         List<AIInOut> allInputs = getAllInputs();
         List<String> additionalMarkers = getAdditionalMarkers();
         List<String> inputVersions = AIVersionMarker.calculateInputMarkers(allInputs, additionalMarkers);
@@ -196,7 +196,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull AIInOut promptInput, String... placeholdersAndValues)  {
+    public AIGenerationTask addPrompt(@Nonnull AIInOut promptInput, String... placeholdersAndValues) {
         Map<String, String> map = new LinkedHashMap<>();
         for (int i = 0; i < placeholdersAndValues.length; i += 2) {
             map.put(placeholdersAndValues[i], placeholdersAndValues[i + 1]);
@@ -209,7 +209,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull File promptInput, String... placeholdersAndValues)  {
+    public AIGenerationTask addPrompt(@Nonnull File promptInput, String... placeholdersAndValues) {
         return addPrompt(AIInOut.of(promptInput), placeholdersAndValues);
     }
 
@@ -218,7 +218,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull AIInOut promptFile, Map<String, String> placeholdersAndValues)  {
+    public AIGenerationTask addPrompt(@Nonnull AIInOut promptFile, Map<String, String> placeholdersAndValues) {
         String fileContent = promptFile.read();
         if (fileContent == null) {
             throw new IllegalArgumentException("Could not read prompt file " + promptFile);
@@ -243,7 +243,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return this
      */
-    public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues)  {
+    public AIGenerationTask addPrompt(@Nonnull File promptFile, Map<String, String> placeholdersAndValues) {
         return addPrompt(AIInOut.of(promptFile), placeholdersAndValues);
     }
 
@@ -275,7 +275,7 @@ public class AIGenerationTask implements Cloneable {
         return content;
     }
 
-    public AIGenerationTask setSystemMessage(@Nonnull AIInOut systemMessageFile)  {
+    public AIGenerationTask setSystemMessage(@Nonnull AIInOut systemMessageFile) {
         String fileContent = systemMessageFile.read();
         if (fileContent == null) {
             throw new IllegalArgumentException("Could not read system message file " + systemMessageFile);
@@ -287,7 +287,7 @@ public class AIGenerationTask implements Cloneable {
         return this;
     }
 
-    public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile)  {
+    public AIGenerationTask setSystemMessage(@Nonnull File systemMessageFile) {
         return setSystemMessage(AIInOut.of(systemMessageFile));
     }
 
@@ -302,7 +302,7 @@ public class AIGenerationTask implements Cloneable {
     /**
      * Execute the task if necessary. If the output file is already there and up to date, nothing is done.
      */
-    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
+    public AIGenerationTask execute(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         if (!hasToBeRun()) {
             LOG.info(() -> "Task does not have to be run for: " + output);
             return this;
@@ -327,12 +327,12 @@ public class AIGenerationTask implements Cloneable {
     /**
      * For debugging purposes: returns the JSON that would be sent to the AI.
      */
-    public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
+    public String toJson(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         return makeChatBuilder(chatBuilderFactory, rootDirectory).toJson();
     }
 
     @Nonnull
-    protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory)  {
+    protected AIChatBuilder makeChatBuilder(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory) {
         requireNonNull(output, "Output file not writeable: " + output);
         if ((prompt == null || prompt.isBlank()) && (systemMessage == null || systemMessage.isBlank()) && systemMessageInput == null) {
             throw new IllegalArgumentException("No prompt given!");
@@ -378,7 +378,7 @@ public class AIGenerationTask implements Cloneable {
      *
      * @return the answer of the AI - not written to a file!
      */
-    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question)  {
+    public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) {
         if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake
             throw new IllegalStateException("Task has to be already run for: " + output);
         }
