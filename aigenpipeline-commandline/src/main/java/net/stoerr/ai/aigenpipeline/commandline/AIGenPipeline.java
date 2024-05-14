@@ -74,7 +74,7 @@ public class AIGenPipeline {
     protected String model = "gpt-3.5-turbo"; // "gpt-4o";
     protected AIGenerationTask task = new AIGenerationTask();
     protected File rootDir = new File(".");
-    protected PrintStream logStream;
+    protected PrintStream logStream = System.err;
     protected Integer tokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
@@ -112,12 +112,12 @@ public class AIGenPipeline {
                 runWithOutputScan(args);
             }
         } catch (IllegalArgumentException e) {
-            ERR.println("Usage error: " + e.getMessage());
+            logStream.println("Usage error: " + e.getMessage());
+            if (verbose) {
+                e.printStackTrace(ERR);
+            }
             OUT.flush();
             ERR.flush();
-            if (verbose) {
-                e.printStackTrace();
-            }
 //            System.err.println();
 //            printHelpAndExit(true);
             System.exit(1);
@@ -214,7 +214,10 @@ public class AIGenPipeline {
                 String marker = promptStartMatch.group("id");
                 try {
                     SegmentedFile segmentedFile = new SegmentedFile(file, SegmentedFile.infilePrompting(marker));
-                    String infileArguments = segmentedFile.getSegment(2);
+                    String infileArguments = segmentedFile.getSegment(2).trim().replaceAll("\\s+", " ");
+                    if (verbose) {
+                        logStream.println("Processing file " + file + " with marker " + marker + " and arguments " + infileArguments);
+                    }
                     parseArguments(infileArguments.split("\\s+"), file.getParentFile());
                     AIGenPipeline subPipeline = new AIGenPipeline();
                     List<String> subArgs = new ArrayList<>(Arrays.asList(args));
@@ -251,7 +254,7 @@ public class AIGenPipeline {
                     requireNonNull(output, "No output file given.")).toFile();
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
-            String infileArguments = segmentedFile.getSegment(2);
+            String infileArguments = segmentedFile.getSegment(2).trim().replaceAll("\\s+", " ");
             parseArguments(infileArguments.split("\\s+"), outputFile.getParentFile());
         }
     }

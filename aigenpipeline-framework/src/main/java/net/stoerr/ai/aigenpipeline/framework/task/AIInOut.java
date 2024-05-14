@@ -130,7 +130,7 @@ public interface AIInOut {
 
         @Override
         public String toString() {
-            return "AIFileInOut [file=" + file + "]";
+            return file.toString();
         }
     }
 
@@ -183,7 +183,7 @@ public interface AIInOut {
 
         @Override
         public String toString() {
-            return "AIFileSegmentInOut [segmentedFile=" + segmentedFile + ", segmentIndex=" + segmentIndex + "]";
+            return segmentedFile.getFile() + " segment " + segmentIndex;
         }
     }
 
