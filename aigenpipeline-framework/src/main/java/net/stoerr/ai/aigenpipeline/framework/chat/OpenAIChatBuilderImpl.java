@@ -25,6 +25,12 @@ import com.google.gson.GsonBuilder;
 public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     /**
+     * Pseudo model that outputs the json that would be sent to OpenAI and writes that to the output,
+     * instead of actually calling OpenAI. Mostly for debugging.
+     */
+    public static final String MODEL_OPENAIJSON = "openaijson";
+
+    /**
      * Environment variable for the Anthropic API version.
      */
     public static final String ENV_ANTHROPIC_VERSION = "ANTHROPIC_API_VERSION";
@@ -136,6 +142,9 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
 
     @Override
     public String execute() {
+        if (MODEL_OPENAIJSON.equals(model)) {
+            return toJson();
+        }
         String key = determineApiKey();
         HttpClient client = HttpClient.newBuilder()
                 // use HTTP 1.1 since at least LM Studio doesn't handle that right. Requests are slow, anyway.

@@ -5,13 +5,11 @@ AIGenCommand(tablefromdata)
 data.txt
 AIGenPromptEnd(tablefromdata) -->
 ---
-version: AIGenVersion(16623a19, tablefromdata.md-4b2aeec1, data.txt-54cc6c01)
+version: AIGenVersion(75a7c09f, tablefromdata.md-4b2aeec1, data.txt-54cc6c01)
 ---
 
-| Name  | Profession          |
-|-------|---------------------|
-| Franz | Frontend developer  |
-| Karl  | Backend developer   |
-| Maria | Designer            |
-<!-- AIGenEnd(tablefromdata) -->
-End of the file
+| Name  | Profession         |
+|-------|--------------------|
+| Franz | Frontend developer |
+| Karl  | Backend developer  |
+| Maria | Designer           |
