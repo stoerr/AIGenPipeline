@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -264,14 +263,14 @@ public class AIGenPipeline {
         argLists.add(argsConfig);
 
         // If no -cn option is given, scan for .aigenpipeline files upwards from the output file directory.
-        if (isContinueScan(argsConfig)) {
+        if (!isStopCfgfileScan(argsConfig)) {
             File currentDir = startDir;
             while (currentDir != null) {
                 File configFile = new File(currentDir, CONFIGFILE);
                 if (configFile.exists()) {
                     AIGenArgumentList argumentsFromFile = new AIGenArgumentList(configFile);
                     argLists.add(argumentsFromFile);
-                    if (!isContinueScan(argumentsFromFile)) break;
+                    if (!isStopCfgfileScan(argumentsFromFile)) break;
                 }
                 currentDir = currentDir.getParentFile();
             }
@@ -289,7 +288,7 @@ public class AIGenPipeline {
         return argLists;
     }
 
-    protected boolean isContinueScan(AIGenArgumentList args) {
+    protected boolean isStopCfgfileScan(AIGenArgumentList args) {
         return args.hasArgument("-cn", "--confignoscan");
     }
 

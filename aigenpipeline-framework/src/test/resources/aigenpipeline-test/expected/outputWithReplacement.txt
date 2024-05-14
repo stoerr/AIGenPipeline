@@ -1,7 +1,7 @@
 this should be left alone at the beginning.
 yes yes
 <!-- start of thereplacedpart -->
-// AIGenVersion(076e7249, prompt.txt-45366fcf, input.txt-7e10dd2a, inputWithVersion.txt-1.1)
+// AIGenVersion(7808a12c, prompt.txt-45366fcf, input.txt-7e10dd2a, inputWithVersion.txt-1.1)
 
 Response to:
 {
@@ -9,7 +9,7 @@ Response to:
   "messages": [
     {
       "role": "system",
-      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`EMCIF(AI) ` and a description of that problem.\n"
+      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`EMCIF(GenAIPipeline) ` and a description of that problem.\n"
     },
     {
       "role": "user",
