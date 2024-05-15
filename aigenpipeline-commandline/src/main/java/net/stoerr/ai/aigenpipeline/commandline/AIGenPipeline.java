@@ -127,8 +127,8 @@ public class AIGenPipeline {
     public AIChatBuilder makeChatBuilder() {
         AIChatBuilder chatBuilder =
                 CopyPseudoAIChatBuilderImpl.MODEL_COPY.equals(model) ?
-                new CopyPseudoAIChatBuilderImpl() :
-                new OpenAIChatBuilderImpl();
+                        new CopyPseudoAIChatBuilderImpl() :
+                        new OpenAIChatBuilderImpl();
         if (null != url) {
             chatBuilder.url(url);
         }
@@ -148,6 +148,11 @@ public class AIGenPipeline {
     }
 
     protected void run() throws IOException {
+        prepareTask();
+        executeTask();
+    }
+
+    protected void prepareTask() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = Path.of(".").resolve(requireNonNull(output, "No output file given.")).toFile();
         AIInOut taskOutput;
@@ -188,10 +193,16 @@ public class AIGenPipeline {
             logStream.println("Dryrun - not executed; needs executing: " + hasToBeRun);
             return;
         }
-        if (explain != null && !explain.isBlank()) {
+        if (explain != null) {
             String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
             OUT.println(explanation);
         } else {
+            task.execute(this::makeChatBuilder, rootDir);
+        }
+    }
+
+    protected void executeTask() {
+        if (explain == null) {
             task.execute(this::makeChatBuilder, rootDir);
         }
     }
@@ -207,6 +218,7 @@ public class AIGenPipeline {
         } else if (verbose) {
             OUT.println("Found " + files.size() + " files: " + files);
         }
+        List<AIGenPipeline> subPipelines = new ArrayList<>();
         for (File file : files) {
             String content = AIInOut.of(file).read();
             Matcher promptStartMatch = SegmentedFile.REGEX_AIGENPROMPTSTART.matcher(content);
@@ -224,12 +236,17 @@ public class AIGenPipeline {
                     subArgs.addAll(List.of("-ifp", marker, file.getAbsolutePath()));
                     subPipeline.readArguments(subArgs.toArray(new String[0]), rootDir);
                     subPipeline.rootDir = file.getParentFile();
-                    subPipeline.run();
+                    subPipeline.prepareTask();
+                    subPipelines.add(subPipeline);
                 } catch (IOException e) {
                     ERR.println("Error processing file " + file + ": " + e);
                 }
             }
         }
+        if (verbose) {
+            OUT.println("Processing " + subPipelines.size() + " tasks.");
+        }
+        subPipelines.forEach(AIGenPipeline::executeTask);
     }
 
     protected void readArguments(String[] args, @Nonnull File startDir) throws IOException {
@@ -283,7 +300,7 @@ public class AIGenPipeline {
         boolean ignoreEnvironmentArgs = argLists.stream().anyMatch(this::isIgnoreEnvironmentArgs);
         if (!ignoreEnvironmentArgs) {
             AIGenArgumentList envConfig = new AIGenArgumentList(System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
-                            System.getenv(AIGENPIPELINE_CONFIG).split("\\s+"));
+                    System.getenv(AIGENPIPELINE_CONFIG).split("\\s+"));
             argLists.add(envConfig);
         }
 

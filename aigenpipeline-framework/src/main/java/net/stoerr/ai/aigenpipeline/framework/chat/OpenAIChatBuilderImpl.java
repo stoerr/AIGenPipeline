@@ -1,5 +1,7 @@
 package net.stoerr.ai.aigenpipeline.framework.chat;
 
+import static net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask.FIXME;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -143,7 +145,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     @Override
     public String execute() {
         if (MODEL_OPENAIJSON.equals(model)) {
-            return toJson();
+            return toJson().replaceAll(Pattern.quote(FIXME), "FIXME ");
         }
         String key = determineApiKey();
         HttpClient client = HttpClient.newBuilder()

@@ -23,7 +23,7 @@ AIGenPromptEnd(openaijson) -->
   "messages": [
     {
       "role": "system",
-      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`FIXME(GenAIPipeline) ` and a description of that problem.\n"
+      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\n\nIMPORTANT: If something in the instructions is unclear, there is information missing, you have any questions\nor after printing the response you notice that something was wrong, then append to the file a paragraph starting with\n`FIXME  ` and a description of that problem.\n"
     },
     {
       "role": "user",
@@ -35,7 +35,7 @@ AIGenPromptEnd(openaijson) -->
     },
     {
       "role": "user",
-      "content": "This uses the copy fake model to just copy the data.txt file. \n"
+      "content": "This uses the openaijson fake model to just insert the JSON that would have been sent to OpenAI into the file. \n"
     }
   ],
   "temperature": 0.0,
