@@ -138,4 +138,32 @@ public class AIGenerationTaskTest {
         checkOutputExistsAndIsAsExpected(outFile);
     }
 
+
+    @Test
+    public void testUnclutter() {
+        AIGenerationTask task = new AIGenerationTask();
+        String input = "<!--Copyright Adobe Licensed under--> // AIGenVersion(ourversion, inputfile1@version1, inputfile2@version2, ...)\n" +
+                "Some content";
+        String expected = " // \n" +
+                "Some content";
+        String result = task.unclutter(input);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testUnclutterInfilePrompting() {
+        AIGenerationTask task = new AIGenerationTask();
+        String input = "foo\n" +
+                "<!-- AIGenPromptStart(tablefromdatacopied)\n" +
+                "Make a markdown table from the data, with columns \"Name\" and \"Profession\".\n" +
+                "AIGenCommand(tablefromdatacopied)\n" +
+                "-f -m copy tablefromdata.md\n" +
+                "AIGenPromptEnd(tablefromdatacopied) -->\n" +
+                "bar";
+        String expected = "foo\n" +
+                "bar";
+        String result = task.unclutter(input);
+        assertEquals(expected, result);
+    }
+
 }

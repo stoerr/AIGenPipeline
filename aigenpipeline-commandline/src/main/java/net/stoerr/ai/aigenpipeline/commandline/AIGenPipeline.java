@@ -64,6 +64,7 @@ public class AIGenPipeline {
     protected boolean help, verbose, dryRun, check, version;
     protected String helpAIquestion;
     protected String output;
+    protected AIInOut taskOutput;
     protected String explain;
     protected String url;
     protected String apiKey;
@@ -74,7 +75,7 @@ public class AIGenPipeline {
     protected String model = "gpt-3.5-turbo"; // "gpt-4o";
     protected AIGenerationTask task = new AIGenerationTask();
     protected File rootDir = new File(".");
-    protected PrintStream logStream;
+    protected PrintStream logStream = System.err;
     protected Integer tokens;
     protected RegenerationCheckStrategy regenerationCheckStrategy = RegenerationCheckStrategy.VERSIONMARKER;
     protected WritingStrategy writingStrategy = WritingStrategy.WITHVERSION;
@@ -82,6 +83,7 @@ public class AIGenPipeline {
     protected boolean printconfig;
     protected String infilePromptMarker;
     protected String outputScan;
+    protected boolean printdependencydiagram;
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -112,12 +114,12 @@ public class AIGenPipeline {
                 runWithOutputScan(args);
             }
         } catch (IllegalArgumentException e) {
-            ERR.println("Usage error: " + e.getMessage());
+            logStream.println("Usage error: " + e.getMessage());
+            if (verbose) {
+                e.printStackTrace(ERR);
+            }
             OUT.flush();
             ERR.flush();
-            if (verbose) {
-                e.printStackTrace();
-            }
 //            System.err.println();
 //            printHelpAndExit(true);
             System.exit(1);
@@ -127,8 +129,8 @@ public class AIGenPipeline {
     public AIChatBuilder makeChatBuilder() {
         AIChatBuilder chatBuilder =
                 CopyPseudoAIChatBuilderImpl.MODEL_COPY.equals(model) ?
-                new CopyPseudoAIChatBuilderImpl() :
-                new OpenAIChatBuilderImpl();
+                        new CopyPseudoAIChatBuilderImpl() :
+                        new OpenAIChatBuilderImpl();
         if (null != url) {
             chatBuilder.url(url);
         }
@@ -148,9 +150,13 @@ public class AIGenPipeline {
     }
 
     protected void run() throws IOException {
+        prepareTask();
+        executeTask();
+    }
+
+    protected void prepareTask() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = Path.of(".").resolve(requireNonNull(output, "No output file given.")).toFile();
-        AIInOut taskOutput;
         if (infilePromptMarker != null) {
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
@@ -188,10 +194,19 @@ public class AIGenPipeline {
             logStream.println("Dryrun - not executed; needs executing: " + hasToBeRun);
             return;
         }
-        if (explain != null && !explain.isBlank()) {
+        if (explain != null) {
             String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
             OUT.println(explanation);
-        } else {
+        }
+    }
+
+    protected void executeTask() {
+        if (printdependencydiagram) {
+            new AIDepDiagram(Arrays.asList(this), rootDir).printDepDiagram(logStream);
+            return;
+        }
+        if (explain == null) {
+            if (verbose) logStream.println("Executing task for " + taskOutput.getFile());
             task.execute(this::makeChatBuilder, rootDir);
         }
     }
@@ -207,6 +222,7 @@ public class AIGenPipeline {
         } else if (verbose) {
             OUT.println("Found " + files.size() + " files: " + files);
         }
+        List<AIGenPipeline> subPipelines = new ArrayList<>();
         for (File file : files) {
             String content = AIInOut.of(file).read();
             Matcher promptStartMatch = SegmentedFile.REGEX_AIGENPROMPTSTART.matcher(content);
@@ -214,18 +230,30 @@ public class AIGenPipeline {
                 String marker = promptStartMatch.group("id");
                 try {
                     SegmentedFile segmentedFile = new SegmentedFile(file, SegmentedFile.infilePrompting(marker));
-                    String infileArguments = segmentedFile.getSegment(2);
+                    String infileArguments = segmentedFile.getSegment(2).trim().replaceAll("\\s+", " ");
+                    if (verbose) {
+                        logStream.println("Processing file " + file + " with marker " + marker + " and arguments " + infileArguments);
+                    }
                     parseArguments(infileArguments.split("\\s+"), file.getParentFile());
                     AIGenPipeline subPipeline = new AIGenPipeline();
                     List<String> subArgs = new ArrayList<>(Arrays.asList(args));
                     subArgs.addAll(List.of("-ifp", marker, file.getAbsolutePath()));
                     subPipeline.readArguments(subArgs.toArray(new String[0]), rootDir);
                     subPipeline.rootDir = file.getParentFile();
-                    subPipeline.run();
+                    subPipeline.prepareTask();
+                    subPipelines.add(subPipeline);
                 } catch (IOException e) {
                     ERR.println("Error processing file " + file + ": " + e);
                 }
             }
+        }
+        if (verbose) {
+            OUT.println("Processing " + subPipelines.size() + " tasks.");
+        }
+        if (printdependencydiagram) {
+            new AIDepDiagram(subPipelines, rootDir).printDepDiagram(logStream);
+        } else {
+            new AIDepDiagram(subPipelines, rootDir).sortedPipelines().forEach(AIGenPipeline::executeTask);
         }
     }
 
@@ -251,7 +279,7 @@ public class AIGenPipeline {
                     requireNonNull(output, "No output file given.")).toFile();
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
-            String infileArguments = segmentedFile.getSegment(2);
+            String infileArguments = segmentedFile.getSegment(2).trim().replaceAll("\\s+", " ");
             parseArguments(infileArguments.split("\\s+"), outputFile.getParentFile());
         }
     }
@@ -280,7 +308,7 @@ public class AIGenPipeline {
         boolean ignoreEnvironmentArgs = argLists.stream().anyMatch(this::isIgnoreEnvironmentArgs);
         if (!ignoreEnvironmentArgs) {
             AIGenArgumentList envConfig = new AIGenArgumentList(System.getenv(AIGENPIPELINE_CONFIG) == null ? new String[0] :
-                            System.getenv(AIGENPIPELINE_CONFIG).split("\\s+"));
+                    System.getenv(AIGENPIPELINE_CONFIG).split("\\s+"));
             argLists.add(envConfig);
         }
 
@@ -334,6 +362,10 @@ public class AIGenPipeline {
                 case "-os":
                 case "--outputscan":
                     outputScan = args[++i];
+                    break;
+                case "-dd":
+                case "--dependencydiagram":
+                    printdependencydiagram = true;
                     break;
                 case "-p":
                 case "--prompt":
@@ -488,7 +520,7 @@ public class AIGenPipeline {
     }
 
     protected void printHelp(boolean onerror) {
-        try (InputStream usageFile = getClass().getResourceAsStream("aigencmdline/usage.txt");
+        try (InputStream usageFile = getClass().getResourceAsStream("/aigencmdline/usage.txt");
              InputStreamReader reader = new InputStreamReader(
                      requireNonNull(usageFile), StandardCharsets.UTF_8)) {
             Writer writer = new StringWriter();

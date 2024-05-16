@@ -1,5 +1,7 @@
 package net.stoerr.ai.aigenpipeline.framework.chat;
 
+import static net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask.unclutter;
+
 /**
  * A pseudo AI chat model that just copies the input to the output.
  */
@@ -63,7 +65,7 @@ public class CopyPseudoAIChatBuilderImpl implements AIChatBuilder {
     @Override
     public AIChatBuilder assistantMsg(String text) {
         if (text != null) {
-            allInputs.append(text);
+            allInputs.append(unclutter(text));
         }
         return this;
     }

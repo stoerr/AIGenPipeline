@@ -63,6 +63,19 @@ public class AIGenerationTask implements Cloneable {
     protected static final Pattern PATTERN_LICENCE =
             Pattern.compile("\\A<!--(?s).*?Copyright.*?Adobe.*?Licensed under.*?-->");
 
+    /**
+     * A pattern matching infile prompts like this:
+     * <pre>
+     * <%-- AIGenPromptStart(tablefromdatacopied)
+     * Make a markdown table from the data, with columns "Name" and "Profession".
+     * AIGenCommand(tablefromdatacopied)
+     * -f -m copy tablefromdata.md
+     * AIGenPromptEnd(tablefromdatacopied) --%>
+     * </pre>
+     * This matches a line containing AIGenPromptStart with an id until the corresponding AIGenPromptEnd.
+     */
+    protected static final Pattern PATTERN_INFILEPROMPT = Pattern.compile(
+            ".*AIGenPromptStart\\(([^)]*)\\)((?s).*?)AIGenPromptEnd\\(\\1\\).*\n?");
 
     protected List<AIInOut> inputFiles = new ArrayList<>();
     protected AIInOut output;
@@ -259,8 +272,8 @@ public class AIGenerationTask implements Cloneable {
         }
     }
 
-    /* Remove some clutter that is not relevant and might even confuse the AI */
-    protected static String unclutter(String content) {
+    /* Remove some clutter that is not relevant and might even confuse the AI. */
+    public static String unclutter(String content) {
         if (content == null) {
             return null;
         }
@@ -269,6 +282,10 @@ public class AIGenerationTask implements Cloneable {
             content = matcher.replaceFirst("");
         }
         matcher = AIVersionMarker.VERSION_MARKER_PATTERN.matcher(content);
+        if (matcher.find()) {
+            content = matcher.replaceFirst("");
+        }
+        matcher = PATTERN_INFILEPROMPT.matcher(content);
         if (matcher.find()) {
             content = matcher.replaceFirst("");
         }
