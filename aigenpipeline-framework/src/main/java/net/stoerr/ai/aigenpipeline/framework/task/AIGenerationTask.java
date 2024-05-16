@@ -260,7 +260,7 @@ public class AIGenerationTask implements Cloneable {
     }
 
     /* Remove some clutter that is not relevant and might even confuse the AI */
-    protected static String unclutter(String content) {
+    public static String unclutter(String content) {
         if (content == null) {
             return null;
         }
