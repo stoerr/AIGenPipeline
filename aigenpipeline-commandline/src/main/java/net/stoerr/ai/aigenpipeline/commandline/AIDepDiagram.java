@@ -3,6 +3,7 @@ package net.stoerr.ai.aigenpipeline.commandline;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,53 @@ public class AIDepDiagram {
             pathToId.put(path, id);
         }
         return id;
+    }
+
+    /**
+     * Does a topological sort to execute tasks that depend on other tasks later.
+     */
+    public List<AIGenPipeline> sortedPipelines() {
+        List<AIGenPipeline> sorted = new ArrayList<>();
+        TopoSort<String> sort = new TopoSort<>();
+        for (AIGenPipeline pipeline : pipelines) {
+            String outId = idForInOut(pipeline.taskOutput);
+            for (AIInOut input : pipeline.inputFiles) {
+                String inId = idForInOut(input);
+                sort.addEdge(inId, outId);
+            }
+            for (AIInOut prompt : pipeline.promptFiles) {
+                String inId = idForInOut(prompt);
+                sort.addEdge(inId, outId);
+            }
+        }
+        List<String> sortedIds = null;
+        try {
+            sortedIds = sort.sort();
+        } catch (TopoSort.TopoSortCycleException e) {
+            String id = (String) e.getNode();
+            File involvedFile = pipelines.stream()
+                    .map(p -> p.taskOutput)
+                    .filter(io -> idForInOut(io).equals(id))
+                    .findFirst().get().getFile();
+            throw new IllegalArgumentException("Cycle detected involving file " + involvedFile.getAbsolutePath());
+        }
+        Map<String, List<AIGenPipeline>> outIdToPipelines = new HashMap<>();
+        for (AIGenPipeline pipeline : pipelines) {
+            String outId = idForInOut(pipeline.taskOutput);
+            List<AIGenPipeline> list = outIdToPipelines.get(outId);
+            if (null == list) {
+                list = new ArrayList<>();
+                outIdToPipelines.put(outId, list);
+            }
+            list.add(pipeline);
+        }
+        for (String id : sortedIds) {
+            List<AIGenPipeline> list = outIdToPipelines.get(id);
+            if (null != list) {
+                sorted.addAll(list);
+            }
+        }
+        return sorted;
     }
 
 }

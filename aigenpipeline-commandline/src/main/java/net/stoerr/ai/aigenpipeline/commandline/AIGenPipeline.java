@@ -197,8 +197,6 @@ public class AIGenPipeline {
         if (explain != null) {
             String explanation = task.explain(this::makeChatBuilder, rootDir, explain);
             OUT.println(explanation);
-        } else {
-            task.execute(this::makeChatBuilder, rootDir);
         }
     }
 
@@ -207,7 +205,8 @@ public class AIGenPipeline {
             new AIDepDiagram(Arrays.asList(this), rootDir).printDepDiagram(logStream);
             return;
         }
-        if (explain == null && !printdependencydiagram) {
+        if (explain == null) {
+            if (verbose) logStream.println("Executing task for " + taskOutput.getFile());
             task.execute(this::makeChatBuilder, rootDir);
         }
     }
@@ -254,7 +253,7 @@ public class AIGenPipeline {
         if (printdependencydiagram) {
             new AIDepDiagram(subPipelines, rootDir).printDepDiagram(logStream);
         } else {
-            subPipelines.forEach(AIGenPipeline::executeTask);
+            new AIDepDiagram(subPipelines, rootDir).sortedPipelines().forEach(AIGenPipeline::executeTask);
         }
     }
 
