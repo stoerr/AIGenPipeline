@@ -22,6 +22,7 @@ Options:
     -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
     -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers.
                              The infile prompts in these files are processed.
+    -dd, --dependencydiagram Print a dependency diagram (Mermaid graph) of the scanned files and exit.
 
   AI Generation control:
     -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.

@@ -64,6 +64,7 @@ public class AIGenPipeline {
     protected boolean help, verbose, dryRun, check, version;
     protected String helpAIquestion;
     protected String output;
+    protected AIInOut taskOutput;
     protected String explain;
     protected String url;
     protected String apiKey;
@@ -82,6 +83,7 @@ public class AIGenPipeline {
     protected boolean printconfig;
     protected String infilePromptMarker;
     protected String outputScan;
+    protected boolean printdependencydiagram;
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -155,7 +157,6 @@ public class AIGenPipeline {
     protected void prepareTask() throws IOException {
         this.logStream = output == null || output.isBlank() ? OUT : ERR;
         File outputFile = Path.of(".").resolve(requireNonNull(output, "No output file given.")).toFile();
-        AIInOut taskOutput;
         if (infilePromptMarker != null) {
             String[] separators = SegmentedFile.infilePrompting(infilePromptMarker);
             SegmentedFile segmentedFile = new SegmentedFile(outputFile, separators);
@@ -202,7 +203,11 @@ public class AIGenPipeline {
     }
 
     protected void executeTask() {
-        if (explain == null) {
+        if (printdependencydiagram) {
+            new AIDepDiagram(Arrays.asList(this), rootDir).printDepDiagram(logStream);
+            return;
+        }
+        if (explain == null && !printdependencydiagram) {
             task.execute(this::makeChatBuilder, rootDir);
         }
     }
@@ -246,7 +251,11 @@ public class AIGenPipeline {
         if (verbose) {
             OUT.println("Processing " + subPipelines.size() + " tasks.");
         }
-        subPipelines.forEach(AIGenPipeline::executeTask);
+        if (printdependencydiagram) {
+            new AIDepDiagram(subPipelines, rootDir).printDepDiagram(logStream);
+        } else {
+            subPipelines.forEach(AIGenPipeline::executeTask);
+        }
     }
 
     protected void readArguments(String[] args, @Nonnull File startDir) throws IOException {
@@ -354,6 +363,10 @@ public class AIGenPipeline {
                 case "-os":
                 case "--outputscan":
                     outputScan = args[++i];
+                    break;
+                case "-dd":
+                case "--dependencydiagram":
+                    printdependencydiagram = true;
                     break;
                 case "-p":
                 case "--prompt":
