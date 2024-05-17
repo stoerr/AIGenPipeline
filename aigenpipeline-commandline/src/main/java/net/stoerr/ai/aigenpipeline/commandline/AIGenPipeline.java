@@ -215,6 +215,9 @@ public class AIGenPipeline {
      * Scans for files in {@link #outputScan} and processes them.
      */
     protected void runWithOutputScan(String[] args) {
+        if (!inputFiles.isEmpty()) {
+            throw new IllegalArgumentException("Cannot use -os with additional input files (likely a misusage). Actual arguments were: " + Arrays.toString(args));
+        }
         FileLookupHelper helper = FileLookupHelper.fromPath(".");
         List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
         if (files.isEmpty()) {
@@ -529,6 +532,20 @@ public class AIGenPipeline {
         } catch (IOException e) {
             throw new IllegalStateException("Bug: cannot read usage file.");
         }
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AIGenPipeline{");
+        sb.append("output='").append(output).append('\'');
+        sb.append(", taskOutput=").append(taskOutput);
+        sb.append(", inputFiles=").append(inputFiles);
+        sb.append(", promptFiles=").append(promptFiles);
+        sb.append(", writePart='").append(writePart).append('\'');
+        sb.append(", infilePromptMarker='").append(infilePromptMarker).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
 }

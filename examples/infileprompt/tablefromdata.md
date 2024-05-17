@@ -1,4 +1,3 @@
-Start of the file
 <!-- AIGenPromptStart(tablefromdata)
 Make a markdown table from the data, with columns "Name" and "Profession".
 AIGenCommand(tablefromdata)
