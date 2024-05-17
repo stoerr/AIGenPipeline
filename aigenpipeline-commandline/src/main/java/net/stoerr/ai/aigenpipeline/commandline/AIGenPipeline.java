@@ -477,8 +477,12 @@ public class AIGenPipeline {
                     if (args[i].startsWith("-")) {
                         throw new IllegalArgumentException("Unknown option: " + args[i]);
                     }
-                    Path inputArg = dir.toPath().resolve(args[i]);
-                    inputFiles.add(AIInOut.of(inputArg));
+                    if (helpAIquestion != null) {
+                        helpAIquestion += " " + args[i];
+                    } else {
+                        Path inputArg = dir.toPath().resolve(args[i]);
+                        inputFiles.add(AIInOut.of(inputArg));
+                    }
                     break;
             }
         }
@@ -500,9 +504,13 @@ public class AIGenPipeline {
         try {
             OUT.println("Trying to get an answer from the AI...\n");
             AIChatBuilder aiChatBuilder = makeChatBuilder();
+            aiChatBuilder.systemMsg("You are a helper for the AI based code generation pipeline. " +
+                    "You answer the users question about it from the collected help texts." +
+                    "Answer in plain text!");
             aiChatBuilder.userMsg("Print the collected help texts for the aigenpipeline tool.");
             aiChatBuilder.assistantMsg(helptext.toString());
             aiChatBuilder.userMsg("From this help texts, please answer the following question:\n\n" + helpAIquestion);
+            if (verbose) logStream.println("Asking AI:\n" + aiChatBuilder.toJson());
             String answer = aiChatBuilder.execute();
             OUT.println(answer);
         } catch (Exception e) {
