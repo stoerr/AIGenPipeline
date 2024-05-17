@@ -216,7 +216,9 @@ public class AIGenPipeline {
      */
     protected void runWithOutputScan(String[] args) {
         if (!inputFiles.isEmpty()) {
-            throw new IllegalArgumentException("Cannot use -os with additional input files (likely a misusage). Actual arguments were: " + Arrays.toString(args));
+            throw new IllegalArgumentException("Cannot use -os with additional input files. " +
+                    "(Likely a misusage - did you forget to quote the pattern on the command line?) " +
+                    "Actual arguments were: " + Arrays.toString(args));
         }
         FileLookupHelper helper = FileLookupHelper.fromPath(".");
         List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
