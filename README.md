@@ -62,7 +62,7 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
 4. **Generate parts of a file**: If you want to combine manually written and ai generated parts in one file, you can use
    the `-wp <marker>` option to replace a part of the output file. The marker should occur in exactly two lines of the
    already existing output file - the lines between them are replaced by the AI generated text. The first line must 
-   also contain the version commment (see below).
+   also contain the version comment (see below).
 
    ```shell
    aigenpipeline -wp generatedtable -o outputfile.md -p maketablefromjson.txt input.json
