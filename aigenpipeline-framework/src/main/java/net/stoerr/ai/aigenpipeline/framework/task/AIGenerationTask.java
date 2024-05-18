@@ -78,7 +78,9 @@ public class AIGenerationTask implements Cloneable {
             ".*AIGenPromptStart\\(([^)]*)\\)((?s).*?)AIGenPromptEnd\\(\\1\\).*\n?");
 
     protected List<AIInOut> inputFiles = new ArrayList<>();
+    protected List<AIInOut> hints = new ArrayList<>();
     protected AIInOut output;
+    protected boolean updateRequested = false;
 
     /**
      * The actual prompt created from prompt files and parameters.
@@ -150,6 +152,11 @@ public class AIGenerationTask implements Cloneable {
         return addInput(AIInOut.of(file));
     }
 
+    public AIGenerationTask addHint(AIInOut hint) {
+        hints.add(hint);
+        return this;
+    }
+
     public AIGenerationTask setOutput(@Nonnull AIInOut output) {
         requireNonNull(output, "Ouput must not be null");
         this.output = output;
@@ -173,6 +180,15 @@ public class AIGenerationTask implements Cloneable {
      */
     public AIGenerationTask setWritingStrategy(WritingStrategy strategy) {
         this.writingStrategy = strategy;
+        return this;
+    }
+
+    /**
+     * If true, adds the output file as a special input with a hint that this is the current state of the output
+     * that has to be updated with minimal changes.
+     */
+    public AIGenerationTask setUpdateRequested(boolean updateRequested) {
+        this.updateRequested = updateRequested;
         return this;
     }
 
@@ -368,14 +384,23 @@ public class AIGenerationTask implements Cloneable {
                 throw new IllegalStateException("Bug: Error reading default system message", e);
             }
         }
+        if (updateRequested) {
+            String outputContent = output.read();
+            if (outputContent != null) {
+                chat.userMsg("Retrieve the current content of the output file. " +
+                        "Later you will take this file as basis for the output, check it and possibly modify it, " +
+                        "but minimize changes."
+                );
+                chat.assistantMsg(unclutter(outputContent));
+            }
+        }
         for (AIInOut file : inputFiles) {
             // "Put it into the AI's mouth" pattern https://www.stoerr.net/blog/aimouth
             String path = relativePath(file.getFile(), rootDirectory);
-            String usermsg = !file.sameFile(output) ? // XXX WRONG
-                    "Retrieve the content of the input file '" + path + "'" :
-                    "Retrieve the current content of the output file '" + path +
-                            "'. Later you will take this file as basis for the output, check it and possibly modify it, " +
-                            "but minimize changes.";
+            if (file.sameFile(output)) {
+                throw new IllegalArgumentException("The output is also given as input file. Please request an update instead.");
+            }
+            String usermsg = "Retrieve the content of the input file '" + path + "'";
             chat.userMsg(usermsg);
             String fileContent = file.read();
             if (fileContent == null) {
@@ -383,7 +408,15 @@ public class AIGenerationTask implements Cloneable {
             }
             chat.assistantMsg(unclutter(fileContent));
         }
-        chat.userMsg(prompt);
+        StringBuilder promptBuilder = new StringBuilder(prompt);
+        for (AIInOut hint : hints) {
+            String hintContent = hint.read();
+            if (hintContent == null) {
+                throw new IllegalArgumentException("Could not read hint file " + hint);
+            }
+            promptBuilder.append("\n\n").append(unclutter(hintContent));
+        }
+        chat.userMsg(promptBuilder.toString());
         LOG.fine(() -> "Executing chat for: " + output + "\n" + chat.toJson());
         return chat;
     }

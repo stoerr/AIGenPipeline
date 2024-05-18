@@ -16,13 +16,16 @@ Options:
     -v, --verbose            Enable verbose output to stderr, providing more details about the process.
 
   Input / outputs:
-    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
-    -p, --prompt <file>      Reads a prompt from the given file.
+    -o, --output <file>      Specify the output file where the generated content will be written.
     -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.
-    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
+    -upd, --update           Gives the current content of the output as hint to the AI that it should be updated / improved.
+    --hint <file>            Gives this file as additional clue to the AI (special filename - is stdin), e.g. to tell
+                             it to focus on something for an --update. This is not used for version checking.
+    -p, --prompt <file>      Reads a prompt from the given file.
+    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default.
     -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
     -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers.
-                             The infile prompts in these files are processed.
+                             The infile prompts in these files are processed (see -ifp).
     -dd, --dependencydiagram Print a dependency diagram (Mermaid graph) of the scanned files and exit.
 
   AI Generation control:

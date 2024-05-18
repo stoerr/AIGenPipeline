@@ -164,6 +164,7 @@ Options:
   General options:
     -h, --help               Show this help message and exit.
     -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.
+                             Use as last argument - rest of command line counts as question.
     --version                Show the version of the AIGenPipeline tool and exit.
     -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                              generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
@@ -173,13 +174,17 @@ Options:
     -v, --verbose            Enable verbose output to stderr, providing more details about the process.
 
   Input / outputs:
-    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
-    -p, --prompt <file>      Reads a prompt from the given file.
+    -o, --output <file>      Specify the output file where the generated content will be written.
     -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.
-    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
+    -upd, --update           Gives the current content of the output as hint to the AI that it should be updated / improved.
+    --hint <file>            Gives this file as additional clue to the AI (special filename - is stdin), e.g. to tell
+                             it to focus on something for an --update. This is not used for version checking.
+    -p, --prompt <file>      Reads a prompt from the given file.
+    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default.
     -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
     -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers.
-                             The infile prompts in these files are processed.
+                             The infile prompts in these files are processed (see -ifp).
+    -dd, --dependencydiagram Print a dependency diagram (Mermaid graph) of the scanned files and exit.
 
   AI Generation control:
     -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
@@ -196,6 +201,7 @@ Options:
                              that was given to generate the output file, and the additional --explain <question> option.
                              It recreates the conversation that lead to the output file and asks the AI for a 
                              clarification. The output file is not written, but read to recreate the conversation.
+                             Use as last argument - rest of command line counts as question.
 
   Configuration files:
     -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.
