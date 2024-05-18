@@ -1,0 +1,31 @@
+For today's let's have some fun with AI I'd like to spend a few hours to see how far we get with our AI toolbox
+to implement a nice interesting idea as a proof of concept. I've recently heard an interesting talk about some
+experiments how to use AI techniques to try to find code duplicates. Recalling from memory, these were about the
+steps taken:
+
+1. extract all methods from the source code including information about the types used in that method
+2. use an LLM to summarize what the method does
+3. use an embedding on all summaries to transform that into vector space
+4. find the closest matches
+5. use an LLM to rate how close those closest matches really are
+6. present the best results
+
+Now let's see how to implement that the simplest way, using LLM utilities and Unix command line utilities.
+
+## Step 1 extract the methods
+
+In the original talk they used an actual parser for the language to collect features from the code. That's way more 
+than a few hours, so we try to use a LLM for that, too. So we want to feed all classes to the LLM and get a couple 
+of documents out of it, one for each method. Since we are interested in the descriptions of the methods, we rather 
+fuse step 1 and 2 into one step and have the LLM output summaries in the first place. To get one document per method 
+let's have JSON output as an array of descriptions, and split that with unix utilities.
+
+There is obvious room for improvement here: for instance it'd be nice for a class implementing an interface to feed 
+that interface as background information to the LLM, too, but let's keep it simple for now.
+
+That's a nice job for the AIGenPipeline. We need to create a prompt that reads the source code and outputs the JSON
+array of method descriptions. AIGenPipeline will also ensure that the output is regenerated if and only if the 
+source file changes.
+
+To split the JSON array into separate documents we can use `jq` and `awk`. We can use `jq` to extract the array
+and `awk` to split it into separate documents. We can then use `jq` again to extract the summaries.
