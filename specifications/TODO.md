@@ -1,5 +1,7 @@
 # Todos for the application
 
+- Bug: when using -os and giving the output file as input to update then we should not give the whole file but the 
+  part. Or do we? Maybe give both, or an additional switch to update.
 - for updating: possibly give additional instructions for focusing on specific changes that is not included into the
   normal prompt file and versioning. (<-> prompt on command line? And how to do that for -os?)
 - make a video
