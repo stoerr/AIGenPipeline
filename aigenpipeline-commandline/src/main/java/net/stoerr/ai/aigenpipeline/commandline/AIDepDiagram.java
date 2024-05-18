@@ -78,6 +78,7 @@ public class AIDepDiagram {
                 sort.addEdge(inId, outId);
             }
         }
+
         List<String> sortedIds = null;
         try {
             sortedIds = sort.sort();
@@ -89,7 +90,9 @@ public class AIDepDiagram {
                     .findFirst().get().getFile();
             throw new IllegalArgumentException("Cycle detected involving file " + involvedFile.getAbsolutePath());
         }
+
         Map<String, List<AIGenPipeline>> outIdToPipelines = new HashMap<>();
+        List<AIGenPipeline> remainingPipelines = new ArrayList<>(pipelines);
         for (AIGenPipeline pipeline : pipelines) {
             String outId = idForInOut(pipeline.taskOutput);
             List<AIGenPipeline> list = outIdToPipelines.get(outId);
@@ -103,8 +106,10 @@ public class AIDepDiagram {
             List<AIGenPipeline> list = outIdToPipelines.get(id);
             if (null != list) {
                 sorted.addAll(list);
+                remainingPipelines.removeAll(list);
             }
         }
+        sorted.addAll(remainingPipelines);
         return sorted;
     }
 

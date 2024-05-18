@@ -258,7 +258,8 @@ public class AIGenPipeline {
         if (printdependencydiagram) {
             new AIDepDiagram(subPipelines, rootDir).printDepDiagram(logStream);
         } else {
-            new AIDepDiagram(subPipelines, rootDir).sortedPipelines().forEach(AIGenPipeline::executeTask);
+            List<AIGenPipeline> sorted = new AIDepDiagram(subPipelines, rootDir).sortedPipelines();
+            sorted.forEach(AIGenPipeline::executeTask);
         }
     }
 
