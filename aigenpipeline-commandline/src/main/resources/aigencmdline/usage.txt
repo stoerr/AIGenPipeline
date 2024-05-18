@@ -6,6 +6,7 @@ Options:
   General options:
     -h, --help               Show this help message and exit.
     -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.
+                             Use as last argument - rest of command line counts as question.
     --version                Show the version of the AIGenPipeline tool and exit.
     -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                              generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
@@ -39,6 +40,7 @@ Options:
                              that was given to generate the output file, and the additional --explain <question> option.
                              It recreates the conversation that lead to the output file and asks the AI for a 
                              clarification. The output file is not written, but read to recreate the conversation.
+                             Use as last argument - rest of command line counts as question.
 
   Configuration files:
     -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.

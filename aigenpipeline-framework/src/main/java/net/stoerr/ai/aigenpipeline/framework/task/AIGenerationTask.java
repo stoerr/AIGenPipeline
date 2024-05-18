@@ -397,7 +397,8 @@ public class AIGenerationTask implements Cloneable {
      */
     public String explain(@Nonnull Supplier<AIChatBuilder> chatBuilderFactory, @Nonnull File rootDirectory, @Nonnull String question) {
         if (hasToBeRun()) { // that's not strictly necessary, but if not that's a likely mistake
-            throw new IllegalStateException("Task has to be already run for: " + output);
+            System.err.println("Warning: explain results might be invalid since task would need to be run for: " + output);
+            // throw new IllegalStateException("Task has to be already run for: " + output);
         }
         AIChatBuilder chat = makeChatBuilder(chatBuilderFactory, rootDirectory);
         String outputFileContent = output.read();
@@ -409,9 +410,9 @@ public class AIGenerationTask implements Cloneable {
         chat.assistantMsg(previousOutput);
         chat.userMsg(question);
         String result = chat.execute();
-        LOG.info(() -> "Explanation result for " + outputFileContent + " with question " + question + " is:\n" + result);
+        LOG.info(() -> "Explanation result for " + output + " with question " + question + " is:\n" + result);
         if (result.contains(FIXME)) {
-            throw new IllegalStateException("AI returned FIXME for " + output + " :\n" + result);
+            System.err.println("Warning: AI returned FIXME for explain of " + output + " :\n" + result);
         }
         return result;
     }

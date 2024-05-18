@@ -477,7 +477,9 @@ public class AIGenPipeline {
                     if (args[i].startsWith("-")) {
                         throw new IllegalArgumentException("Unknown option: " + args[i]);
                     }
-                    if (helpAIquestion != null) {
+                    if (explain != null) {
+                        explain += " " + args[i];
+                    } else if (helpAIquestion != null) {
                         helpAIquestion += " " + args[i];
                     } else {
                         Path inputArg = dir.toPath().resolve(args[i]);

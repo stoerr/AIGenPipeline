@@ -1,24 +1,28 @@
 # Todos for the application
 
-- put information / command line into the generated file.
+- for updating: possibly give additional instructions for focusing on specific changes that is not included into the
+  normal prompt file and versioning. (<-> prompt on command line? And how to do that for -os?)
+- make a video
 
 ## Ideas for command line / framework improvements
+
 - prompt on command line? stdin? unclear what filename!
-  - (idea: -p - = stdin , versioning from tag)
+    - (idea: -p - = stdin , versioning from tag)
 - improve automated deployment with GitHub Actions ; automatically push to master
 
 ## Site improvements
+
 - better document usage of various backends
 - split into several pages
 - examples
-  - json prompts to page
-  - Request example to GSON class
-  - construct the readmes of the examples?
-  - HTL to md to java?
-  - construct mini-application?
-  - demonstrate explain feature
+    - json prompts to page
+    - Request example to GSON class
+    - construct the readmes of the examples?
+    - HTL to md to java?
+    - construct mini-application?
+    - demonstrate explain feature
 
-## Endpoints
+## Possible other endpoints to check
 
 https://octo.ai/product/text-generation/
 Huggingface?
@@ -29,7 +33,8 @@ https://openrouter.ai/models/meta-llama/llama-3-70b-instruct
 llm? llm -m Meta-Llama-3-8B-Instruct
 llm chat -m Meta-Llama-3-8B-Instruct
 
-## Maven central
+## Maven central publishing links
+
 - https://github.com/volkodavs/ossrh-demo
 - https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-maven
 - https://www.baeldung.com/maven-repo-github
