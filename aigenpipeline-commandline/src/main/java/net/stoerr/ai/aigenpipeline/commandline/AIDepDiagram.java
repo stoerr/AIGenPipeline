@@ -69,7 +69,9 @@ public class AIDepDiagram {
             String outId = idForInOut(pipeline.taskOutput);
             for (AIInOut input : pipeline.inputFiles) {
                 String inId = idForInOut(input);
-                sort.addEdge(inId, outId);
+                if(!inId.equals(outId)) {
+                    sort.addEdge(inId, outId);
+                }
             }
             for (AIInOut prompt : pipeline.promptFiles) {
                 String inId = idForInOut(prompt);

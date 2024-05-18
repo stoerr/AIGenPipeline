@@ -2,6 +2,7 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -26,6 +28,24 @@ public class FileLookupHelper {
     protected static final Logger LOG = Logger.getLogger(FileLookupHelper.class.getName());
 
     public static final String HTML_PATTERN = ".*\\.html";
+
+    /**
+     * A pattern matching a prefix of a file name that ends with a / and has no meta characters of the
+     * {@link java.nio.file.FileSystem#getPathMatcher(String)} in it.
+     */
+    protected static final Pattern NOMETAPREFIXPATTERN = Pattern.compile("^/?([^/*?{}\\[\\]]+/)+");
+
+    /**
+     * The maximum filesize we search in.
+     */
+    protected static final int FILE_MAXSIZE = 50 * 1024;
+
+    /**
+     * Pattern matching file names of files which have binary content (*.jpg, *.gif, *.jar etc.), which we ignore in the search.
+     */
+    protected static final Pattern BINARYFILEPATTERN = Pattern.compile(
+            ".*\\.(jpg|gif|png|[jwet]ar|class|zip|gz|tgz|pdf|doc|xls|ppt|docx|xlsx|pptx|odt|ods)");
+
     protected final File directory;
 
     protected FileLookupHelper(String path) {
@@ -80,11 +100,20 @@ public class FileLookupHelper {
      */
     @Nonnull
     public List<File> files(@Nonnull String relpathDirectory, @Nullable String filePathPattern, boolean recursive) {
+        if (filePathPattern != null) {
+            Matcher fixedPrefixMatcher = NOMETAPREFIXPATTERN.matcher(filePathPattern);
+            if (fixedPrefixMatcher.find()) {
+                String prefix = fixedPrefixMatcher.group();
+                relpathDirectory = Path.of(relpathDirectory).resolve(prefix).normalize().toString();
+                filePathPattern = filePathPattern.substring(prefix.length());
+            }
+        }
+
         File dir = new File(directory, relpathDirectory);
         if (!dir.isDirectory()) {
             throw new IllegalStateException("Directory " + dir + " does not exist");
         }
-        Path dirPath = dir.toPath();
+        Path dirPath = dir.toPath().normalize();
         PathMatcher pathMatcher = null != filePathPattern && !filePathPattern.isEmpty() ?
                 dirPath.getFileSystem().getPathMatcher("glob:" + filePathPattern) : null;
         List<File> result = new ArrayList<>();
@@ -127,11 +156,16 @@ public class FileLookupHelper {
         List<File> candidates = files(relpathDirectory, filePathPattern, recursive);
         List<File> result = new ArrayList<>();
         for (File file : candidates) {
+            if (file.length() > FILE_MAXSIZE || BINARYFILEPATTERN.matcher(file.getName()).matches()) {
+                continue;
+            }
             try {
                 String content = Files.readString(file.toPath());
                 if (pattern.matcher(content).find()) {
                     result.add(file);
                 }
+            } catch (MalformedInputException e) { // skip binary file
+                // ignore
             } catch (IOException e) {
                 LOG.severe("for " + file + ":" + e);
             }

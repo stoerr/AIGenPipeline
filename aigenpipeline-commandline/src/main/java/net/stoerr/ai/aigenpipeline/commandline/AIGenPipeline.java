@@ -215,6 +215,11 @@ public class AIGenPipeline {
      * Scans for files in {@link #outputScan} and processes them.
      */
     protected void runWithOutputScan(String[] args) {
+        if (!inputFiles.isEmpty()) {
+            throw new IllegalArgumentException("Cannot use -os with additional input files. " +
+                    "(Likely a misusage - did you forget to quote the pattern on the command line?) " +
+                    "Actual arguments were: " + Arrays.toString(args));
+        }
         FileLookupHelper helper = FileLookupHelper.fromPath(".");
         List<File> files = helper.filesContaining(".", outputScan, SegmentedFile.REGEX_AIGENPROMPTSTART, true);
         if (files.isEmpty()) {
@@ -472,8 +477,14 @@ public class AIGenPipeline {
                     if (args[i].startsWith("-")) {
                         throw new IllegalArgumentException("Unknown option: " + args[i]);
                     }
-                    Path inputArg = dir.toPath().resolve(args[i]);
-                    inputFiles.add(AIInOut.of(inputArg));
+                    if (explain != null) {
+                        explain += " " + args[i];
+                    } else if (helpAIquestion != null) {
+                        helpAIquestion += " " + args[i];
+                    } else {
+                        Path inputArg = dir.toPath().resolve(args[i]);
+                        inputFiles.add(AIInOut.of(inputArg));
+                    }
                     break;
             }
         }
@@ -495,9 +506,13 @@ public class AIGenPipeline {
         try {
             OUT.println("Trying to get an answer from the AI...\n");
             AIChatBuilder aiChatBuilder = makeChatBuilder();
+            aiChatBuilder.systemMsg("You are a helper for the AI based code generation pipeline. " +
+                    "You answer the users question about it from the collected help texts." +
+                    "Answer in plain text!");
             aiChatBuilder.userMsg("Print the collected help texts for the aigenpipeline tool.");
             aiChatBuilder.assistantMsg(helptext.toString());
             aiChatBuilder.userMsg("From this help texts, please answer the following question:\n\n" + helpAIquestion);
+            if (verbose) logStream.println("Asking AI:\n" + aiChatBuilder.toJson());
             String answer = aiChatBuilder.execute();
             OUT.println(answer);
         } catch (Exception e) {
@@ -529,6 +544,20 @@ public class AIGenPipeline {
         } catch (IOException e) {
             throw new IllegalStateException("Bug: cannot read usage file.");
         }
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AIGenPipeline{");
+        sb.append("output='").append(output).append('\'');
+        sb.append(", taskOutput=").append(taskOutput);
+        sb.append(", inputFiles=").append(inputFiles);
+        sb.append(", promptFiles=").append(promptFiles);
+        sb.append(", writePart='").append(writePart).append('\'');
+        sb.append(", infilePromptMarker='").append(infilePromptMarker).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
 }

@@ -76,19 +76,13 @@ public interface WritingStrategy {
                 case "htm":
                 case "xml":
                 case "jsp":
+                case "md":
                     result = content + "\n\n<!-- " + comment + " -->\n";
                     break;
                 case "css":
                 case "js":
                 case "json": // json is a problem, no comment syntax. Let's see whether this makes sense.
                     result = "/* " + comment + " */\n\n" + content;
-                    break;
-                case "md":
-                    if (content.startsWith("---\n")) {
-                        result = content.replaceFirst("---\n", "---\nversion: " + comment + "\n");
-                    } else {
-                        result = "---\nversion: " + comment + "\n---\n\n" + content;
-                    }
                     break;
                 case "sh":
                 case "yaml":

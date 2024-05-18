@@ -97,13 +97,17 @@ public class SegmentedFile {
                 }
             }
         }
-        if (!content.equals(joinSegments())) {
+        if (!content.equals(joinSegments()) && !(content + "\n").equals(joinSegments())) {
             throw new IllegalStateException("Bug: content does not match segments in " + file);
         }
     }
 
     protected String joinSegments() {
-        return String.join("", segments);
+        String fullcontent = String.join("", segments);
+        if (!fullcontent.endsWith("\n")) {
+            fullcontent += "\n";
+        }
+        return fullcontent;
     }
 
     @Override
