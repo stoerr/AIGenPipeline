@@ -16,7 +16,6 @@ keywords:
 <img src="images/AIGenPipelineLogo-square.png" alt="AIGenPipeline Logo" width="320" height="320"/>
 </div>
 
-
 # AI based code generation pipeline
 
 <strong>A command line tool and framework for systematic code generation using AI</strong>
@@ -56,8 +55,9 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
    aigenpipeline -p test_prompt.txt -i generated_interface.java -o generated_test.java
    ```
 
-   By the way: if you want to change an existing output file, you can give it as additional input file to the AI. 
-   It will be instructed to check and update the file according to the new input files, minimizing the changes.
+   By the way: if you want to change an existing output file, you can add the argument `-upd`.
+   Then the current content of the output file will be given to the AI, and
+   it will be instructed to check and update the file according to the new input files, minimizing the changes.
 
 2. **Explanation / Query**: After generating an output, if there are questions or the need for clarification on how to
    improve it:
@@ -80,13 +80,13 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
 
 4. **Generate parts of a file**: If you want to combine manually written and ai generated parts in one file, you can use
    the `-wp <marker>` option to replace a part of the output file. The marker should occur in exactly two lines of the
-   already existing output file - the lines between them are replaced by the AI generated text. The first line must 
+   already existing output file - the lines between them are replaced by the AI generated text. The first line must
    also contain the version commment (see below).
 
    ```shell
    aigenpipeline -wp generatedtable -o outputfile.md -p maketablefromjson.txt input.json
    ```
-  
+
    could e.g. replace the part between the lines `<!-- start generatedtable AIGenVersion(1.0) -->` and `<!-- end 
    generatedtable -->` in:
 
@@ -131,17 +131,20 @@ The comment syntax (in this case /* */) is ignored - we just look for the AIGenV
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.
 
+Hint files (given with the `--hint` option) are not used for version checking, but only to give temporary additional 
+information to the AI, such as instructions to focus on specific things for an update. Use with care.
+
 ## Using different large language models
 
-While the tool defaults to using the OpenAI chat completion service, it is possible to use other services / LLM as 
-well. I tried with [Anthropic Claude](https://www.anthropic.com/claude) 
-[text generation](https://docs.anthropic.com/claude/docs/text-generation) and some local models run with the nice 
+While the tool defaults to using the OpenAI chat completion service, it is possible to use other services / LLM as
+well. I tried with [Anthropic Claude](https://www.anthropic.com/claude)
+[text generation](https://docs.anthropic.com/claude/docs/text-generation) and some local models run with the nice
 [LM Studio](https://lmstudio.ai/). See [using other models](otherModels.md) for some examples.
 
 ## Configuration files
 
 The tool can read configuration files with common configurations (e.g. which AI backend to use). These should simply
-contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment 
+contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment
 variable AIGENPIPELINE_CONFIG that can contain options.
 
 Configuration files can be given explicitly (option `-cf` / `--configfile`) or the tool can scan for files named
@@ -151,7 +154,7 @@ the scanning further upwards in the directory tree.
 
 The order these configurations are processed is: environment variable, `.aigenpipeline` files from top to bottom,
 command line arguments. Thus, the later override the earlier one. Explicitly given configuration files are
-processed at the point where the argument occurs when processing the command line arguments. The option `-cp` / 
+processed at the point where the argument occurs when processing the command line arguments. The option `-cp` /
 `--configprint` gives an overview of the used files / sources of configuration.
 
 ## Other features
@@ -161,8 +164,8 @@ about the result or have it make suggestions how to improve the prompt. This mod
 recreate the conversation that lead to the output file and ask the AI for a clarification or suggestion in form of a
 chat continuation.
 
-It's also possible to ask the tool questions about itself - use the `-ha` / `--helpai` option with a question, and it 
-tries to answer that from this documentation. There is also an 
+It's also possible to ask the tool questions about itself - use the `-ha` / `--helpai` option with a question, and it
+tries to answer that from this documentation. There is also an
 [OpenAI GPT](https://chatgpt.com/g/g-zheGoARkR-ai-based-code-generation-pipeline-helper)
 that can be asked.
 
@@ -182,6 +185,7 @@ Options:
   General options:
     -h, --help               Show this help message and exit.
     -ha, --helpai <question> Answer a question about the tool from the text on its documentation site and exit.
+                             Use as last argument - rest of command line counts as question.
     --version                Show the version of the AIGenPipeline tool and exit.
     -c, --check              Only check if the output needs to be regenerated based on input versions without actually 
                              generating it. The exit code is 0 if the output is up to date, 1 if it needs to be 
@@ -191,13 +195,17 @@ Options:
     -v, --verbose            Enable verbose output to stderr, providing more details about the process.
 
   Input / outputs:
-    -o, --output <file>      Specify the output file where the generated content will be written. Mandatory.
-    -p, --prompt <file>      Reads a prompt from the given file.
+    -o, --output <file>      Specify the output file where the generated content will be written.
     -ifp, --infileprompt <marker> <file>  The output and the prompt are in the same file, the marker is used in separating the parts.
-    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default. 
+    -upd, --update           Gives the current content of the output as hint to the AI that it should be updated / improved.
+    --hint <file>            Gives this file as additional clue to the AI (special filename - is stdin), e.g. to tell
+                             it to focus on something for an --update. This is not used for version checking.
+    -p, --prompt <file>      Reads a prompt from the given file.
+    -s, --sysmsg <file>      Optional: Reads a system message from the given file instead of using the default.
     -k <key>=<value>         Sets a key-value pair replacing ${key} in prompt files with the value. 
     -os, --outputscan <pattern>  Searches for files matching the ant-like pattern and scans them for AIGenPromptStart markers.
-                             The infile prompts in these files are processed.
+                             The infile prompts in these files are processed (see -ifp).
+    -dd, --dependencydiagram Print a dependency diagram (Mermaid graph) of the scanned files and exit.
 
   AI Generation control:
     -f, --force              Force regeneration of output files, ignoring any version checks - same as -ga.
@@ -214,6 +222,7 @@ Options:
                              that was given to generate the output file, and the additional --explain <question> option.
                              It recreates the conversation that lead to the output file and asks the AI for a 
                              clarification. The output file is not written, but read to recreate the conversation.
+                             Use as last argument - rest of command line counts as question.
 
   Configuration files:
     -cf, --configfile <file> Read configuration from the given file. These contain options like on the command line.

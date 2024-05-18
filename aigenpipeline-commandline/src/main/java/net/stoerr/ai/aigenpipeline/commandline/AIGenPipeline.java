@@ -84,6 +84,8 @@ public class AIGenPipeline {
     protected String infilePromptMarker;
     protected String outputScan;
     protected boolean printdependencydiagram;
+    protected boolean update;
+    protected List<AIInOut> hintFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         new AIGenPipeline().run(args);
@@ -176,6 +178,8 @@ public class AIGenPipeline {
                 task.addInput(inputFile);
             }
         }
+        hintFiles.forEach(task::addHint);
+        task.setUpdateRequested(update);
         promptFiles.forEach(f -> task.addPrompt(f, keyValues));
         task.setRegenerationCheckStrategy(regenerationCheckStrategy);
         task.setWritingStrategy(writingStrategy);
@@ -258,7 +262,8 @@ public class AIGenPipeline {
         if (printdependencydiagram) {
             new AIDepDiagram(subPipelines, rootDir).printDepDiagram(logStream);
         } else {
-            new AIDepDiagram(subPipelines, rootDir).sortedPipelines().forEach(AIGenPipeline::executeTask);
+            List<AIGenPipeline> sorted = new AIDepDiagram(subPipelines, rootDir).sortedPipelines();
+            sorted.forEach(AIGenPipeline::executeTask);
         }
     }
 
@@ -363,6 +368,18 @@ public class AIGenPipeline {
                         throw new IllegalArgumentException("Output file already given: " + output);
                     }
                     output = args[++i];
+                    break;
+                case "--hint":
+                    String hintFileName = args[++i];
+                    if (hintFileName.equals("-")) {
+                        hintFiles.add(AIInOut.of(System.in));
+                    } else {
+                        hintFiles.add(AIInOut.of(new File(hintFileName)));
+                    }
+                    break;
+                case "-upd":
+                case "--update":
+                    update = true;
                     break;
                 case "-os":
                 case "--outputscan":

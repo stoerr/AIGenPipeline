@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,6 +80,17 @@ public interface AIInOut {
     @Nonnull
     static AIInOut of(@Nonnull SegmentedFile segmentedFile, int segmentIndex) {
         return new AIFileSegmentInOut(requireNonNull(segmentedFile), segmentIndex);
+    }
+
+
+    /**
+     * Creates an AIInOut instance that reads from an input stream. Writing is not supported.
+     *
+     * @param in the input stream to read from
+     * @return an AIInOut instance
+     */
+    static AIInOut of(InputStream in) {
+        return new AIStreamInOut(in);
     }
 
     /**
@@ -184,6 +196,56 @@ public interface AIInOut {
         @Override
         public String toString() {
             return segmentedFile.getFile() + " segment " + segmentIndex;
+        }
+    }
+
+    /**
+     * AIStreamInOut is an implementation of AIInOut that reads from an input stream.
+     */
+    class AIStreamInOut implements AIInOut {
+
+        private final InputStream in;
+
+        /**
+         * Constructs an AIStreamInOut instance.
+         *
+         * @param in the input stream to read from
+         */
+        public AIStreamInOut(InputStream in) {
+            this.in = in;
+        }
+
+        /**
+         * Reads the input stream and returns its content as a string.
+         *
+         * @return the input stream content as a string
+         */
+        public String read() throws IllegalStateException {
+            try {
+                return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not read input stream", e);
+            }
+        }
+
+        /**
+         * Writing to an input stream is not supported.
+         *
+         * @param content the string to write
+         */
+        @Override
+        public void write(String content) {
+            throw new UnsupportedOperationException("Writing to an input stream is not supported");
+        }
+
+        @Override
+        public File getFile() {
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return "input stream";
         }
     }
 
