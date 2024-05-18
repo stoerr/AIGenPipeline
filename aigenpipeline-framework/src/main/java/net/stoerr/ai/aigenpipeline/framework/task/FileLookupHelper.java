@@ -3,10 +3,12 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -109,25 +111,24 @@ public class FileLookupHelper {
             }
         }
 
-        File dir = new File(directory, relpathDirectory);
-        if (!dir.isDirectory()) {
+        Path dir = directory.toPath().resolve(relpathDirectory).normalize();
+        if (!dir.toFile().isDirectory()) {
             throw new IllegalStateException("Directory " + dir + " does not exist");
         }
-        Path dirPath = dir.toPath().normalize();
         PathMatcher pathMatcher = null != filePathPattern && !filePathPattern.isEmpty() ?
-                dirPath.getFileSystem().getPathMatcher("glob:" + filePathPattern) : null;
+                dir.getFileSystem().getPathMatcher("glob:" + filePathPattern) : null;
         List<File> result = new ArrayList<>();
         if (!recursive) {
-            File[] files = dir.listFiles(file -> pathMatcher == null || pathMatcher.matches(file.toPath())
-                    || pathMatcher.matches(dirPath.relativize(file.toPath())));
+            File[] files = dir.toFile().listFiles(file -> pathMatcher == null || pathMatcher.matches(file.toPath())
+                    || pathMatcher.matches(dir.relativize(file.toPath())));
             Arrays.stream(Objects.requireNonNull(files, dir.toString()))
                     .filter(File::isFile).forEach(result::add);
         } else {
             try {
-                Files.walkFileTree(dirPath, new SimpleFileVisitor<>() {
+                Files.walkFileTree(dir, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        Path relativePath = dirPath.relativize(file);
+                        Path relativePath = dir.relativize(file);
                         if (Files.isRegularFile(file) &&
                                 (pathMatcher == null || pathMatcher.matches(relativePath) || pathMatcher.matches(file))) {
                             result.add(file.toFile());
