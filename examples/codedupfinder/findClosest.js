@@ -70,8 +70,8 @@ calculateSimilarities();
 // sort similarities by decreasing similarity
 similarities.sort((a, b) => b.similarity - a.similarity);
 
-// print the 10 most similar pairs
-for (let i = 0; i < 10; i++) {
+// print the 50 most similar pairs
+for (let i = 0; i < 50; i++) {
     const sim = similarities[i];
     console.log(`### Similarity ${sim.similarity} between\n${sim.id1}\nand\n${sim.id2}\n`);
     console.log(`${embeddings.get(sim.id1).content}\n`);
