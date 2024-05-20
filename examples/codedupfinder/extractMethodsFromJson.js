@@ -50,7 +50,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   const baseName = path.basename(filename, path.extname(filename));
 
   for (const [key, value] of Object.entries(jsonData)) {
-    const outputFilePath = path.join(dir, `${baseName}${key}.descr`);
+    const outputFilePath = path.join(dir, `${baseName}.${key}.descr`);
     fs.writeFile(outputFilePath, value, 'utf8', (writeErr) => {
       if (writeErr) {
         console.error(`Error writing file: ${writeErr.message}`);

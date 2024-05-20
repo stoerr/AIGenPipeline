@@ -12,6 +12,12 @@ steps taken:
 
 Now let's see how to implement that the simplest way, using LLM utilities and Unix command line utilities.
 
+## Preconditions
+
+I'll use a couple of tools I had installed anyway, so if you want to run this yourself you have to install them, too.
+Also I'll use OpenAI APIs, so you need an API key, though it isn't difficult to run this with local models, too. 
+(Please ask me if you like to do that and I'll extend this document with the necessary steps.)
+
 ## Step 1 and 2: extract the methods
 
 In the original talk they used an actual parser for the language to collect features from the code. That's way more 
@@ -32,4 +38,28 @@ To split the JSON array into separate documents it's probably easiest to make no
 ChatGPT-4 using aigenpipeline from the initial comment in this file: it describes the task and the aigenpipeline
 scans from script [generatecode.sh](generatecode.sh) where such prompts need to be executed.
 
-## Step 3
+## Step 3 - calculate embeddings
+
+The [LLM](https://github.com/simonw/llm) tool by [Simon Willison](https://simonwillison.net/) offers many LLM 
+related features, e.g. 
+[calculating embeddings for sets of files](https://til.stoerr.net/LLM/llm-embeddings-swillison.html),
+recalculating them only when needed. We can calculate the embeddings and save them in a SQLite database with the 
+following command:
+
+    llm embed-multi descr -d embeddings.db -m 3-large --store --files "$jsondir" '**/*.descr
+
+The nice thing is that LLM offers a simple similarity search that could even use this to find relevant methods for 
+something, though output is as a JSON format (jq is only for readable formatting):
+
+    llm similar descr -d embeddings.db -n 10 -c "description to search for" | jq
+
+## Step 4 and 6 - find the closest matches and present them
+
+While llm offers a similarity search, we need to get all of the embeddings and compare them. That's probably best 
+done with a program. I'll go for exporting the database to JSON and read it into a Javascript program for nodejs, 
+since that needs the least amount of things to learn for this quick project. :-) This exports it:
+
+    sqlite-utils rows embeddings.db embeddings --nl -c id -c content -c embedding > embeddings.json
+
+For now we'll skip the step 5 (rating the matches with an LLM) and just present the best matches, since in the talk
+they thought that didn't work too well, anyway.
