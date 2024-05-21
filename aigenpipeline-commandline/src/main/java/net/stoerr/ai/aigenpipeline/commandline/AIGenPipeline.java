@@ -116,14 +116,12 @@ public class AIGenPipeline {
                 runWithOutputScan(args);
             }
         } catch (IllegalArgumentException e) {
-            logStream.println("Usage error: " + e.getMessage());
+            logStream.println("Usage error for " + output + " : " + e.getMessage());
             if (verbose) {
                 e.printStackTrace(ERR);
             }
             OUT.flush();
             ERR.flush();
-//            System.err.println();
-//            printHelpAndExit(true);
             System.exit(1);
         }
     }
@@ -205,13 +203,19 @@ public class AIGenPipeline {
     }
 
     protected void executeTask() {
-        if (printdependencydiagram) {
-            new AIDepDiagram(Arrays.asList(this), rootDir).printDepDiagram(logStream);
-            return;
-        }
-        if (explain == null) {
-            if (verbose) logStream.println("Executing task for " + taskOutput.getFile());
-            task.execute(this::makeChatBuilder, rootDir);
+        try {
+            if (printdependencydiagram) {
+                new AIDepDiagram(Arrays.asList(this), rootDir).printDepDiagram(logStream);
+                return;
+            }
+            if (explain == null) {
+                if (verbose) logStream.println("Executing task for " + taskOutput.getFile());
+                task.execute(this::makeChatBuilder, rootDir);
+            }
+        } catch (RuntimeException e) {
+            String outputLocation = taskOutput != null ? taskOutput.getFile().getPath() : output;
+            logStream.println("Error regarding " + outputLocation);
+            throw e;
         }
     }
 
