@@ -59,12 +59,14 @@ function calculateSimilarities() {
     const keys = Array.from(embeddings.keys());
     for (let i = 0; i < keys.length; i++) {
         const id1 = keys[i];
-        const embedding1 = embeddings.get(id1).embedding;
+        let data1 = embeddings.get(id1);
+        const embedding1 = data1.embedding;
         for (let j = i + 1; j < keys.length; j++) {
             const id2 = keys[j];
-            const embedding2 = embeddings.get(id2).embedding;
+            let data2 = embeddings.get(id2);
+            const embedding2 = data2.embedding;
             let similarity = cosineSimilarity(embedding1, embedding2);
-            similarities.push({id1, id2, similarity});
+            similarities.push({similarity, id1, "content1": data1.content, id2, "content2": data2.content});
         }
     }
 }
@@ -82,3 +84,7 @@ for (let i = 0; i < 50; i++) {
     console.log(`=== ${sim.id2}:`);
     console.log(`${embeddings.get(sim.id2).content}\n\n`);
 }
+
+// create a json with an array of the 50 most similar pairs and write it to the file closest.json
+const closest = similarities.slice(0, 50);
+fs.writeFileSync('result.json', JSON.stringify(closest, null, 2));
