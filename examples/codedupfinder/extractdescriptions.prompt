@@ -1,14 +1,19 @@
-Write a JSON map that maps method names to descriptions for all methods of the retrieved class that are not simple getters, setters,
-constructors or overridden java.lang.Object methods.
+Write a JSON map that maps method names to detailed descriptions for all methods of the retrieved class that are
+The descriptions should be detailed enough to support finding code duplicates by comparing the descriptions.
 
 The description should tell the method signature including return type, method name and parameters as full
-Java type names, a newline and then a single paragraph description what the method does,
+Java type names, a newline and then a paragraph with description what the method does,
 covering results, effect, functionality, algorithm, side effects (data the function processes and changes)
 and dependencies as appropriate to the purpose of uncovering duplicates by comparison with other descriptions of this type.
 The specific implementation is secondary. Ignore error handling in the description.
 
-Example:
+DO NOT include simple getters, setters, constructors, methods without implementation in interfaces,
+or overridden java.lang.Object methods or methods just forwarding functionality to other methods,
+as they are not candidates for deduplication.
+Only print methods that have significant complexity and more than 5 lines of code!
+
+Example: the whole JSON file could look like this (abbreviated):
 {
-  "method1" : "String method1(String arg)\nThis method does ...",
+  "method1" : "String method1(String arg)\nThis method does .... It returns ... The algorithm ... As a side effect ...",
   ...
 }

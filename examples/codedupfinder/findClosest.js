@@ -27,13 +27,16 @@ function readEmbeddings() {
             continue;
         }
         const entry = JSON.parse(line);
+        // ignore entries with an entry.id for which the file does not exist (anymore)
+        if (!fs.existsSync('descriptions/' + entry.id)) {
+            continue;
+        }
         // decode entry.embedding.encoded into entry.embedding as a Float32Array
         const buffer = Buffer.from(entry.embedding.encoded, 'base64');
-        const floatView = new Float32Array(new Uint8Array(buffer).buffer);
-        entry.embedding = floatView;
+        entry.embedding = new Float32Array(new Uint8Array(buffer).buffer);
         embeddings.set(entry.id, entry);
     }
-};
+}
 readEmbeddings();
 
 function cosineSimilarity(embedding1, embedding2) {
@@ -73,7 +76,9 @@ similarities.sort((a, b) => b.similarity - a.similarity);
 // print the 50 most similar pairs
 for (let i = 0; i < 50; i++) {
     const sim = similarities[i];
-    console.log(`### Similarity ${sim.similarity} between\n${sim.id1}\nand\n${sim.id2}\n`);
+    console.log(`### Similarity ${sim.similarity}:`);
+    console.log(`=== ${sim.id1}:`);
     console.log(`${embeddings.get(sim.id1).content}\n`);
+    console.log(`=== ${sim.id2}:`);
     console.log(`${embeddings.get(sim.id2).content}\n\n`);
 }

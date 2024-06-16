@@ -15,7 +15,7 @@ set -x
 for fil in $(find $srcdir -name '*.java' | fgrep src/main/java); do
   filrelativepath=$(realpath --relative-to=$srcdir $fil)
   jsonfile=$jsondir/$filrelativepath.json
-  mkdir -p $(dirname $jsonfile)
+  mkdir -p "$(dirname $jsonfile)"
 
   # Either generate a description
   aigenpipeline -s sysprompt.prompt -p extractdescriptions.prompt -o $jsonfile $fil
@@ -26,6 +26,7 @@ for fil in $(find $srcdir -name '*.java' | fgrep src/main/java); do
   node extractMethodsFromJson.js $jsonfile
 done
 
+mkdir -p db
 db=$(realpath db/embeddings.db)
 (
   cd $jsondir
