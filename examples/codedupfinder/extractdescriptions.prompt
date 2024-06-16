@@ -1,3 +1,5 @@
+AIGenVersion(1.0)
+
 Write a JSON map that maps method names to detailed descriptions for all methods of the retrieved class that are
 The descriptions should be detailed enough to support finding code duplicates by comparing the descriptions.
 
@@ -9,7 +11,7 @@ The specific implementation is secondary. Ignore error handling in the descripti
 
 DO NOT include simple getters, setters, constructors, methods without implementation in interfaces,
 or overridden java.lang.Object methods or methods just forwarding functionality to other methods,
-as they are not candidates for deduplication.
+no constants or variables, as they are not candidates for deduplication.
 Only print methods that have significant complexity and more than 5 lines of code!
 
 Example: the whole JSON file could look like this (abbreviated):

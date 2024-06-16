@@ -75,8 +75,8 @@ calculateSimilarities();
 // sort similarities by decreasing similarity
 similarities.sort((a, b) => b.similarity - a.similarity);
 
-// print the 50 most similar pairs
-for (let i = 0; i < 50; i++) {
+// print the 20 most similar pairs
+for (let i = 0; i < 20; i++) {
     const sim = similarities[i];
     console.log(`### Similarity ${sim.similarity}:`);
     console.log(`=== ${sim.id1}:`);
@@ -87,4 +87,4 @@ for (let i = 0; i < 50; i++) {
 
 // create a json with an array of the 50 most similar pairs and write it to the file closest.json
 const closest = similarities.slice(0, 50);
-fs.writeFileSync('result.json', JSON.stringify(closest, null, 2));
+fs.writeFileSync('results.json', JSON.stringify(closest, null, 2));

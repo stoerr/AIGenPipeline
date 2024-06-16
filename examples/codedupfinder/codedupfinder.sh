@@ -9,7 +9,7 @@ if [ ! -f CodeDuplicationFinder.md ]; then
 fi
 mkdir -p $jsondir
 
-set -x
+# set -x
 
 # Calculate the descriptions for the Java source files as JSON files
 for fil in $(find $srcdir -name '*.java' | fgrep src/main/java); do
@@ -39,4 +39,7 @@ sqlite-utils rows db/embeddings.db embeddings --nl -c id -c content -c embedding
 
 ./findClosest.js > result.txt
 
-echo The closest found duplicates are in result.txt
+echo The closest found duplicates are in result.txt , json representation in results.json
+
+mkdir -p eval
+./evaluateDuplicates.js $srcdir eval results.json > resultevaluation.txt
