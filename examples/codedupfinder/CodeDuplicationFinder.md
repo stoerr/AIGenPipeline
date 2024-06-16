@@ -53,7 +53,7 @@ something, though output is as a JSON format (jq is only for readable formatting
 
     llm similar descr -d embeddings.db -n 10 -c "description to search for" | jq
 
-## Step 4 and 6 - find the closest matches and present them
+## Step 4 - find the closest matches and present them
 
 While llm offers a similarity search, we need to get all of the embeddings and compare them. That's probably best 
 done with a program. I'll go for exporting the database to JSON and read it into a Javascript program for nodejs, 
@@ -64,7 +64,39 @@ since that needs the least amount of things to learn for this quick project. :-)
 For now we'll skip the step 5 (rating the matches with an LLM) and just present the best matches, since in the talk
 they thought that didn't work too well, anyway.
 
-## Colclusion
+## Step 5 - rating the matches
+
+Here aigenpipeline again comes in handy. [evaluateDuplicates.js](evaluateDuplicates.js) reads out the results of 
+step 4, and has aigenpipeline create a file that has GPT-4o rate the matches. Before printing an estimated number of 
+lines that will be saved when deduplicating, we have it print a reason why it thinks it's a duplicate and a little 
+plan how to deduplicate it - that might be interesting for the developer, and also improve the result in the style of
+"chain of thought": having the LLM generate an explanation will likely improve the result in comparison to 
+just having it rate the matches. The prompt 
+[evaluateDuplicate.prompt](evaluateDuplicate.prompt)
+requests that - compare the result [resultevaluation.txt](resultevaluation.txt).
+
+## How to run it
+
+The script codedupfinder.sh is the entry point, and contains some variables like the source code location if you 
+want to try it on other code bases. From that the other scripts are called. This generates various temporary files
+in subdirectories of this directory, and the following result files:
+
+- [result.txt](result.txt): the best matches
+- [result.json](result.json): the best matches in JSON format, as input for further steps
+- [resultevaluation.txt](resultevaluation.txt): LLM rated evaluation.
+
+Please be aware that Step 5 uses gpt-4o since gpt-3.5-turbo didn't work well on this task, and that might cost a bit 
+- even on this small project my experiments today were about $2.
+
+## Ideas for improvement
+
+The GPT-4o rating is a bit expensive. It might be a good idea to add a step in between where 3.5 is used to extract 
+the actual source code of the methods, and then presenting only that to GPT-4o. That would likely be considerably
+cheaper and probably faster without losing much quality. OTOH that would prevent GPT-4o to see the context of the
+methods when rating them. You might also try a local model for all that - creating an 
+[.aigenpipeline file](https://aigenpipeline.stoerr.net/otherModels.html) for that can do this.
+
+## Conclusion
 
 As an example you can find what this outputs in result.txt. Of course, this project is too small to have significant
 duplicates. But you can adapt the paths in codedupfinder.sh and try it out on your own project. Have fun trying it out!
