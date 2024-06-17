@@ -1,0 +1,452 @@
+[
+  {
+    method1: 'execute',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'toJson',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods share a significant portion of code for building the AIChatBuilder object, but they diverge in their final steps.',
+    how: 'Extract the common code for building the AIChatBuilder object into a separate method and call this method from both execute and toJson.',
+    deduplicated_lines: 30
+  },
+  {
+    method1: 'execute',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'explain',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods share a significant amount of code related to setting up the AIChatBuilder and reading the output file content.',
+    how: 'Extract the common code into a separate method that sets up the AIChatBuilder and reads the output file content, then call this method from both execute and explain.',
+    deduplicated_lines: 30
+  },
+  {
+    method1: 'filesContaining',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/FileLookupHelper.java',
+    method2: 'files',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/FileLookupHelper.java',
+    reason: 'The methods share similar logic for file traversal and pattern matching, but filesContaining includes additional logic for reading file content and matching a regex pattern within the content.',
+    how: 'Extract the common file traversal and pattern matching logic into a private helper method. Both methods can then call this helper method and add their specific logic (e.g., content matching for filesContaining).',
+    deduplicated_lines: 20
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInput',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add an input to the inputFiles list, but addOptionalInput does not throw an exception if the input does not exist.',
+    how: 'Create a private method that handles the common logic of adding an input, and call this method from both addInput and addOptionalInput.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'addInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add a file to the inputFiles list by converting a File object to an AIInOut object. The only difference is that addOptionalInputFile checks if the file exists before adding it.',
+    how: 'Create a private helper method that takes a File object and a boolean flag indicating whether the file is optional. This method will handle the conversion and existence check, and then add the AIInOut object to the inputFiles list.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'setRegenerationCheckStrategy',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'setWritingStrategy',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods follow a similar pattern of setting a strategy and returning the current instance of the class.',
+    how: 'Create a generic method that takes a strategy and a setter function as parameters, and use it to set the respective strategies.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'addInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'setOutputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods wrap a File object into an AIInOut object and then call another method with the resulting AIInOut object.',
+    how: 'Create a private helper method that takes a File object and an AIInOut object, and then call this helper method from both addInputFile and setOutputFile.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'addInputs',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputFiles',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods iterate over a list of inputs and call another method to add each input to the inputFiles list.',
+    how: 'Create a private method that takes a list of inputs and a function to add each input, then call this method from both addInputs and addInputFiles.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'systemMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'assistantMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    reason: 'Both methods add a message to the chat with similar structure and functionality, differing only in the type of message (system vs assistant).',
+    how: 'Introduce a generic method that takes an additional parameter to specify the type of message, and use this method within both systemMsg and assistantMsg.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'isOpenAI',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/OpenAIChatBuilderImpl.java',
+    method2: 'isClaude',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/OpenAIChatBuilderImpl.java',
+    reason: 'Both methods check if the URL contains a specific substring to determine the type of API.',
+    how: 'Create a single method that takes the substring as a parameter and checks if the URL contains that substring.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'javaMdFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/FileLookupHelper.java',
+    method2: 'javaFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/FileLookupHelper.java',
+    reason: 'Both methods convert a fully qualified class name to a file path by replacing dots with slashes and appending a specific file extension.',
+    how: 'Create a private helper method that takes the fully qualified class name and the desired file extension as parameters, and use this helper method in both javaFile and javaMdFile.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'execute',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/CopyPseudoAIChatBuilderImpl.java',
+    method2: 'toJson',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/CopyPseudoAIChatBuilderImpl.java',
+    reason: 'Both methods return the same value, allInputs.toString(), and have identical implementations.',
+    how: 'Create a private method that returns allInputs.toString() and call this method from both execute and toJson.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'addHint',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInput',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add an AIInOut object to a list if certain conditions are met, but they have different conditions and target lists.',
+    how: 'Create a private method that takes the list and the condition as parameters, and use it in both methods.',
+    deduplicated_lines: 4
+  },
+  {
+    method1: 'of(File file)',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    method2: 'of(Path path)',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    reason: 'Both methods create an AIInOut instance from a file, with the second method converting a Path to a File before proceeding.',
+    how: 'Combine the two methods into one by having the Path version call the File version after converting the Path to a File.',
+    deduplicated_lines: 3
+  },
+  {
+    method1: 'setOutput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'setOutputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods setOutput and setOutputFile perform similar tasks: setting the output, but one takes an AIInOut object and the other takes a File object.',
+    how: 'Deduplication can be achieved by having setOutputFile call setOutput after converting the File object to an AIInOut object.',
+    deduplicated_lines: 3
+  },
+  {
+    method1: 'addOptionalInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods perform similar operations: adding an optional input to the inputFiles list if it exists. The only difference is that addOptionalInputFile converts a File to an AIInOut object before calling addOptionalInput.',
+    how: 'Deduplication can be done by making addOptionalInputFile call addOptionalInput after converting the File to an AIInOut object.',
+    deduplicated_lines: 3
+  },
+  {
+    method1: 'addInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInput',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add an input file to the inputFiles list, but addOptionalInput handles null and non-existent files differently.',
+    how: 'Create a private method that handles the common logic of adding a file to the inputFiles list, and call this method from both addInputFile and addOptionalInput.',
+    deduplicated_lines: 3
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add an input to the inputFiles list, with addInputFile converting a File to an AIInOut before calling addInput.',
+    how: 'Deduplication can be done by having addInputFile call addInput after converting the File to an AIInOut.',
+    deduplicated_lines: 2
+  },
+  {
+    method1: 'systemMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'userMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    reason: 'Both methods have identical signatures and similar functionality, differing only in the type of message they add.',
+    how: 'Introduce a private method that takes an additional parameter to specify the type of message, and call this method from both systemMsg and userMsg.',
+    deduplicated_lines: 2
+  },
+  {
+    method1: 'assistantMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'userMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    reason: 'Both methods add a message to the chat with similar structure and functionality, differing only in the type of message (assistant or user).',
+    how: 'Introduce a generic method that takes an additional parameter to specify the type of message, and use this method within both assistantMsg and userMsg.',
+    deduplicated_lines: 2
+  },
+  {
+    method1: 'addOptionalInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'setOutputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods wrap a File object into an AIInOut object and then call another method with the resulting AIInOut object. They are similar in functionality but not exact duplicates.',
+    how: 'Create a private helper method that takes a File object and a Consumer<AIInOut> to handle the common logic of wrapping the File into an AIInOut and then passing it to the appropriate method.',
+    deduplicated_lines: 2
+  },
+  {
+    method1: 'needsRegeneration',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    method2: 'needsRegeneration',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    reason: "The methods are not duplicates. The first 'needsRegeneration' is an interface method, while the second 'needsRegeneration' is an implementation in the 'VersionMarkerRegenerationCheckStrategy' class.",
+    how: 'No deduplication needed as they serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'assistantMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'assistantMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/CopyPseudoAIChatBuilderImpl.java',
+    reason: 'The methods are not duplicates. The method in AIChatBuilder is an interface method declaration, while the method in CopyPseudoAIChatBuilderImpl is an implementation that appends text to a StringBuilder.',
+    how: 'No deduplication is needed as one is a declaration and the other is an implementation.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'needsRegeneration',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    method2: 'IF_OLDER',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    reason: "The methods serve different purposes. 'needsRegeneration' is an interface method, while 'IF_OLDER' is a specific implementation of that method.",
+    how: 'No deduplication is necessary as they are not duplicates.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputFiles',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'Both methods add input files to the inputFiles list, with addInputFiles calling addInputFile in a loop.',
+    how: 'Deduplication can be done by having addInputFiles call addInputFile for each file in the list, which it already does.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputs',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: "The methods are not duplicates. 'addInput' adds a single input, while 'addInputs' adds multiple inputs by calling 'addInput' for each element in the list.",
+    how: 'No deduplication needed as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'toJson',
+    file1: 'OpenAIChatBuilderImpl.java',
+    method2: 'toJson',
+    file2: 'AIChatBuilder.java',
+    reason: 'The method toJson in AIChatBuilder.java is an interface method declaration without implementation, while the method toJson in OpenAIChatBuilderImpl.java is a concrete implementation. They are not duplicates.',
+    how: 'No deduplication is needed as one is an interface method declaration and the other is its implementation.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'execute',
+    file1: 'OpenAIChatBuilderImpl.java',
+    method2: 'execute',
+    file2: 'AIChatBuilder.java',
+    reason: 'The method execute in AIChatBuilder.java is an interface method declaration, while the method execute in OpenAIChatBuilderImpl.java is its implementation. They are not duplicates but rather related as interface and implementation.',
+    how: 'No deduplication is needed as one is an interface method declaration and the other is its implementation.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'model',
+    file1: 'CopyPseudoAIChatBuilderImpl.java',
+    method2: 'model',
+    file2: 'AIChatBuilder.java',
+    reason: 'The method in AIChatBuilder.java is an interface method declaration, while the method in CopyPseudoAIChatBuilderImpl.java is an implementation of that interface method.',
+    how: 'No deduplication is needed as one is a declaration and the other is an implementation. They serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'of(File file)',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    method2: 'of(InputStream in)',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    reason: 'The methods create instances of different classes (AIFileInOut and AIStreamInOut) and handle different input types (File and InputStream).',
+    how: 'No deduplication is possible as the methods serve different purposes and handle different types of input.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'IF_OLDER',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    method2: 'VersionMarkerRegenerationCheckStrategy',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/RegenerationCheckStrategy.java',
+    reason: 'The methods have different logic for determining if regeneration is needed. IF_OLDER checks file modification times, while VersionMarkerRegenerationCheckStrategy compares version markers.',
+    how: 'No deduplication is possible as the methods serve different purposes and have different implementations.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'setOutput',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods addInput and setOutput have different purposes and logic. addInput adds an input file to a list, while setOutput sets a single output file. Their implementations are not similar enough to be considered duplicates.',
+    how: 'No deduplication is necessary as the methods serve different purposes and have different logic.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'toJson',
+    file1: 'AIChatBuilder.java',
+    method2: 'toJson',
+    file2: 'CopyPseudoAIChatBuilderImpl.java',
+    reason: 'The methods have the same name but different implementations. The method in AIChatBuilder is an interface method with no implementation, while the method in CopyPseudoAIChatBuilderImpl has a specific implementation.',
+    how: 'No deduplication is possible as one is an interface method and the other is a concrete implementation.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'maxTokens',
+    file1: 'AIGenerationTask.java',
+    method2: 'maxTokens',
+    file2: 'AIChatBuilder.java',
+    reason: 'The methods serve different purposes and are part of different classes. One sets a field in the AIGenerationTask class, while the other is part of an interface for building AI chat interactions.',
+    how: 'No deduplication is possible as the methods are not duplicates and serve different functionalities.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'idForInOut',
+    file1: '../../aigenpipeline-commandline/src/main/java/net/stoerr/ai/aigenpipeline/commandline/AIDepDiagram.java',
+    method2: 'labelForInOut',
+    file2: '../../aigenpipeline-commandline/src/main/java/net/stoerr/ai/aigenpipeline/commandline/AIDepDiagram.java',
+    reason: 'The methods perform different tasks: one generates an ID based on the file path, while the other generates a label based on the file path.',
+    how: 'No deduplication is possible as the methods serve distinct purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'of(File file)',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    method2: 'of(SegmentedFile segmentedFile, int segmentIndex)',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    reason: 'The methods create instances of different classes (AIFileInOut and AIFileSegmentInOut) and have different parameters, so they are not duplicates.',
+    how: 'No deduplication is possible as the methods serve different purposes and instantiate different classes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addOptionalInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputs',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods serve different purposes. addOptionalInput adds a single optional input, while addInputs adds multiple mandatory inputs.',
+    how: 'No deduplication is necessary as the methods have distinct functionalities.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputFiles',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: "The methods are not duplicates. 'addInput' adds a single input file, while 'addInputFiles' adds multiple input files by calling 'addInput' for each file.",
+    how: 'No deduplication needed as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addHint',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods addInput and addHint are not duplicates. addInput checks if the input exists and throws an exception if it does not, while addHint simply adds the hint to the list without any checks.',
+    how: 'No deduplication is necessary as the methods serve different purposes and have different logic.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'of(InputStream in)',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    method2: 'of(Path path)',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    reason: 'The methods serve different purposes: one creates an AIInOut instance from an InputStream, while the other creates it from a Path.',
+    how: 'No deduplication is possible as the methods handle different input types and have different implementations.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'setOutput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInput',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods serve different purposes: one sets the output file while the other adds an optional input file. They share some common patterns like null checks and logging, but their core functionality is distinct.',
+    how: 'Deduplication could be done by extracting common patterns like null checks and logging into separate helper methods, but the core logic of each method would remain.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'toJson',
+    file1: 'OpenAIChatBuilderImpl.java',
+    method2: 'toJson',
+    file2: 'CopyPseudoAIChatBuilderImpl.java',
+    reason: 'The methods serve different purposes and have different implementations. The toJson method in OpenAIChatBuilderImpl constructs a JSON request for an AI chat model, while the toJson method in CopyPseudoAIChatBuilderImpl simply concatenates input strings.',
+    how: 'No deduplication is possible as the methods have different logic and purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInputFiles',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: "The methods are not duplicates. 'addInputFiles' adds multiple input files, while 'addOptionalInputFile' adds a single optional input file.",
+    how: 'No deduplication is necessary as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addOptionalInputFile',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: "The methods are not duplicates. 'addInput' adds a required input file, while 'addOptionalInputFile' adds an optional input file and handles the case where the file does not exist.",
+    how: 'No deduplication is necessary as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addInputFile',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputs',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: "The methods are not duplicates. 'addInputFile' adds a single file, while 'addInputs' adds multiple inputs.",
+    how: 'No deduplication is necessary as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'userMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'assistantMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/CopyPseudoAIChatBuilderImpl.java',
+    reason: "The methods have different purposes and implementations. 'userMsg' in AIChatBuilder is an interface method meant to add a user message, while 'assistantMsg' in CopyPseudoAIChatBuilderImpl appends text to a StringBuilder.",
+    how: 'No deduplication is possible as the methods serve different roles and have different implementations.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'of(SegmentedFile segmentedFile, int segmentIndex)',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    method2: 'of(Path path)',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIInOut.java',
+    reason: 'The methods serve different purposes: one creates an AIInOut instance from a segmented file and segment index, while the other creates an AIInOut instance from a file path.',
+    how: 'No deduplication is possible as the methods have different parameters and functionalities.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addOptionalInput',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputFiles',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods have different purposes and implementations. addOptionalInput adds a single optional input, while addInputFiles adds multiple input files.',
+    how: 'No deduplication is possible as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'addHint',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    method2: 'addInputs',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.java',
+    reason: 'The methods addHint and addInputs are not duplicates. addHint adds a single AIInOut object to the hints list, while addInputs adds multiple AIInOut objects to the inputFiles list.',
+    how: 'No deduplication is necessary as the methods serve different purposes.',
+    deduplicated_lines: 0
+  },
+  {
+    method1: 'systemMsg',
+    file1: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/AIChatBuilder.java',
+    method2: 'assistantMsg',
+    file2: '../../aigenpipeline-framework/src/main/java/net/stoerr/ai/aigenpipeline/framework/chat/CopyPseudoAIChatBuilderImpl.java',
+    reason: "The methods have different purposes and implementations. 'systemMsg' in AIChatBuilder is an interface method meant to add a system message, while 'assistantMsg' in CopyPseudoAIChatBuilderImpl appends text to a StringBuilder and assumes a specific pattern.",
+    how: 'No deduplication is possible as the methods serve different roles and have different implementations.',
+    deduplicated_lines: 0
+  }
+]

@@ -1,0 +1,13 @@
+Estimate whether method
+${method1} in the retrieved file ${file1}
+and
+${method2} in the retrieved file ${file2}
+are duplicates and estimate how many lines of code can be saved through deduplication.
+Print a JSON object with the following fields:
+- "method1": name of the first method.
+- "file1": name of the first file.
+- "method2": name of the second method.
+- "file2": name of the second file.
+- "reason": short explanation of the decision.
+- "how": short explanation how a deduplication could be done.
+- "deduplicated_lines": estimate of the number of lines that can be saved through deduplication. Print 0 if the methods are not duplicates.

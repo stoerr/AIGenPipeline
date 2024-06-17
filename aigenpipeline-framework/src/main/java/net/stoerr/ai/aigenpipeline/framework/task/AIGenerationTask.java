@@ -255,7 +255,7 @@ public class AIGenerationTask implements Cloneable {
         String newPrompt = unclutter(fileContent);
         requireNonNull(newPrompt, "Could not read prompt file " + promptFile);
         for (Map.Entry<String, String> entry : placeholdersAndValues.entrySet()) {
-            newPrompt = newPrompt.replace(entry.getKey(), entry.getValue());
+            newPrompt = newPrompt.replaceAll(Pattern.quote("${" + entry.getKey() + "}"), entry.getValue());
         }
         if (this.prompt == null) {
             this.prompt = newPrompt;

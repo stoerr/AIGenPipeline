@@ -1,0 +1,15 @@
+AIGenVersion(1.0)
+
+Write a JSON map that maps method names to the extracted sources for all methods of the retrieved class that are
+not simple getters, setters, constructors or overridden java.lang.Object methods, or methods with less than 3 lines of code.
+
+The printed source for each method should contain the method declaration including
+the method body with comments and JavaDoc comments, and nothing else - no other methods.
+All types should be fully qualified. The source should be formatted as it would be in a Java source file.
+In each entry in the JSON include exactly one method entry!
+
+Example:
+{
+  "method1" : "java.lang.String method1(java.lang.String arg)\n{...\n}",
+  ...
+}

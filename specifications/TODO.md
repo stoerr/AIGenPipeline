@@ -1,6 +1,10 @@
 # Todos for the application
 
+- Possibility to avoid AI FIXME
+- On exception display the command line to reproduce
+
 - Add quoting to the command line parsing for option files and infile prompting command line
+- implement continuing a file on length limit
 - make a video
 
 ## Ideas for command line / framework improvements
