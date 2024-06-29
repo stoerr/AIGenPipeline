@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>CopyPseudoAIChatBuilderImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.chat</a> &gt; <span class="el_source">CopyPseudoAIChatBuilderImpl.java</span></div><h1>CopyPseudoAIChatBuilderImpl.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.chat;
+
+import static net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask.unclutter;
+
+/**
+ * A pseudo AI chat model that just copies the input to the output.
+ */
+<span class="nc" id="L8">public class CopyPseudoAIChatBuilderImpl implements AIChatBuilder {</span>
+
+    /**
+     * Pseudo model that just concatenates the inputs and writes these to the output.
+     */
+    public static final String MODEL_COPY = &quot;copy&quot;;
+
+<span class="nc" id="L15">    protected final StringBuilder allInputs = new StringBuilder();</span>
+
+    @Override
+    public AIChatBuilder url(String url) {
+        // not used
+<span class="nc" id="L20">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder key(String key) {
+        // not used
+<span class="nc" id="L26">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder organizationId(String organizationId) {
+        // not used
+<span class="nc" id="L32">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder maxTokens(int maxTokens) {
+        // not used
+<span class="nc" id="L38">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder model(String model) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (!MODEL_COPY.equals(model)) {</span>
+<span class="nc" id="L44">            throw new IllegalArgumentException(&quot;Only model &quot; + MODEL_COPY + &quot; is supported.&quot;);</span>
+        }
+<span class="nc" id="L46">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder systemMsg(String text) {
+        // not used
+<span class="nc" id="L52">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder userMsg(String text) {
+        // not used
+<span class="nc" id="L58">        return this;</span>
+    }
+
+    /**
+     * We assume the &quot;put it into the mouth of the AI&quot; pattern is used. Then all the assistant messages are actually
+     * the inputs. (That is a bit dangerous if it's used differently, but the easiest way.)
+     */
+    @Override
+    public AIChatBuilder assistantMsg(String text) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (text != null) {</span>
+<span class="nc" id="L68">            allInputs.append(unclutter(text));</span>
+        }
+<span class="nc" id="L70">        return this;</span>
+    }
+
+    @Override
+    public String toJson() {
+<span class="nc" id="L75">        return allInputs.toString();</span>
+    }
+
+    @Override
+    public String execute() {
+<span class="nc" id="L80">        return allInputs.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

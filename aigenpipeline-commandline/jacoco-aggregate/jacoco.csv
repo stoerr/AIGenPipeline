@@ -1,18 +1,22 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper,265,0,22,0,53,0,22,0,11,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,RegenerationCheckStrategy,54,0,10,0,11,0,9,0,4,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIVersionMarker,285,0,24,0,59,0,25,0,13,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.WritePartStrategy,193,0,10,0,32,0,14,0,9,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,RegenerationCheckStrategy.VersionMarkerRegenerationCheckStrategy,33,0,6,0,8,0,5,0,2,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIGenerationTask,761,0,72,0,162,0,68,0,32,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},20,0,0,0,5,0,4,0,4,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,RegenerationCheckStrategy,59,0,10,0,11,0,9,0,4,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper,305,0,34,0,61,0,27,0,10,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIVersionMarker,275,0,24,0,56,0,25,0,13,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,RegenerationCheckStrategy.VersionMarkerRegenerationCheckStrategy,28,0,4,0,6,0,4,0,2,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut.AIStreamInOut,30,0,0,0,9,0,5,0,5,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIGenerationTask,836,0,76,0,186,0,78,0,40,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},14,0,0,0,5,0,4,0,4,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},82,0,9,0,26,0,11,0,5,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut,56,0,8,0,6,0,10,0,6,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,SegmentedFile,272,0,20,0,51,0,21,0,11,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy,9,0,0,0,2,0,1,0,1,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},113,0,16,0,31,0,15,0,5,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper.new SimpleFileVisitor() {...},31,0,2,0,4,0,3,0,2,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,RunListLocalModel,67,0,0,0,20,0,3,0,3,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper.new SimpleFileVisitor() {...},49,0,8,0,6,0,6,0,2,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut.AIFileSegmentInOut,45,0,0,0,12,0,5,0,5,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut.AIFileInOut,49,0,0,0,13,0,5,0,5,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,CopyPseudoAIChatBuilderImpl,49,0,4,0,16,0,13,0,11,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.Message,9,0,0,0,4,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.Choice,3,0,0,0,1,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionRequest,15,0,0,0,6,0,1,0,1,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse.ClaudeResponseContent,3,0,0,0,1,0,1,0,1,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl,438,0,58,0,103,0,45,0,16,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl.ChatCompletionResponse,3,0,0,0,1,0,1,0,1,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.chat,OpenAIChatBuilderImpl,450,0,60,0,105,0,46,0,16,0

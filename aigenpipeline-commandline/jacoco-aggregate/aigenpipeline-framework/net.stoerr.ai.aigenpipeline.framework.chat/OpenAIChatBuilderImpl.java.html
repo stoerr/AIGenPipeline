@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OpenAIChatBuilderImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.chat</a> &gt; <span class="el_source">OpenAIChatBuilderImpl.java</span></div><h1>OpenAIChatBuilderImpl.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.chat;
 
+import static net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTask.FIXME;
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,216 +26,233 @@ import com.google.gson.GsonBuilder;
  */
 <span class="nc" id="L27">public class OpenAIChatBuilderImpl implements AIChatBuilder {</span>
 
-    /** Environment variable for the Anthropic API version. */
+    /**
+     * Pseudo model that outputs the json that would be sent to OpenAI and writes that to the output,
+     * instead of actually calling OpenAI. Mostly for debugging.
+     */
+    public static final String MODEL_OPENAIJSON = &quot;openaijson&quot;;
+
+    /**
+     * Environment variable for the Anthropic API version.
+     */
     public static final String ENV_ANTHROPIC_VERSION = &quot;ANTHROPIC_API_VERSION&quot;;
-    /** Environment variable for the OpenAI API key. */
+    /**
+     * Environment variable for the OpenAI API key.
+     */
     public static final String ENV_OPENAI_API_KEY = &quot;OPENAI_API_KEY&quot;;
-    /** Environment variable for the Anthropic API key. */
+    /**
+     * Environment variable for the Anthropic API key.
+     */
     public static final String ENV_ANTHROPIC_API_KEY = &quot;ANTHROPIC_API_KEY&quot;;
-    /** Default version for the Anthropic API, of not overridden with environment variable {@link #ENV_ANTHROPIC_VERSION}  . */
+    /**
+     * Default version for the Anthropic API, of not overridden with environment variable {@link #ENV_ANTHROPIC_VERSION}  .
+     */
     public static final String ANTHROPIC_DEFAULT_VERSION = &quot;2023-06-01&quot;;
 
     public static final int DEFAULT_MAX_TOKENS = 2048;
 
-<span class="nc" id="L40">    protected static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+<span class="nc" id="L54">    protected static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
     public static final String ROLE_SYSTEM = &quot;system&quot;;
     public static final String ROLE_USER = &quot;user&quot;;
     public static final String ROLE_ASSISTANT = &quot;assistant&quot;;
 
-<span class="nc" id="L45">    protected final Pattern CODEBLOCK_PATTERN = Pattern.compile(&quot;\\A\\s*```\\w*\\n?(.*?)\\n*```\\s*\\Z&quot;, Pattern.DOTALL);</span>
+<span class="nc" id="L59">    protected final Pattern CODEBLOCK_PATTERN = Pattern.compile(&quot;\\A\\s*```\\w*\\n?(.*?)\\n*```\\s*\\Z&quot;, Pattern.DOTALL);</span>
 
-<span class="nc" id="L47">    protected String model = &quot;gpt-4-turbo-preview&quot;;</span>
-<span class="nc" id="L48">    protected final List&lt;Message&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L61">    protected String model = &quot;gpt-4o&quot;;</span>
+<span class="nc" id="L62">    protected final List&lt;Message&gt; messages = new ArrayList&lt;&gt;();</span>
     protected String apiKey;
     protected String organizationId;
-<span class="nc" id="L51">    protected int maxTokens = DEFAULT_MAX_TOKENS;</span>
-<span class="nc" id="L52">    protected String url = AIModelConstants.OPENAI_URL;</span>
+<span class="nc" id="L65">    protected int maxTokens = DEFAULT_MAX_TOKENS;</span>
+<span class="nc" id="L66">    protected String url = AIModelConstants.OPENAI_URL;</span>
 
     @Override
     public AIChatBuilder url(String url) {
-<span class="nc" id="L56">        this.url = url;</span>
-<span class="nc" id="L57">        return this;</span>
+<span class="nc" id="L70">        this.url = url;</span>
+<span class="nc" id="L71">        return this;</span>
     }
 
     @Override
     public AIChatBuilder key(String key) {
-<span class="nc" id="L62">        this.apiKey = key;</span>
-<span class="nc" id="L63">        return this;</span>
+<span class="nc" id="L76">        this.apiKey = key;</span>
+<span class="nc" id="L77">        return this;</span>
     }
 
     @Override
     public AIChatBuilder organizationId(String organizationId) {
-<span class="nc" id="L68">        this.organizationId = organizationId;</span>
-<span class="nc" id="L69">        return this;</span>
+<span class="nc" id="L82">        this.organizationId = organizationId;</span>
+<span class="nc" id="L83">        return this;</span>
     }
 
     @Override
     public AIChatBuilder maxTokens(int maxTokens) {
-<span class="nc" id="L74">        this.maxTokens = maxTokens;</span>
-<span class="nc" id="L75">        return this;</span>
-    }
-
-    @Override
-    public AIChatBuilder model(String model) {
-<span class="nc" id="L80">        this.model = model;</span>
-<span class="nc" id="L81">        return this;</span>
-    }
-
-    @Override
-    public AIChatBuilder systemMsg(String text) {
-<span class="nc bnc" id="L86" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
-<span class="nc" id="L87">            messages.add(0, new Message(ROLE_SYSTEM, text));</span>
-        }
+<span class="nc" id="L88">        this.maxTokens = maxTokens;</span>
 <span class="nc" id="L89">        return this;</span>
     }
 
     @Override
-    public AIChatBuilder userMsg(String text) {
-<span class="nc bnc" id="L94" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
-<span class="nc" id="L95">            messages.add(new Message(ROLE_USER, text));</span>
+    public AIChatBuilder model(String model) {
+<span class="nc" id="L94">        this.model = model;</span>
+<span class="nc" id="L95">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder systemMsg(String text) {
+<span class="nc bnc" id="L100" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
+<span class="nc" id="L101">            messages.add(0, new Message(ROLE_SYSTEM, text));</span>
         }
-<span class="nc" id="L97">        return this;</span>
+<span class="nc" id="L103">        return this;</span>
+    }
+
+    @Override
+    public AIChatBuilder userMsg(String text) {
+<span class="nc bnc" id="L108" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
+<span class="nc" id="L109">            messages.add(new Message(ROLE_USER, text));</span>
+        }
+<span class="nc" id="L111">        return this;</span>
     }
 
     @Override
     public AIChatBuilder assistantMsg(String text) {
-<span class="nc bnc" id="L102" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
-<span class="nc" id="L103">            messages.add(new Message(ROLE_ASSISTANT, text));</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">        if (text != null &amp;&amp; !text.isEmpty()) {</span>
+<span class="nc" id="L117">            messages.add(new Message(ROLE_ASSISTANT, text));</span>
         }
-<span class="nc" id="L105">        return this;</span>
+<span class="nc" id="L119">        return this;</span>
     }
 
     /**
      * This returns {@link #apiKey} if given, otherwise resorts to environment variables depending on the {@link #url}
      */
     protected String determineApiKey() {
-<span class="nc" id="L112">        String key = apiKey;</span>
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (key == null) {</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (isOpenAI()) {</span>
-<span class="nc" id="L115">                key = System.getenv(ENV_OPENAI_API_KEY);</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">            } else if (isClaude()) {</span>
-<span class="nc" id="L117">                key = System.getenv(ENV_ANTHROPIC_API_KEY);</span>
+<span class="nc" id="L126">        String key = apiKey;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (key == null) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (isOpenAI()) {</span>
+<span class="nc" id="L129">                key = System.getenv(ENV_OPENAI_API_KEY);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            } else if (isClaude()) {</span>
+<span class="nc" id="L131">                key = System.getenv(ENV_ANTHROPIC_API_KEY);</span>
             }
         }
-<span class="nc" id="L120">        return key;</span>
+<span class="nc" id="L134">        return key;</span>
     }
 
     protected boolean isClaude() {
-<span class="nc" id="L124">        return url.contains(&quot;//api.anthropic.com/&quot;);</span>
+<span class="nc" id="L138">        return url.contains(&quot;//api.anthropic.com/&quot;);</span>
     }
 
     protected boolean isOpenAI() {
-<span class="nc" id="L128">        return url.contains(&quot;//api.openai.com/&quot;);</span>
+<span class="nc" id="L142">        return url.contains(&quot;//api.openai.com/&quot;);</span>
     }
 
     @Override
     public String execute() {
-<span class="nc" id="L133">        String key = determineApiKey();</span>
-<span class="nc" id="L134">        HttpClient client = HttpClient.newBuilder()</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (MODEL_OPENAIJSON.equals(model)) {</span>
+<span class="nc" id="L148">            return toJson().replaceAll(Pattern.quote(FIXME), &quot;FIXME &quot;);</span>
+        }
+<span class="nc" id="L150">        String key = determineApiKey();</span>
+<span class="nc" id="L151">        HttpClient client = HttpClient.newBuilder()</span>
                 // use HTTP 1.1 since at least LM Studio doesn't handle that right. Requests are slow, anyway.
-<span class="nc" id="L136">                .version(HttpClient.Version.HTTP_1_1)</span>
-<span class="nc" id="L137">                .connectTimeout(Duration.ofSeconds(20))</span>
-<span class="nc" id="L138">                .build();</span>
-<span class="nc" id="L139">        String json = toJson();</span>
-<span class="nc" id="L140">        HttpRequest.Builder builder = HttpRequest.newBuilder()</span>
-<span class="nc" id="L141">                .uri(URI.create(url))</span>
-<span class="nc" id="L142">                .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
-<span class="nc" id="L143">                .POST(HttpRequest.BodyPublishers.ofString(json));</span>
-<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (isOpenAI()) {</span>
-<span class="nc" id="L145">            builder.header(&quot;Authorization&quot;, &quot;Bearer &quot; + key);</span>
-<span class="nc bnc" id="L146" title="All 2 branches missed.">        } else if (isClaude()) {</span>
+<span class="nc" id="L153">                .version(HttpClient.Version.HTTP_1_1)</span>
+<span class="nc" id="L154">                .connectTimeout(Duration.ofSeconds(20))</span>
+<span class="nc" id="L155">                .build();</span>
+<span class="nc" id="L156">        String json = toJson();</span>
+<span class="nc" id="L157">        HttpRequest.Builder builder = HttpRequest.newBuilder()</span>
+<span class="nc" id="L158">                .uri(URI.create(url))</span>
+<span class="nc" id="L159">                .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
+<span class="nc" id="L160">                .POST(HttpRequest.BodyPublishers.ofString(json));</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (isOpenAI()) {</span>
+<span class="nc" id="L162">            builder.header(&quot;Authorization&quot;, &quot;Bearer &quot; + key);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        } else if (isClaude()) {</span>
             // https://docs.anthropic.com/claude/reference/versions
-<span class="nc" id="L148">            String anthropicVersion = System.getenv(ENV_ANTHROPIC_VERSION);</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">            anthropicVersion = anthropicVersion != null ? anthropicVersion : ANTHROPIC_DEFAULT_VERSION;</span>
-<span class="nc" id="L150">            builder.header(&quot;x-api-key&quot;, determineApiKey())</span>
-<span class="nc" id="L151">                    .header(&quot;anthropic-version&quot;, anthropicVersion);</span>
+<span class="nc" id="L165">            String anthropicVersion = System.getenv(ENV_ANTHROPIC_VERSION);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            anthropicVersion = anthropicVersion != null ? anthropicVersion : ANTHROPIC_DEFAULT_VERSION;</span>
+<span class="nc" id="L167">            builder.header(&quot;x-api-key&quot;, determineApiKey())</span>
+<span class="nc" id="L168">                    .header(&quot;anthropic-version&quot;, anthropicVersion);</span>
         }
-<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (organizationId != null) {</span>
-<span class="nc" id="L154">            builder.header(&quot;OpenAI-Organization&quot;, organizationId);</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (organizationId != null) {</span>
+<span class="nc" id="L171">            builder.header(&quot;OpenAI-Organization&quot;, organizationId);</span>
         }
-<span class="nc" id="L156">        builder.timeout(Duration.ofSeconds(120));</span>
-<span class="nc" id="L157">        HttpRequest request = builder.build();</span>
+<span class="nc" id="L173">        builder.timeout(Duration.ofSeconds(120));</span>
+<span class="nc" id="L174">        HttpRequest request = builder.build();</span>
         try {
-<span class="nc" id="L159">            HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
-<span class="nc bnc" id="L160" title="All 2 branches missed.">            if (response.statusCode() != 200) {</span>
-<span class="nc" id="L161">                throw new IllegalStateException(&quot;Unexpected status code &quot; + response.statusCode() + &quot; : &quot; + response.body());</span>
+<span class="nc" id="L176">            HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (response.statusCode() != 200) {</span>
+<span class="nc" id="L178">                throw new IllegalStateException(&quot;Unexpected status code &quot; + response.statusCode() + &quot; : &quot; + response.body());</span>
             }
-<span class="nc" id="L163">            return extractResponse(response.body());</span>
-<span class="nc" id="L164">        } catch (InterruptedException e) {</span>
-<span class="nc" id="L165">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L166">            throw new IllegalStateException(&quot;Interrupted while waiting for chat completion response&quot;, e);</span>
-<span class="nc" id="L167">        } catch (IOException e) {</span>
-<span class="nc" id="L168">            throw new IllegalStateException(&quot;Failed to execute chat completion request&quot;, e);</span>
+<span class="nc" id="L180">            return extractResponse(response.body());</span>
+<span class="nc" id="L181">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L182">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L183">            throw new IllegalStateException(&quot;Interrupted while waiting for chat completion response&quot;, e);</span>
+<span class="nc" id="L184">        } catch (IOException e) {</span>
+<span class="nc" id="L185">            throw new IllegalStateException(&quot;Failed to execute chat completion request&quot;, e);</span>
         }
     }
 
     public String toJson() {
         ChatCompletionRequest request;
-<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (isClaude()) { // the system prompt for Claude is a request attribute, not a message.</span>
-<span class="nc" id="L175">            StringBuilder systemMessage = new StringBuilder();</span>
-<span class="nc" id="L176">            List&lt;Message&gt; filteredMessages = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">            for (Message message : messages) {</span>
-<span class="nc bnc" id="L178" title="All 4 branches missed.">                if (ROLE_ASSISTANT.equals(message.role) || ROLE_USER.equals(message.role)) {</span>
-<span class="nc" id="L179">                    filteredMessages.add(message);</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">                } else if (ROLE_SYSTEM.equals(message.role)) {</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">                    if (systemMessage.length() &gt; 0) {</span>
-<span class="nc" id="L182">                        systemMessage.append(&quot;\n\n&quot;);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        if (isClaude()) { // the system prompt for Claude is a request attribute, not a message.</span>
+<span class="nc" id="L192">            StringBuilder systemMessage = new StringBuilder();</span>
+<span class="nc" id="L193">            List&lt;Message&gt; filteredMessages = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            for (Message message : messages) {</span>
+<span class="nc bnc" id="L195" title="All 4 branches missed.">                if (ROLE_ASSISTANT.equals(message.role) || ROLE_USER.equals(message.role)) {</span>
+<span class="nc" id="L196">                    filteredMessages.add(message);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                } else if (ROLE_SYSTEM.equals(message.role)) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                    if (systemMessage.length() &gt; 0) {</span>
+<span class="nc" id="L199">                        systemMessage.append(&quot;\n\n&quot;);</span>
                     }
-<span class="nc" id="L184">                    systemMessage.append(message.content);</span>
+<span class="nc" id="L201">                    systemMessage.append(message.content);</span>
                 } else {
-<span class="nc" id="L186">                    throw new IllegalArgumentException(&quot;Unknown role &quot; + message.role);</span>
+<span class="nc" id="L203">                    throw new IllegalArgumentException(&quot;Unknown role &quot; + message.role);</span>
                 }
-<span class="nc" id="L188">            }</span>
-<span class="nc" id="L189">            request = new ChatCompletionRequest(model, filteredMessages, 0, maxTokens);</span>
-<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (systemMessage.length() &gt; 0) {</span>
-<span class="nc" id="L191">                request.system = systemMessage.toString();</span>
+<span class="nc" id="L205">            }</span>
+<span class="nc" id="L206">            request = new ChatCompletionRequest(model, filteredMessages, 0, maxTokens);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">            if (systemMessage.length() &gt; 0) {</span>
+<span class="nc" id="L208">                request.system = systemMessage.toString();</span>
             }
-<span class="nc" id="L193">        } else { // OpenAI format</span>
-<span class="nc" id="L194">            request = new ChatCompletionRequest(model, messages, 0, maxTokens);</span>
+<span class="nc" id="L210">        } else { // OpenAI format</span>
+<span class="nc" id="L211">            request = new ChatCompletionRequest(model, messages, 0, maxTokens);</span>
         }
-<span class="nc" id="L196">        return gson.toJson(request);</span>
+<span class="nc" id="L213">        return gson.toJson(request);</span>
     }
 
     protected String extractResponse(String json) {
-<span class="nc" id="L200">        ChatCompletionResponse response = gson.fromJson(json, ChatCompletionResponse.class);</span>
+<span class="nc" id="L217">        ChatCompletionResponse response = gson.fromJson(json, ChatCompletionResponse.class);</span>
         boolean stopped;
         String finish_reason;
         String content;
-<span class="nc bnc" id="L204" title="All 4 branches missed.">        if (response.choices != null &amp;&amp; !response.choices.isEmpty()) { // OpenAI format</span>
-<span class="nc" id="L205">            ChatCompletionResponse.Choice choice = response.choices.get(0);</span>
-<span class="nc" id="L206">            content = choice.message.content.trim();</span>
-<span class="nc" id="L207">            finish_reason = choice.finish_reason;</span>
-<span class="nc" id="L208">            stopped = &quot;stop&quot;.equals(finish_reason);</span>
+<span class="nc bnc" id="L221" title="All 4 branches missed.">        if (response.choices != null &amp;&amp; !response.choices.isEmpty()) { // OpenAI format</span>
+<span class="nc" id="L222">            ChatCompletionResponse.Choice choice = response.choices.get(0);</span>
+<span class="nc" id="L223">            content = choice.message.content.trim();</span>
+<span class="nc" id="L224">            finish_reason = choice.finish_reason;</span>
+<span class="nc" id="L225">            stopped = &quot;stop&quot;.equals(finish_reason);</span>
 
-<span class="nc bnc" id="L210" title="All 4 branches missed.">        } else if (response.content != null &amp;&amp; !response.content.isEmpty()) { // Anthropic Claude</span>
-<span class="nc" id="L211">            finish_reason = response.stop_reason;</span>
-<span class="nc" id="L212">            stopped = &quot;end_turn&quot;.equals(finish_reason);</span>
-<span class="nc" id="L213">            content = response.content.get(0).text;</span>
+<span class="nc bnc" id="L227" title="All 4 branches missed.">        } else if (response.content != null &amp;&amp; !response.content.isEmpty()) { // Anthropic Claude</span>
+<span class="nc" id="L228">            finish_reason = response.stop_reason;</span>
+<span class="nc" id="L229">            stopped = &quot;end_turn&quot;.equals(finish_reason);</span>
+<span class="nc" id="L230">            content = response.content.get(0).text;</span>
         } else {
-<span class="nc" id="L215">            throw new IllegalStateException(&quot;Could not find answer in response: &quot; + json);</span>
+<span class="nc" id="L232">            throw new IllegalStateException(&quot;Could not find answer in response: &quot; + json);</span>
         }
-<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (!stopped) {</span>
-<span class="nc" id="L218">            String msg = &quot;Invalid finish reason: &quot; + finish_reason + &quot; in response: &quot; + json;</span>
-<span class="nc bnc" id="L219" title="All 4 branches missed.">            if (finish_reason != null &amp;&amp; finish_reason.contains(&quot;length&quot;)) {</span>
-<span class="nc" id="L220">                msg += &quot;\n- try increasing maxTokens&quot;;</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (!stopped) {</span>
+<span class="nc" id="L235">            String msg = &quot;Invalid finish reason: &quot; + finish_reason + &quot; in response: &quot; + json;</span>
+<span class="nc bnc" id="L236" title="All 4 branches missed.">            if (finish_reason != null &amp;&amp; finish_reason.contains(&quot;length&quot;)) {</span>
+<span class="nc" id="L237">                msg += &quot;\n- try increasing maxTokens&quot;;</span>
             }
-<span class="nc" id="L222">            throw new IllegalStateException(msg);</span>
+<span class="nc" id="L239">            throw new IllegalStateException(msg);</span>
         }
-<span class="nc" id="L224">        Matcher matcher = CODEBLOCK_PATTERN.matcher(content);</span>
-<span class="nc bnc" id="L225" title="All 2 branches missed.">        if (matcher.matches()) {</span>
-<span class="nc" id="L226">            content = matcher.group(1);</span>
+<span class="nc" id="L241">        Matcher matcher = CODEBLOCK_PATTERN.matcher(content);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if (matcher.matches()) {</span>
+<span class="nc" id="L243">            content = matcher.group(1);</span>
         }
-<span class="nc" id="L228">        return content;</span>
+<span class="nc" id="L245">        return content;</span>
     }
 
     protected static class Message {
         String role;
         String content;
 
-<span class="nc" id="L235">        Message(String role, String content) {</span>
-<span class="nc" id="L236">            this.role = role;</span>
-<span class="nc" id="L237">            this.content = content;</span>
-<span class="nc" id="L238">        }</span>
+<span class="nc" id="L252">        Message(String role, String content) {</span>
+<span class="nc" id="L253">            this.role = role;</span>
+<span class="nc" id="L254">            this.content = content;</span>
+<span class="nc" id="L255">        }</span>
     }
 
     protected static class ChatCompletionRequest {
@@ -245,15 +262,15 @@ import com.google.gson.GsonBuilder;
         int max_tokens;
         String system; // only for Anthropic Claude
 
-<span class="nc" id="L248">        ChatCompletionRequest(String model, List&lt;Message&gt; messages, double temperature, int maxTokens) {</span>
-<span class="nc" id="L249">            this.model = model;</span>
-<span class="nc" id="L250">            this.messages = messages;</span>
-<span class="nc" id="L251">            this.temperature = temperature;</span>
-<span class="nc" id="L252">            this.max_tokens = maxTokens;</span>
-<span class="nc" id="L253">        }</span>
+<span class="nc" id="L265">        ChatCompletionRequest(String model, List&lt;Message&gt; messages, double temperature, int maxTokens) {</span>
+<span class="nc" id="L266">            this.model = model;</span>
+<span class="nc" id="L267">            this.messages = messages;</span>
+<span class="nc" id="L268">            this.temperature = temperature;</span>
+<span class="nc" id="L269">            this.max_tokens = maxTokens;</span>
+<span class="nc" id="L270">        }</span>
     }
 
-<span class="nc" id="L256">    protected static class ChatCompletionResponse {</span>
+<span class="nc" id="L273">    protected static class ChatCompletionResponse {</span>
         // OpenAI style response
         List&lt;Choice&gt; choices;
 
@@ -261,12 +278,12 @@ import com.google.gson.GsonBuilder;
         List&lt;ClaudeResponseContent&gt; content;
         String stop_reason;
 
-<span class="nc" id="L264">        static class Choice {</span>
+<span class="nc" id="L281">        static class Choice {</span>
             Message message;
             String finish_reason;
         }
 
-<span class="nc" id="L269">        static class ClaudeResponseContent {</span>
+<span class="nc" id="L286">        static class ClaudeResponseContent {</span>
             String text;
         }
     }

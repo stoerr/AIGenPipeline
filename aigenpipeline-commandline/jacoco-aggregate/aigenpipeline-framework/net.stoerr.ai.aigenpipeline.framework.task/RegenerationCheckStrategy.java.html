@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>RegenerationCheckStrategy.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">RegenerationCheckStrategy.java</span></div><h1>RegenerationCheckStrategy.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -16,48 +14,45 @@ public interface RegenerationCheckStrategy {
     /**
      * Decides whether the output file needs to be regenerated.
      *
-     * @param output            the output file
-     * @param inputs            the input files . Caution: a file with name &quot;-&quot; is a placeholder for stdin - it is not a file.
-     * @param writingStrategy   the writing strategy used to write the output file.
-     * @param inputVersions     versions of all inputs
+     * @param output          the output file
+     * @param inputs          the input files . Caution: a file with name &quot;-&quot; is a placeholder for stdin - it is not a file.
+     * @param writingStrategy the writing strategy used to write the output file.
+     * @param inputVersions   versions of all inputs
      * @return true if the output file needs to be regenerated.
      */
-    boolean needsRegeneration(@Nonnull File output, @Nonnull List&lt;File&gt; inputs,
-                              @Nonnull WritingStrategy writingStrategy, @Nonnull List&lt;String&gt; inputVersions) throws IOException;
+    boolean needsRegeneration(@Nonnull AIInOut output, @Nonnull List&lt;AIInOut&gt; inputs,
+                              @Nonnull WritingStrategy writingStrategy, @Nonnull List&lt;String&gt; inputVersions);
 
-<span class="nc" id="L28">    RegenerationCheckStrategy ALWAYS = (output, inputs, writingStrategy, inputVersions) -&gt; true;</span>
+<span class="nc" id="L26">    RegenerationCheckStrategy ALWAYS = (output, inputs, writingStrategy, inputVersions) -&gt; true;</span>
 
-<span class="nc bnc" id="L30" title="All 2 branches missed.">    RegenerationCheckStrategy IF_NOT_EXISTS = (output, inputs, writingStrategy, additionalMarkers) -&gt; !output.exists();</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">    RegenerationCheckStrategy IF_NOT_EXISTS = (output, inputs, writingStrategy, additionalMarkers) -&gt; !output.getFile().exists();</span>
 
     /**
      * Regenerate when output file does not exist or is older than one of the input files.
      */
-<span class="nc" id="L35">    RegenerationCheckStrategy IF_OLDER = (output, inputs, writingStrategy, inputVersions) -&gt; {</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (!output.exists()) return true;</span>
-<span class="nc" id="L37">        long outputTime = output.lastModified();</span>
-<span class="nc bnc" id="L38" title="All 2 branches missed.">        for (File input : inputs) {</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (input.getName().equals(&quot;-&quot;)) continue;</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (input.lastModified() &gt; outputTime) return true;</span>
-<span class="nc" id="L41">        }</span>
-<span class="nc" id="L42">        return false;</span>
+<span class="nc" id="L33">    RegenerationCheckStrategy IF_OLDER = (output, inputs, writingStrategy, inputVersions) -&gt; {</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (!output.getFile().exists()) return true;</span>
+<span class="nc" id="L35">        long outputTime = output.getFile().lastModified();</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (AIInOut input : inputs) {</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            if (input.getFile().toString().equals(&quot;-&quot;)) continue;</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            if (input.getFile().lastModified() &gt; outputTime) return true;</span>
+<span class="nc" id="L39">        }</span>
+<span class="nc" id="L40">        return false;</span>
     };
 
-<span class="nc" id="L45">    RegenerationCheckStrategy VERSIONMARKER = new VersionMarkerRegenerationCheckStrategy();</span>
+<span class="nc" id="L43">    RegenerationCheckStrategy VERSIONMARKER = new VersionMarkerRegenerationCheckStrategy();</span>
 
-<span class="nc" id="L47">    public class VersionMarkerRegenerationCheckStrategy implements RegenerationCheckStrategy {</span>
+<span class="nc" id="L45">    public class VersionMarkerRegenerationCheckStrategy implements RegenerationCheckStrategy {</span>
 
         @Override
-        public boolean needsRegeneration(@Nonnull File output, @Nonnull List&lt;File&gt; inputs,
-                                         @Nonnull WritingStrategy writingStrategy, @Nonnull List&lt;String&gt; inputVersions) throws IOException {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (!output.exists()) {</span>
-<span class="nc" id="L53">                return true;</span>
+        public boolean needsRegeneration(@Nonnull AIInOut output, @Nonnull List&lt;AIInOut&gt; inputs,
+                                         @Nonnull WritingStrategy writingStrategy, @Nonnull List&lt;String&gt; inputVersions) {
+<span class="nc" id="L50">            AIVersionMarker outputVersionMarker = writingStrategy.getRecordedVersionMarker(output);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            if (outputVersionMarker == null) {</span>
+<span class="nc" id="L52">                return true;</span>
             }
-<span class="nc" id="L55">            AIVersionMarker outputVersionMarker = writingStrategy.getRecordedVersionMarker(output);</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (outputVersionMarker == null) {</span>
-<span class="nc" id="L57">                return true;</span>
-            }
-<span class="nc" id="L59">            List&lt;String&gt; oldInputVersions = outputVersionMarker.getInputVersions();</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">            return !new HashSet&lt;Object&gt;(inputVersions).equals(new HashSet&lt;Object&gt;(oldInputVersions));</span>
+<span class="nc" id="L54">            List&lt;String&gt; oldInputVersions = outputVersionMarker.getInputVersions();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            return !new HashSet&lt;Object&gt;(inputVersions).equals(new HashSet&lt;Object&gt;(oldInputVersions));</span>
         }
 
     }

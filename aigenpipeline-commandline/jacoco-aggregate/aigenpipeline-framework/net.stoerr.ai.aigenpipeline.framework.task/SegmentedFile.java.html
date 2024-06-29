@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SegmentedFile.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">SegmentedFile.java</span></div><h1>SegmentedFile.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+
+/**
+ * ALlows reading and writing individual segments of a file where the segments are separated by a regular expression.
+ */
+public class SegmentedFile {
+
+    protected final File file;
+    protected final List&lt;Pattern&gt; separatorPatterns;
+
+    /**
+     * Segment before first separator, content matching first separator, segment before second separator, content
+     * matching second separator , and so forth, and then the rest of the file.
+     **/
+    protected List&lt;String&gt; segments;
+
+    /**
+     * Reads the file and checks that the separators can be found and that they don't match at other places.
+     */
+<span class="nc" id="L33">    public SegmentedFile(@Nonnull File file, @Nonnull String... separatorRegexes) throws IOException {</span>
+<span class="nc" id="L34">        this.file = file;</span>
+<span class="nc" id="L35">        this.separatorPatterns = Arrays.stream(separatorRegexes)</span>
+<span class="nc" id="L36">                .map(Pattern::compile)</span>
+<span class="nc" id="L37">                .collect(Collectors.toList());</span>
+<span class="nc" id="L38">        readAndParseFile();</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Reads the file and splits it according to the separators.
+     */
+    protected void readAndParseFile() throws IOException {
+<span class="nc" id="L45">        String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L46">        int startpos = 0;</span>
+<span class="nc" id="L47">        segments = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        for (Pattern separator : separatorPatterns) {</span>
+<span class="nc" id="L49">            Matcher matcher = separator.matcher(content);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (!matcher.find(startpos)) {</span>
+<span class="nc" id="L51">                throw new IllegalArgumentException(&quot;Separator &quot; + separator + &quot; not found in &quot; + file);</span>
+            }
+<span class="nc" id="L53">            segments.add(content.substring(startpos, matcher.start()));</span>
+<span class="nc" id="L54">            segments.add(content.substring(matcher.start(), matcher.end()));</span>
+<span class="nc" id="L55">            startpos = matcher.end();</span>
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">        segments.add(content.substring(startpos));</span>
+<span class="nc" id="L58">        sanityCheck(content);</span>
+<span class="nc" id="L59">    }</span>
+
+    /**
+     * Retrieves the segment - 0 is before first separator, 1 is between first and second separator, and so forth,
+     * segments.size()-1 is the rest of the file.
+     */
+    public String getSegment(int i) {
+<span class="nc" id="L66">        return segments.get(2 * i);</span>
+    }
+
+    /**
+     * Retrieves the segment - 0 is before first separator, 1 is between first and second separator, and so forth,
+     * segments.size()-1 is the rest of the file.
+     */
+    public void writeSegment(int i, String newSegment) throws IOException {
+<span class="nc" id="L74">        segments.set(2 * i, newSegment);</span>
+<span class="nc" id="L75">        Files.write(file.toPath(), joinSegments().getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L76">    }</span>
+
+    /**
+     * The basic file we write into.
+     */
+    public File getFile() {
+<span class="nc" id="L82">        return file;</span>
+    }
+
+    protected void sanityCheck(String content) {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (segments.size() != 2 * separatorPatterns.size() + 1) { // sanity check</span>
+<span class="nc" id="L87">            throw new IllegalStateException(&quot;Bug: parsed &quot; + segments.size() + &quot; segments, but expected &quot;</span>
+<span class="nc" id="L88">                    + (2 * separatorPatterns.size() + 1));</span>
+        }
+        // check that the separatorRegexes do not match any of the segments other than the separators.
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        for (int i = 0; i &lt; segments.size(); i += 2) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            for (Pattern separator : separatorPatterns) {</span>
+<span class="nc" id="L93">                String segment = segments.get(i);</span>
+<span class="nc" id="L94">                Matcher matcher = separator.matcher(segment);</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">                if (matcher.find() &amp;&amp; matcher.start() &lt; segment.length() - 1) {</span>
+<span class="nc" id="L96">                    throw new IllegalStateException(&quot;Likely a usage error: separator &quot; + separator + &quot; matches segment &quot; + i + &quot; in &quot; + file);</span>
+                }
+<span class="nc" id="L98">            }</span>
+        }
+<span class="nc bnc" id="L100" title="All 4 branches missed.">        if (!content.equals(joinSegments()) &amp;&amp; !(content + &quot;\n&quot;).equals(joinSegments())) {</span>
+<span class="nc" id="L101">            throw new IllegalStateException(&quot;Bug: content does not match segments in &quot; + file);</span>
+        }
+<span class="nc" id="L103">    }</span>
+
+    protected String joinSegments() {
+<span class="nc" id="L106">        String fullcontent = String.join(&quot;&quot;, segments);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (!fullcontent.endsWith(&quot;\n&quot;)) {</span>
+<span class="nc" id="L108">            fullcontent += &quot;\n&quot;;</span>
+        }
+<span class="nc" id="L110">        return fullcontent;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L115">        return &quot;SegmentedFile [file=&quot; + file + &quot;, separatorPatterns=&quot; + separatorPatterns + &quot;]&quot;;</span>
+    }
+
+    public static String wholeLineRegex(String separator) {
+<span class="nc" id="L119">        return &quot;.*&quot; + separator + &quot;.*\n&quot;;</span>
+    }
+
+    /**
+     * Generates the patterns for storing prompt and generated data within one file.
+     */
+    public static String[] infilePrompting(String id) {
+<span class="nc" id="L126">        return new String[]{</span>
+<span class="nc" id="L127">                wholeLineRegex(&quot;AIGenPromptStart\\(&quot; + id + &quot;\\)&quot;),</span>
+<span class="nc" id="L128">                wholeLineRegex(&quot;AIGenCommand\\(&quot; + id + &quot;\\)&quot;),</span>
+<span class="nc" id="L129">                wholeLineRegex(&quot;AIGenPromptEnd\\(&quot; + id + &quot;\\)&quot;),</span>
+<span class="nc" id="L130">                wholeLineRegex(&quot;AIGenEnd\\(&quot; + id + &quot;\\)&quot;) + &quot;|\\z&quot;</span>
+        };
+    }
+
+    /**
+     * Start pattern for {@link #infilePrompting(String)}, group &quot;id&quot; is the id.
+     */
+<span class="nc" id="L137">    public static final Pattern REGEX_AIGENPROMPTSTART = Pattern.compile(&quot;AIGenPromptStart\\((?&lt;id&gt;[^\\)]+)\\)&quot;);</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
