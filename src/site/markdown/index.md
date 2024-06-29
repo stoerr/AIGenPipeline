@@ -44,11 +44,11 @@ be necessary.
 I suggest to inspect the intermediate and final results and committing them into a version control system like Git.
 That ensures manual checks when they are regenerated, and minimizes regeneration.
 
-If you have questions, please don't hesitate to [contact me](https://www.stoerr.net/contact.html) , if you have fun you 
-can also ask the 
+If you have questions, please don't hesitate to [contact me](https://www.stoerr.net/contact.html) , if you have fun you
+can also ask the
 [Helper for the AI based Code Generation Pipeline](https://chatgpt.com/g/g-zheGoARkR-helper-for-the-ai-based-code-generation-pipeline)
-which is an OpenAI GPT that is fed with all the documentation, or - if you have set up the OpenAI API key for it - 
-you can ask it questions about itself with `aigenpipeline --helpai <question>`. 
+which is an OpenAI GPT that is fed with all the documentation, or - if you have set up the OpenAI API key for it -
+you can ask it questions about itself with `aigenpipeline --helpai <question>`.
 
 ## Some example usages
 
@@ -137,7 +137,7 @@ The comment syntax (in this case /* */) is ignored - we just look for the AIGenV
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.
 
-Hint files (given with the `--hint` option) are not used for version checking, but only to give temporary additional 
+Hint files (given with the `--hint` option) are not used for version checking, but only to give temporary additional
 information to the AI, such as instructions to focus on specific things for an update. Use with care.
 
 ## Using different large language models
@@ -174,6 +174,20 @@ It's also possible to ask the tool questions about itself - use the `-ha` / `--h
 tries to answer that from this documentation. There is also an
 [OpenAI GPT](https://chatgpt.com/g/g-zheGoARkR-ai-based-code-generation-pipeline-helper)
 that can be asked.
+
+## How can I download or install it?
+
+The download and installation links are given on the
+[release pages](https://github.com/stoerr/AIGenPipeline/releases/) on Github.
+You can either:
+
+- [build it from the source](https://github.com/stoerr/AIGenPipeline),
+- grab a zip with the command line script (incl. a prebuilt jar) from the
+  [command line package](https://repo1.maven.org/maven2/net/stoerr/ai/aigenpipeline/aigenpipeline-commandline/)
+  (on [maven central](https://mvnrepository.com/artifact/net.stoerr.ai.aigenpipeline/aigenpipeline-commandline/))
+- or use the [framework jar](https://mvnrepository.com/artifact/net.stoerr.ai.aigenpipeline/aigenpipeline-framework)
+  directly with the class 
+  [AIGenerationTask](https://aigenpipeline.stoerr.net/aigenpipeline-framework/apidocs/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.html) .
 
 ## Limitations and additional ideas (not implemented yet)
 
