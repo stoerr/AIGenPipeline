@@ -10,9 +10,9 @@
     <packaging>jar</packaging>
     <name>AIGenPipeline Framework</name>
     <description>A command line tool and framework for generating code and documentation with AI.</description>
-    <url>${siteurl}</url>
+    <url>https://aigenpipeline.stoerr.net/</url>
     <scm>
-        <url>${giturl}</url>
+        <url>https://github.com/ist-dresden/composum-AI.git</url>
         <tag>HEAD</tag>
     </scm>
     <dependencies>
