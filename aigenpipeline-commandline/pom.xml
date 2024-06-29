@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.stoerr.ai.aigenpipeline</groupId>
         <artifactId>aigenpipeline</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>aigenpipeline-commandline</artifactId>
     <packaging>jar</packaging>
@@ -13,7 +13,7 @@
     <url>${siteurl}</url>
     <scm>
         <url>${giturl}</url>
-        <tag>aigenpipeline-2.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
