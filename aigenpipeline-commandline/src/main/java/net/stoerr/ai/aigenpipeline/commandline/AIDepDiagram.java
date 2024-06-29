@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import net.stoerr.ai.aigenpipeline.framework.task.AIInOut;
 
 public class AIDepDiagram {
@@ -25,6 +27,7 @@ public class AIDepDiagram {
 
     /**
      * Prints a dependency diagram of the pipelines to the given output stream.
+     * @param out the output stream to print to
      */
     public void printDepDiagram(PrintStream out) {
         out.println("graph TD");
@@ -61,7 +64,9 @@ public class AIDepDiagram {
 
     /**
      * Does a topological sort to execute tasks that depend on other tasks later.
+     * @return the sorted list of pipelines, not null
      */
+    @Nonnull
     public List<AIGenPipeline> sortedPipelines() {
         List<AIGenPipeline> sorted = new ArrayList<>();
         TopoSort<String> sort = new TopoSort<>();

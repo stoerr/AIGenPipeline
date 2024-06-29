@@ -40,6 +40,7 @@ public class AIGenArgumentList {
 
     /**
      * Unrelated to file.
+     * @param args the arguments
      */
     public AIGenArgumentList(@Nonnull String[] args) {
         this.cfgFile = null;
@@ -48,6 +49,7 @@ public class AIGenArgumentList {
 
     /**
      * Reads the arguments from a file.
+     * @param cfgFile the file to read from
      */
     public AIGenArgumentList( @Nonnull File cfgFile) {
         this.cfgFile = cfgFile;

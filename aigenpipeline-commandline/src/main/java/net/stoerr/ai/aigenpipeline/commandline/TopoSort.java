@@ -28,6 +28,7 @@ public class TopoSort<T> {
      * If a cycle is detected, an IllegalArgumentException is thrown.
      *
      * @return sorted list of nodes - if there is an edge from node A to node B, then A will appear before B in the list
+     * @throws TopoSortCycleException if a cycle is detected
      */
     public List<T> sort() throws TopoSortCycleException {
         List<T> result = new ArrayList<>();
@@ -70,6 +71,7 @@ public class TopoSort<T> {
 
         /**
          * One node involved into a cycle.
+         * @return the node
          */
         public Object getNode() {
             return node;

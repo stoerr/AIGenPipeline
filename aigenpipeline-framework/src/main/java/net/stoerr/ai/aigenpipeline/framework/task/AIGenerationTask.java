@@ -66,11 +66,11 @@ public class AIGenerationTask implements Cloneable {
     /**
      * A pattern matching infile prompts like this:
      * <pre>
-     * <%-- AIGenPromptStart(tablefromdatacopied)
+     * &lt;%-- AIGenPromptStart(tablefromdatacopied)
      * Make a markdown table from the data, with columns "Name" and "Profession".
      * AIGenCommand(tablefromdatacopied)
      * -f -m copy tablefromdata.md
-     * AIGenPromptEnd(tablefromdatacopied) --%>
+     * AIGenPromptEnd(tablefromdatacopied) --%&gt;
      * </pre>
      * This matches a line containing AIGenPromptStart with an id until the corresponding AIGenPromptEnd.
      */

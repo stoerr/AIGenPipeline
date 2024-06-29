@@ -221,6 +221,7 @@ public class AIGenPipeline {
 
     /**
      * Scans for files in {@link #outputScan} and processes them.
+     * @param args the command line arguments
      */
     protected void runWithOutputScan(String[] args) {
         if (!inputFiles.isEmpty()) {
@@ -514,6 +515,7 @@ public class AIGenPipeline {
     /**
      * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
      * answer the #helpAIquestion from that.
+     * @throws IOException if the help texts could not be read
      */
     protected void answerHelpAIQuestion() throws IOException {
         StringBuilder helptext = new StringBuilder();
