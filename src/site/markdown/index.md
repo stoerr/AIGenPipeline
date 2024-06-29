@@ -44,6 +44,12 @@ be necessary.
 I suggest to inspect the intermediate and final results and committing them into a version control system like Git.
 That ensures manual checks when they are regenerated, and minimizes regeneration.
 
+If you have questions, please don't hesitate to [contact me](https://www.stoerr.net/contact.html) , if you have fun you 
+can also ask the 
+[Helper for the AI based Code Generation Pipeline](https://chatgpt.com/g/g-zheGoARkR-helper-for-the-ai-based-code-generation-pipeline)
+which is an OpenAI GPT that is fed with all the documentation, or - if you have set up the OpenAI API key for it - 
+you can ask it questions about itself with `aigenpipeline --helpai <question>`. 
+
 ## Some example usages
 
 1. **Basic Generation**: Generating an OpenAPI document interface, tests, and implementation class could be achieved by
