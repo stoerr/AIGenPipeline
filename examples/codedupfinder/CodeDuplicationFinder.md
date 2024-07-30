@@ -85,9 +85,6 @@ in subdirectories of this directory, and the following result files:
 - [result.json](result.json): the best matches in JSON format, as input for further steps
 - [resultevaluation.txt](resultevaluation.txt): LLM rated evaluation.
 
-Please be aware that Step 5 uses gpt-4o since gpt-3.5-turbo didn't work well on this task, and that might cost a bit 
-- even on this small project my experiments today were about $2.
-
 ## Ideas for improvement
 
 The GPT-4o rating is a bit expensive. It might be a good idea to add a step in between where 3.5 is used to extract 

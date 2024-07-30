@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 CMD="../../bin/aigenpipeline"
-# CMD="$CMD -m gpt-3.5-turbo"
+# CMD="$CMD -m gpt-4o-mini"
 
 # If using Anthropic Claude-3: Haiku doesn't work, but Sonnet and Opus do
 # https://docs.anthropic.com/claude/docs/models-overview#model-comparison

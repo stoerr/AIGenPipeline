@@ -21,7 +21,7 @@ public class RunListLocalModel {
                 // .proxy(ProxySelector.of(InetSocketAddress.createUnresolved("localhost", 8080)))
                 .build();
         String json = "{\n" +
-                "  \"model\": \"gpt-3.5-turbo\",\n" +
+                "  \"model\": \"gpt-4o-mini\",\n" +
                 "  \"messages\": [\n" +
                 "    {\n" +
                 "      \"role\": \"user\",\n" +

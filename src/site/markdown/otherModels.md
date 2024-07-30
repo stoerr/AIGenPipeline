@@ -29,7 +29,7 @@ This is the default, so you don't need to specify the API key. If you just put i
     -a $OPENAI_API_KEY
     # optional, if you need that
     -org $OPENAI_ORG_ID
-    -m gpt-3.5-turbo 
+    -m gpt-4o-mini 
 
     # Don't look for configuration files in our parent directories
     -cn

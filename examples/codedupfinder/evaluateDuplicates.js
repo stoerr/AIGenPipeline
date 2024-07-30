@@ -69,7 +69,7 @@ for (const result of results) {
     const evalFile = path.join(evalDir, `${shortId1}-${shortId2}.eval`);
 
     // run aigenpipeline with the two files and write the output to the eval file
-    const args = ['-m', 'gpt-4o', '-v', '-p', 'evaluateDuplicate.prompt', '-k', `method1=${methodname1}`, '-k', `method2=${methodname2}`, '-k', `file1=${file1}`, '-k', `file2=${file2}`, '-o', evalFile, file1, file2];
+    const args = ['-v', '-p', 'evaluateDuplicate.prompt', '-k', `method1=${methodname1}`, '-k', `method2=${methodname2}`, '-k', `file1=${file1}`, '-k', `file2=${file2}`, '-o', evalFile, file1, file2];
     console.log('aigenpipeline', args.join(' '));
     const output = spawnSync('aigenpipeline', args).toString();
     console.log(output);

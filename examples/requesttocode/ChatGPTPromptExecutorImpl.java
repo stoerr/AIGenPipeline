@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ChatGPTPromptExecutorImpl implements ChatGPTPromptExecutor {
 
-    private static final String MODEL = "gpt-3.5-turbo";
+    private static final String MODEL = "gpt-4o-mini";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String AUTHORIZATION = "Authorization";

@@ -72,7 +72,7 @@ public class AIGenPipeline {
     protected List<AIInOut> inputFiles = new ArrayList<>();
     protected List<AIInOut> promptFiles = new ArrayList<>();
     protected Map<String, String> keyValues = new LinkedHashMap<>();
-    protected String model = "gpt-3.5-turbo"; // "gpt-4o";
+    protected String model = "gpt-4o-mini"; // "gpt-4o";
     protected AIGenerationTask task = new AIGenerationTask();
     protected File rootDir = new File(".");
     protected PrintStream logStream = System.err;
