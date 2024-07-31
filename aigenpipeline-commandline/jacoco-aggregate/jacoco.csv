@@ -7,9 +7,9 @@ AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipel
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIGenerationTask,836,0,76,0,186,0,78,0,40,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},14,0,0,0,5,0,4,0,4,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy.new WritingStrategy() {...},82,0,9,0,26,0,11,0,5,0
-AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut,56,0,8,0,6,0,10,0,6,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,SegmentedFile,272,0,20,0,51,0,21,0,11,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,WritingStrategy,9,0,0,0,2,0,1,0,1,0
+AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut,56,0,8,0,6,0,10,0,6,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,FileLookupHelper.new SimpleFileVisitor() {...},49,0,8,0,6,0,6,0,2,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut.AIFileSegmentInOut,45,0,0,0,12,0,5,0,5,0
 AIGenPipeline Command Line Tool/aigenpipeline-framework,net.stoerr.ai.aigenpipeline.framework.task,AIInOut.AIFileInOut,49,0,0,0,13,0,5,0,5,0
