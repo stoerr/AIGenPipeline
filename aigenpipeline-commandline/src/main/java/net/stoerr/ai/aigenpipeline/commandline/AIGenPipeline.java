@@ -88,7 +88,41 @@ public class AIGenPipeline {
     protected List<AIInOut> hintFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        new AIGenPipeline().run(args);
+        if (args.length == 2 && args[0].equals("-rc")) {
+            processCommandFile(args);
+        } else {
+            new AIGenPipeline().run(args);
+        }
+    }
+
+    /**
+     * -rc <file>           Read command lines from the given file. Empty lines separate individual command lines.
+     * Lines starting with a # are ignored (comments).
+     * This saves the startup time when calling the tool multiple times. Incompatible to all other options.
+     */
+    protected static void processCommandFile(String[] args) throws IOException {
+        File cmdfile = new File(args[1]);
+        if (!cmdfile.exists() || !cmdfile.isFile() || !cmdfile.canRead()) {
+            ERR.println("Cannot read command file " + cmdfile.getAbsolutePath());
+            System.exit(1);
+        }
+        try (Scanner scanner = new Scanner(cmdfile, StandardCharsets.UTF_8)) {
+            // TODO: perhaps handle quoted strings, but that's only for command line arguments unlikely to occur.
+            StringBuffer cmd = new StringBuffer();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("#")) continue;
+                if (line.trim().isEmpty()) {
+                    new AIGenPipeline().run(cmd.toString().trim().split("\\s+"));
+                    cmd.setLength(0);
+                } else {
+                    cmd.append(" ").append(line.trim());
+                }
+            }
+            if (!cmd.toString().trim().isEmpty()) {
+                new AIGenPipeline().run(cmd.toString().trim().split("\\s+"));
+            }
+        }
     }
 
     protected void run(String[] args) throws IOException {
@@ -221,6 +255,7 @@ public class AIGenPipeline {
 
     /**
      * Scans for files in {@link #outputScan} and processes them.
+     *
      * @param args the command line arguments
      */
     protected void runWithOutputScan(String[] args) {
@@ -358,6 +393,7 @@ public class AIGenPipeline {
             switch (args[i]) {
                 case "-h":
                 case "--help":
+                case "-?":
                     help = true;
                     break;
                 case "-ha":
@@ -515,6 +551,7 @@ public class AIGenPipeline {
     /**
      * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
      * answer the #helpAIquestion from that.
+     *
      * @throws IOException if the help texts could not be read
      */
     protected void answerHelpAIQuestion() throws IOException {

@@ -14,6 +14,9 @@ Options:
     -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
                              actually calling the AI or writing any files.
     -v, --verbose            Enable verbose output to stderr, providing more details about the process.
+    -rc <file>               Read command lines from the given file. Empty lines separate individual command lines.
+                             Lines starting with a # are ignored (comments).
+                             This saves the startup time when calling the tool multiple times. Incompatible to all other options.
 
   Input / outputs:
     -o, --output <file>      Specify the output file where the generated content will be written.
