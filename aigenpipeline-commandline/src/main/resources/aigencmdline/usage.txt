@@ -1,5 +1,13 @@
 Usage:
 aigenpipeline [options] [<input_files>...]
+or
+ai-gen-pipeline <command_file>
+
+The AIGenPipeline tool generates content using an AI based on a prompt and input files.
+It can also update or improve existing content, and it only calls the AI if the input or prompt files have changed.
+
+If it's called with a command file, it reads a number of command lines from that file. Empty lines separate individual command lines.
+Lines starting with a # are ignored (comments). This saves the startup time when calling the tool multiple times.
 
 Options:
 
@@ -14,9 +22,6 @@ Options:
     -n, --dry-run            Enable dry-run mode, where the tool will only print to stderr what it would do without 
                              actually calling the AI or writing any files.
     -v, --verbose            Enable verbose output to stderr, providing more details about the process.
-    -rc <file>               Read command lines from the given file. Empty lines separate individual command lines.
-                             Lines starting with a # are ignored (comments).
-                             This saves the startup time when calling the tool multiple times. Incompatible to all other options.
 
   Input / outputs:
     -o, --output <file>      Specify the output file where the generated content will be written.

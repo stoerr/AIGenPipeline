@@ -88,20 +88,20 @@ public class AIGenPipeline {
     protected List<AIInOut> hintFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        if (args.length == 2 && args[0].equals("-rc")) {
-            processCommandFile(args);
+        if (args.length == 1) {
+            processCommandFile(args[0]);
         } else {
             new AIGenPipeline().run(args);
         }
     }
 
     /**
-     * -rc <file>           Read command lines from the given file. Empty lines separate individual command lines.
+     * Read command lines from the given file. Empty lines separate individual command lines.
      * Lines starting with a # are ignored (comments).
      * This saves the startup time when calling the tool multiple times. Incompatible to all other options.
      */
-    protected static void processCommandFile(String[] args) throws IOException {
-        File cmdfile = new File(args[1]);
+    protected static void processCommandFile(String cmdfilepath) throws IOException {
+        File cmdfile = new File(cmdfilepath);
         if (!cmdfile.exists() || !cmdfile.isFile() || !cmdfile.canRead()) {
             ERR.println("Cannot read command file " + cmdfile.getAbsolutePath());
             System.exit(1);
@@ -111,18 +111,25 @@ public class AIGenPipeline {
             StringBuffer cmd = new StringBuffer();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
-                if (line.startsWith("#")) continue;
+                if (line.trim().startsWith("#")) continue;
                 if (line.trim().isEmpty()) {
-                    new AIGenPipeline().run(cmd.toString().trim().split("\\s+"));
+                    runWithCommandLine(cmd.toString());
                     cmd.setLength(0);
                 } else {
                     cmd.append(" ").append(line.trim());
                 }
             }
             if (!cmd.toString().trim().isEmpty()) {
-                new AIGenPipeline().run(cmd.toString().trim().split("\\s+"));
+                runWithCommandLine(cmd.toString());
             }
         }
+    }
+
+    protected static void runWithCommandLine(String cmdline) throws IOException {
+        ERR.println("Processing command line: ");
+        ERR.println(cmdline.toString().trim());
+        new AIGenPipeline().run(cmdline.trim().split("\\s+"));
+        ERR.println();
     }
 
     protected void run(String[] args) throws IOException {
