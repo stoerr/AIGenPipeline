@@ -163,6 +163,28 @@ command line arguments. Thus, the later override the earlier one. Explicitly giv
 processed at the point where the argument occurs when processing the command line arguments. The option `-cp` /
 `--configprint` gives an overview of the used files / sources of configuration.
 
+## Command files
+
+While the startup time of aigenpipeline is low in comparison to the actual LLM calls, it can still hurt if there
+are many files to process and most AI calls can be skipped because there were no changes in inputs or prompts.
+Thus, if you just give one file as argument, it'll be read s command file containing a number of command lines
+that are executed in sequence.
+Those contain a number of command lines that are executed in sequence. Empty lines separate individual command lines,
+and lines starting with a # are ignored (comments). For example:
+
+```
+#!/usr/bin/env ../../bin/aigenpipeline
+-m gpt-4o-mini -p 0dialogelements.prompt README.md -o dialogelements.txt
+
+# command lines are separated by empty lines, and comment lines starting with # are ignored
+-m gpt-4o-mini -p 1html.prompt README.md dialogelements.txt -o differentialReTranslation.html
+
+# Each command line can be split over several lines if convenient.
+-m gpt-4o-mini -p 2css.prompt 
+README.md differentialReTranslation.html 
+-o differentialReTranslation.css
+```
+
 ## Other features
 
 If you are not satisfied with the result, the tool can also be used to ask the AI for clarification: ask a question
@@ -199,6 +221,14 @@ You can either:
 ```
 Usage:
 aigenpipeline [options] [<input_files>...]
+or
+ai-gen-pipeline <command_file>
+
+The AIGenPipeline tool generates content using an AI based on a prompt and input files.
+It can also update or improve existing content, and it only calls the AI if the input or prompt files have changed.
+
+If it's called with a command file, it reads a number of command lines from that file. Empty lines separate individual command lines.
+Lines starting with a # are ignored (comments). This saves the startup time when calling the tool multiple times.
 
 Options:
 

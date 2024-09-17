@@ -88,7 +88,48 @@ public class AIGenPipeline {
     protected List<AIInOut> hintFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        new AIGenPipeline().run(args);
+        if (args.length == 1 && !args[0].startsWith("-")) {
+            processCommandFile(args[0]);
+        } else {
+            new AIGenPipeline().run(args);
+        }
+    }
+
+    /**
+     * Read command lines from the given file. Empty lines separate individual command lines.
+     * Lines starting with a # are ignored (comments).
+     * This saves the startup time when calling the tool multiple times. Incompatible to all other options.
+     */
+    protected static void processCommandFile(String cmdfilepath) throws IOException {
+        File cmdfile = new File(cmdfilepath);
+        if (!cmdfile.exists() || !cmdfile.isFile() || !cmdfile.canRead()) {
+            ERR.println("Cannot read command file " + cmdfile.getAbsolutePath());
+            System.exit(1);
+        }
+        try (Scanner scanner = new Scanner(cmdfile, StandardCharsets.UTF_8)) {
+            // TODO: perhaps handle quoted strings, but that's only for command line arguments unlikely to occur.
+            StringBuffer cmd = new StringBuffer();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.trim().startsWith("#")) continue;
+                if (line.trim().isEmpty()) {
+                    runWithCommandLine(cmd.toString());
+                    cmd.setLength(0);
+                } else {
+                    cmd.append(" ").append(line.trim());
+                }
+            }
+            if (!cmd.toString().trim().isEmpty()) {
+                runWithCommandLine(cmd.toString());
+            }
+        }
+    }
+
+    protected static void runWithCommandLine(String cmdline) throws IOException {
+        ERR.println("Processing command line: ");
+        ERR.println(cmdline.toString().trim());
+        new AIGenPipeline().run(cmdline.trim().split("\\s+"));
+        ERR.println();
     }
 
     protected void run(String[] args) throws IOException {
@@ -221,6 +262,7 @@ public class AIGenPipeline {
 
     /**
      * Scans for files in {@link #outputScan} and processes them.
+     *
      * @param args the command line arguments
      */
     protected void runWithOutputScan(String[] args) {
@@ -358,6 +400,7 @@ public class AIGenPipeline {
             switch (args[i]) {
                 case "-h":
                 case "--help":
+                case "-?":
                     help = true;
                     break;
                 case "-ha":
@@ -515,6 +558,7 @@ public class AIGenPipeline {
     /**
      * This reads the collected texts of the website from /helpaitexts.md and gives them to the AI, and then has it
      * answer the #helpAIquestion from that.
+     *
      * @throws IOException if the help texts could not be read
      */
     protected void answerHelpAIQuestion() throws IOException {
