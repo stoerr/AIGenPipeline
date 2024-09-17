@@ -88,7 +88,7 @@ public class AIGenPipeline {
     protected List<AIInOut> hintFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        if (args.length == 1) {
+        if (args.length == 1 && !args[0].startsWith("-")) {
             processCommandFile(args[0]);
         } else {
             new AIGenPipeline().run(args);
