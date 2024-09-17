@@ -1,6 +1,6 @@
 package net.stoerr.ai.aigenpipeline.framework.task;
 
-import java.io.IOException;
+import java.io.File;
 
 import javax.annotation.Nonnull;
 
@@ -21,7 +21,7 @@ public interface WritingStrategy {
      */
     WritingStrategy WITHOUTVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
             output.write(content);
         }
 
@@ -42,7 +42,7 @@ public interface WritingStrategy {
      */
     WritingStrategy WITHVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
             output.write(embedComment(output, content, versionComment));
         }
 
@@ -55,7 +55,16 @@ public interface WritingStrategy {
                 return null;
             }
             if (content == null) {
-                return null;
+                File versionFile = new File(output.getFile() + ".version");
+                if (!versionFile.exists()) {
+                    return null;
+                }
+                content = AIInOut.of(versionFile).read();
+                AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+                if (aiVersionMarker == null) { // here is really something wrong.
+                    throw new IllegalStateException("Could not find version marker in " + versionFile);
+                }
+                return aiVersionMarker;
             }
             AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
             /* if (aiVersionMarker == null) {
@@ -101,6 +110,28 @@ public interface WritingStrategy {
         @Override
         public String toString() {
             return "WritingStrategy.WITHVERSION";
+        }
+    };
+
+    /**
+     * Writes an additional file (.version) with the version.
+     */
+    WritingStrategy WITHVERSIONFILE = new WritingStrategy() {
+        @Override
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
+            output.write(content);
+            File versionFile = new File(output.getFile() + ".version");
+            AIInOut.of(versionFile).write(versionComment);
+        }
+
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) {
+            return WITHVERSION.getRecordedVersionMarker(output);
+        }
+
+        @Override
+        public String toString() {
+            return "WritingStrategy.WITHVERSIONFILE";
         }
     };
 

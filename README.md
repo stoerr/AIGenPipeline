@@ -193,6 +193,7 @@ Options:
     -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
     -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
     -wv, --write-version     Write the output file with a version comment. (Default.)
+    -wvf, --write-versionfile Write the version comment to a separate file named like the output file with .version appended.
     -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .
     -wp, --write-part <marker> Replace the lines between the first occurrence of the marker and the second occurrence.
                              If a version marker is written, it has to be in the first of those lines and is changed there.
