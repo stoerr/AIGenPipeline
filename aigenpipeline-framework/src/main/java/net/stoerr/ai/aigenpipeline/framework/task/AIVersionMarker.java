@@ -2,7 +2,7 @@ package net.stoerr.ai.aigenpipeline.framework.task;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,6 +24,13 @@ import javax.annotation.Nullable;
 public class AIVersionMarker {
 
     public static final Pattern VERSION_MARKER_PATTERN = Pattern.compile("AIGenVersion\\([^)]+\\)");
+
+    /**
+     * Suffix appended to files with formats braindead enough to not allow comments so that we have to store
+     * the file version in an additional file.
+     */
+    public static final String FILESUFFIX_VERSION = ".version";
+
     protected final String ourVersion;
     protected final List<String> inputVersions;
 
@@ -71,6 +78,13 @@ public class AIVersionMarker {
         String content = inOut.read();
         requireNonNull(content, "Could not read file " + inOut);
         AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+        if (aiVersionMarker == null) {
+            File versionFile = new File(inOut.getFile() + FILESUFFIX_VERSION);
+            if (versionFile.exists()) {
+                String versionFileContent = AIInOut.of(versionFile).read();
+                aiVersionMarker = AIVersionMarker.find(versionFileContent);
+            }
+        }
         String version;
         if (aiVersionMarker != null) {
             version = aiVersionMarker.getOurVersion();

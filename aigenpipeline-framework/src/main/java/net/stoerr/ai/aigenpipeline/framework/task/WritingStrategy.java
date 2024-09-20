@@ -1,5 +1,7 @@
 package net.stoerr.ai.aigenpipeline.framework.task;
 
+import static net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarker.FILESUFFIX_VERSION;
+
 import java.io.File;
 
 import javax.annotation.Nonnull;
@@ -54,19 +56,18 @@ public interface WritingStrategy {
             } catch (RuntimeException e) {
                 return null;
             }
-            if (content == null) {
-                File versionFile = new File(output.getFile() + ".version");
+            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+            if (aiVersionMarker == null) {
+                File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);
                 if (!versionFile.exists()) {
                     return null;
                 }
                 content = AIInOut.of(versionFile).read();
-                AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+                aiVersionMarker = AIVersionMarker.find(content);
                 if (aiVersionMarker == null) { // here is really something wrong.
                     throw new IllegalStateException("Could not find version marker in " + versionFile);
                 }
-                return aiVersionMarker;
             }
-            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
             /* if (aiVersionMarker == null) {
                 throw new IllegalStateException("Could not find version marker in " + output);
             } probably invalid heuristic. */
@@ -120,7 +121,7 @@ public interface WritingStrategy {
         @Override
         public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
             output.write(content);
-            File versionFile = new File(output.getFile() + ".version");
+            File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);
             AIInOut.of(versionFile).write(versionComment);
         }
 
