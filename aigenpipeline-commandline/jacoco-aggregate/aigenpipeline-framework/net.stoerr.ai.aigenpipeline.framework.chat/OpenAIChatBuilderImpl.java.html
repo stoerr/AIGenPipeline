@@ -170,7 +170,7 @@ import com.google.gson.GsonBuilder;
 <span class="nc bnc" id="L170" title="All 2 branches missed.">        if (organizationId != null) {</span>
 <span class="nc" id="L171">            builder.header(&quot;OpenAI-Organization&quot;, organizationId);</span>
         }
-<span class="nc" id="L173">        builder.timeout(Duration.ofSeconds(120));</span>
+<span class="nc" id="L173">        builder.timeout(Duration.ofSeconds(300));</span>
 <span class="nc" id="L174">        HttpRequest request = builder.build();</span>
         try {
 <span class="nc" id="L176">            HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>

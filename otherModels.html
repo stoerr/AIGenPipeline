@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="generator" content="#generatedBy()" />
-    <title>AIGenPipeline - command line tool and framework for generating code and documentation with AI – Using various large language models (LLM)</title>
+    <title>Using various large language models (LLM) – AIGenPipeline - command line tool and framework for generating code and documentation with AI</title>
     <link rel="icon" href="./img/favicons/favicon.ico">
     <!-- CSS Stylesheets, site.css is included so downstream projects can override them as appropriate. -->
     <link rel="stylesheet" href="./css/bootstrap.min.css" />
@@ -110,7 +110,7 @@
                    <a href="project-reports.html" id="Project ReportsDropdownLink" title="Project Reports"  class="dropdown-item" >Project Reports</a>
                    <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
                      <li class="nav-item dropdown-item">
-                       <a href="surefire-report.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
+                       <a href="surefire.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="jacoco-aggregate/index.html" id="JaCoCo AggregateDropdownLink" title="JaCoCo Aggregate"  class="dropdown-item" >JaCoCo Aggregate</a>                     </li>
                      <li class="nav-item dropdown-item">
@@ -141,9 +141,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-07-31</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-09-20</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 2.0.1</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 2.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -152,7 +152,7 @@
 
     <main class="flex-shrink-0" role="main">
       <div class="container mt-3 rounded">
-<section>
+<section><a id="Using_various_large_language_models_.28LLM.29"></a>
 <h1>Using various large language models (LLM)</h1>
 <p>While the AIGenPipeline uses the OpenAI chat completion API as default, it's easy to configure it to use different
 models. Here is a description how to configure OpenAI, <a href="https://www.anthropic.com/claude" class="externalLink">Anthropic Claude</a>
@@ -165,12 +165,11 @@ command line tool, you can either put them into the <code>AIGENPIPELINE_CONFIG</
 <code>.aigenpipeline</code> file that contains them. The tool searches from the current directory upwards, so this can be done
 in the project directory where you run the tool or even into your home directory.</p>
 <p>The directory <a href="https://github.com/stoerr/AIGenPipeline/tree/develop/examples/variousModels" class="externalLink">examples/variousModels</a>
-contains several examples.</p><section>
+contains several examples.</p><section><a id="OpenAI_chat_completion_API"></a>
 <h2>OpenAI chat completion API</h2>
 <p>This is the default, so you don't need to specify the API key. If you just put it into an environment variable
 <code>OPENAI_API_KEY</code> you don't need any special options. Otherwise, you could create a <code>.aigenpipeline</code> file like this:</p>
 
-<div class="verbatim">
 <pre><code># for completeness you could give the URL, but that URL hasn't to be set since it's the default.
 # -u https://api.openai.com/v1/chat/completions
 -a $OPENAI_API_KEY
@@ -180,33 +179,31 @@ contains several examples.</p><section>
 
 # Don't look for configuration files in our parent directories
 -cn
-</code></pre></div>
-<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section>
+</code></pre>
+<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section><a id="Anthropic_claude"></a>
 <h2>Anthropic claude</h2>
 <p>The <a href="https://www.anthropic.com/claude" class="externalLink">Anthropic Claude</a>
 <a href="https://docs.anthropic.com/claude/docs/text-generation" class="externalLink">text generation</a> service needs the following arguments in
 a <code>.aigenpipeline</code> file. If the key is in an environment variable <code>ANTHROPIC_API_VERSION</code>, the -a line with the key
 can be omitted.</p>
 
-<div class="verbatim">
 <pre><code>-u https://api.anthropic.com/v1/messages
 -m $ANTHROPIC_DEFAULT_MODEL
 -a $ANTHROPIC_API_KEY
 
 # Don't look for further configuration files
 -cn
-</code></pre></div>
-<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section>
+</code></pre>
+<p>This references environment variables, but you can also put the actual keys into that file.</p></section><section><a id="Local_models"></a>
 <h2>Local models</h2>
 <p>For <a href="https://lmstudio.ai/" class="externalLink">LM Studio</a> the configuration file <code>.aigenpipeline</code> can look like this:</p>
 
-<div class="verbatim">
 <pre><code># for completeness, but that URL hasn't to be set since it's the default.
 -u http://localhost:1234/v1/chat/completions
 
 # Don't look for further configuration files
 -cn
-</code></pre></div>
+</code></pre>
 <p>Or you could put <code>-u http://localhost:1234/v1/chat/completions</code> into <code>AIGENPIPELINE_CONFIG</code> if you always use that.</p></section></section>
       </div>
     </main>

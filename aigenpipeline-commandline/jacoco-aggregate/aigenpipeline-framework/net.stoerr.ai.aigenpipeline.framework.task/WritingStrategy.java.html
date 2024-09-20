@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WritingStrategy.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">AIGenPipeline Command Line Tool</a> &gt; <a href="../index.html" class="el_bundle">aigenpipeline-framework</a> &gt; <a href="index.source.html" class="el_package">net.stoerr.ai.aigenpipeline.framework.task</a> &gt; <span class="el_source">WritingStrategy.java</span></div><h1>WritingStrategy.java</h1><pre class="source lang-java linenums">package net.stoerr.ai.aigenpipeline.framework.task;
 
-import java.io.IOException;
+import static net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarker.FILESUFFIX_VERSION;
+
+import java.io.File;
 
 import javax.annotation.Nonnull;
 
@@ -19,88 +21,118 @@ public interface WritingStrategy {
     /**
      * Writes the raw file without the cersion comment.
      */
-<span class="nc" id="L22">    WritingStrategy WITHOUTVERSION = new WritingStrategy() {</span>
+<span class="nc" id="L24">    WritingStrategy WITHOUTVERSION = new WritingStrategy() {</span>
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
-<span class="nc" id="L25">            output.write(content);</span>
-<span class="nc" id="L26">        }</span>
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
+<span class="nc" id="L27">            output.write(content);</span>
+<span class="nc" id="L28">        }</span>
 
         @Override
         public AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) throws UnsupportedOperationException {
-<span class="nc" id="L30">            throw new UnsupportedOperationException(&quot;Cannot read version marker from file without version comment.&quot;);</span>
+<span class="nc" id="L32">            throw new UnsupportedOperationException(&quot;Cannot read version marker from file without version comment.&quot;);</span>
         }
 
 
         @Override
         public String toString() {
-<span class="nc" id="L36">            return &quot;WritingStrategy.WITHOUTVERSION&quot;;</span>
+<span class="nc" id="L38">            return &quot;WritingStrategy.WITHOUTVERSION&quot;;</span>
         }
     };
 
     /**
      * Writes the file with the version comment.
      */
-<span class="nc" id="L43">    WritingStrategy WITHVERSION = new WritingStrategy() {</span>
+<span class="nc" id="L45">    WritingStrategy WITHVERSION = new WritingStrategy() {</span>
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
-<span class="nc" id="L46">            output.write(embedComment(output, content, versionComment));</span>
-<span class="nc" id="L47">        }</span>
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
+<span class="nc" id="L48">            output.write(embedComment(output, content, versionComment));</span>
+<span class="nc" id="L49">        }</span>
 
         @Override
         public AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) {
             String content;
             try {
-<span class="nc" id="L53">                content = output.read();</span>
-<span class="nc" id="L54">            } catch (RuntimeException e) {</span>
-<span class="nc" id="L55">                return null;</span>
-<span class="nc" id="L56">            }</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (content == null) {</span>
-<span class="nc" id="L58">                return null;</span>
+<span class="nc" id="L55">                content = output.read();</span>
+<span class="nc" id="L56">            } catch (RuntimeException e) {</span>
+<span class="nc" id="L57">                return null;</span>
+<span class="nc" id="L58">            }</span>
+<span class="nc" id="L59">            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            if (aiVersionMarker == null) {</span>
+<span class="nc" id="L61">                File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                if (!versionFile.exists()) {</span>
+<span class="nc" id="L63">                    return null;</span>
+                }
+<span class="nc" id="L65">                content = AIInOut.of(versionFile).read();</span>
+<span class="nc" id="L66">                aiVersionMarker = AIVersionMarker.find(content);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                if (aiVersionMarker == null) { // here is really something wrong.</span>
+<span class="nc" id="L68">                    throw new IllegalStateException(&quot;Could not find version marker in &quot; + versionFile);</span>
+                }
             }
-<span class="nc" id="L60">            AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);</span>
             /* if (aiVersionMarker == null) {
                 throw new IllegalStateException(&quot;Could not find version marker in &quot; + output);
             } probably invalid heuristic. */
-<span class="nc" id="L64">            return aiVersionMarker;</span>
+<span class="nc" id="L74">            return aiVersionMarker;</span>
         }
 
         protected String embedComment(@Nonnull AIInOut outputFile, String content, String comment) {
             String result;
-<span class="nc" id="L69">            String extension = outputFile.getFile().getName().substring(outputFile.getFile().getName().lastIndexOf('.') + 1);</span>
-<span class="nc bnc" id="L70" title="All 5 branches missed.">            switch (extension) {</span>
+<span class="nc" id="L79">            String extension = outputFile.getFile().getName().substring(outputFile.getFile().getName().lastIndexOf('.') + 1);</span>
+<span class="nc bnc" id="L80" title="All 5 branches missed.">            switch (extension) {</span>
                 case &quot;java&quot;:
                 case &quot;txt&quot;: // there is no real comment syntax for txt, but that might be obvious to a human reader
-<span class="nc" id="L73">                    result = &quot;// &quot; + comment + &quot;\n\n&quot; + content;</span>
-<span class="nc" id="L74">                    break;</span>
+<span class="nc" id="L83">                    result = &quot;// &quot; + comment + &quot;\n\n&quot; + content;</span>
+<span class="nc" id="L84">                    break;</span>
                 case &quot;html&quot;:
                 case &quot;htm&quot;:
                 case &quot;xml&quot;:
                 case &quot;jsp&quot;:
                 case &quot;md&quot;:
-<span class="nc" id="L80">                    result = content + &quot;\n\n&lt;!-- &quot; + comment + &quot; --&gt;\n&quot;;</span>
-<span class="nc" id="L81">                    break;</span>
+<span class="nc" id="L90">                    result = content + &quot;\n\n&lt;!-- &quot; + comment + &quot; --&gt;\n&quot;;</span>
+<span class="nc" id="L91">                    break;</span>
                 case &quot;css&quot;:
                 case &quot;js&quot;:
                 case &quot;json&quot;: // json is a problem, no comment syntax. Let's see whether this makes sense.
-<span class="nc" id="L85">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
-<span class="nc" id="L86">                    break;</span>
+<span class="nc" id="L95">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+<span class="nc" id="L96">                    break;</span>
                 case &quot;sh&quot;:
                 case &quot;yaml&quot;:
-<span class="nc" id="L89">                    result = &quot;# &quot; + comment + &quot;\n&quot; + content;</span>
-<span class="nc" id="L90">                    break;</span>
+<span class="nc" id="L99">                    result = &quot;# &quot; + comment + &quot;\n&quot; + content;</span>
+<span class="nc" id="L100">                    break;</span>
                 default:
-<span class="nc" id="L92">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
+<span class="nc" id="L102">                    result = &quot;/* &quot; + comment + &quot; */\n\n&quot; + content;</span>
                     break;
             }
-<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (!result.endsWith(&quot;\n&quot;)) {</span>
-<span class="nc" id="L96">                result += &quot;\n&quot;;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if (!result.endsWith(&quot;\n&quot;)) {</span>
+<span class="nc" id="L106">                result += &quot;\n&quot;;</span>
             }
-<span class="nc" id="L98">            return result;</span>
+<span class="nc" id="L108">            return result;</span>
         }
 
         @Override
         public String toString() {
-<span class="nc" id="L103">            return &quot;WritingStrategy.WITHVERSION&quot;;</span>
+<span class="nc" id="L113">            return &quot;WritingStrategy.WITHVERSION&quot;;</span>
+        }
+    };
+
+    /**
+     * Writes an additional file (.version) with the version.
+     */
+<span class="nc" id="L120">    WritingStrategy WITHVERSIONFILE = new WritingStrategy() {</span>
+        @Override
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
+<span class="nc" id="L123">            output.write(content);</span>
+<span class="nc" id="L124">            File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);</span>
+<span class="nc" id="L125">            AIInOut.of(versionFile).write(versionComment);</span>
+<span class="nc" id="L126">        }</span>
+
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) {
+<span class="nc" id="L130">            return WITHVERSION.getRecordedVersionMarker(output);</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L135">            return &quot;WritingStrategy.WITHVERSIONFILE&quot;;</span>
         }
     };
 

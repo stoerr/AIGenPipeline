@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="generator" content="#generatedBy()" />
-    <title>AIGenPipeline - command line tool and framework for generating code and documentation with AI – Infile prompting</title>
+    <title>Infile prompting – AIGenPipeline - command line tool and framework for generating code and documentation with AI</title>
     <link rel="icon" href="./img/favicons/favicon.ico">
     <!-- CSS Stylesheets, site.css is included so downstream projects can override them as appropriate. -->
     <link rel="stylesheet" href="./css/bootstrap.min.css" />
@@ -110,7 +110,7 @@
                    <a href="project-reports.html" id="Project ReportsDropdownLink" title="Project Reports"  class="dropdown-item" >Project Reports</a>
                    <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
                      <li class="nav-item dropdown-item">
-                       <a href="surefire-report.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
+                       <a href="surefire.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="jacoco-aggregate/index.html" id="JaCoCo AggregateDropdownLink" title="JaCoCo Aggregate"  class="dropdown-item" >JaCoCo Aggregate</a>                     </li>
                      <li class="nav-item dropdown-item">
@@ -141,9 +141,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-07-31</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-09-20</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 2.0.1</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 2.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -152,14 +152,13 @@
 
     <main class="flex-shrink-0" role="main">
       <div class="container mt-3 rounded">
-<section>
+<section><a id="Infile_prompting"></a>
 <h1>Infile prompting</h1>
 <p>This is still somewhat new and experimental, but: how about going declarative instead of using the command line or
 <a href="https://aigenpipeline.stoerr.net/aigenpipeline-framework/apidocs/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.html" class="externalLink">AIGenerationTask</a>
 to tell the AI what files to process for each task? With infile prompting you can put the prompts right into the file
 that contains generated parts. Put a comment like this into the output file:</p>
 
-<div class="verbatim">
 <pre><code>&lt;!-- AIGenPromptStart(marker)
 Here comes the prompt for the AI. 
 AIGenCommand(marker)
@@ -167,7 +166,7 @@ inputfile1.txt inputfile2.java
 AIGenPromptEnd(marker) --&gt;
 Here comes the AI output.
 &lt;!-- AIGenEnd(marker) --&gt;
-</code></pre></div>
+</code></pre>
 <p>The <code>marker</code> should be an unique identifier if you have several prompts in one file. The part between the
 <code>AIGenPromptEnd</code> and <code>AIGenEnd</code> is replaced with the output of the AI when the <code>aigenpipeline</code> is run.
 In the part between <code>AIGenCommand</code> and <code>AIGenPromptEnd</code> you can put the command line options for the individual task -
@@ -176,27 +175,24 @@ the <code>AIGenPromptEnd</code> to the end of the file is replaced with the outp
 <p>This is processed with the <code>-os</code> / <code>--outputscan</code> option, which takes an ant style pattern to find the files to process,
 e.g.:</p>
 
-<div class="verbatim">
 <pre><code>aigenpipeline -os 'src/site/**/*.md'
-</code></pre></div>
+</code></pre>
 <p>In the path, a <code>*</code> matches any file name part, and <code>**</code> matches any number of directories. Remember to quote the
-pattern if you work with an Unix shell, as the shell would otherwise expand the pattern.</p><section>
+pattern if you work with an Unix shell, as the shell would otherwise expand the pattern.</p><section><a id="Printing_a_dependency_diagram"></a>
 <h2>Printing a dependency diagram</h2>
 <p>For debugging or getting an overview you can use <code>-dd</code> / <code>--dependencydiagram</code> to print a diagram of the file
 relationships that exist because of the tasks. For example:</p>
 
-<div class="verbatim">
 <pre><code>aigenpipeline -os 'examples/infileprompt/*' -dd
-</code></pre></div>
+</code></pre>
 <p>prints the following diagram:</p>
 
-<div class="verbatim">
 <pre><code class="language-mermaid">graph TD
     F002[&quot;examples/infileprompt/tablefromdata.md&quot;] --&gt; F001[&quot;examples/infileprompt/tablefromdatacopied.md&quot;]
     F003[&quot;examples/infileprompt/data.txt&quot;] --&gt; F002[&quot;examples/infileprompt/tablefromdata.md&quot;]
     F003[&quot;examples/infileprompt/data.txt&quot;] --&gt; F004[&quot;examples/infileprompt/copydata.md&quot;]
     F003[&quot;examples/infileprompt/data.txt&quot;] --&gt; F004[&quot;examples/infileprompt/copydata.md&quot;]
-</code></pre></div></section><section>
+</code></pre></section><section><a id="Tell_me_how_it_works_for_you"></a>
 <h2>Tell me how it works for you</h2>
 <p>This is a new experimental idea - please
 <a href="https://www.stoerr.net/contact.html" class="externalLink">let me know</a> how it works for you!</p></section></section>

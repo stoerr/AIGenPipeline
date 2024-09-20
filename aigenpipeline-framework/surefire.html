@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="generator" content="#generatedBy()" />
-    <title>AIGenPipeline Command Line Tool – Surefire Report</title>
+    <title>Surefire Report – AIGenPipeline Framework</title>
     <link rel="icon" href="./img/favicons/favicon.ico">
     <!-- CSS Stylesheets, site.css is included so downstream projects can override them as appropriate. -->
     <link rel="stylesheet" href="./css/bootstrap.min.css" />
@@ -46,7 +46,7 @@
     <header>
       <nav class="navbar navbar-expand-md navbar-dark bg-primary">
         <div id="projectBarContainer" class="container-fluid justify-content-center">
-<a href="#" id="navbarIconLink" title="Navbar Brand Icon" class="navbar-brand text-wrap ps-2"> AIGenPipeline Command Line Tool
+<a href="#" id="navbarIconLink" title="Navbar Brand Icon" class="navbar-brand text-wrap ps-2"> AIGenPipeline Framework
 </a>          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -111,9 +111,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-07-31</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-09-20</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 2.0.1</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 2.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -122,7 +122,8 @@
 
     <main class="flex-shrink-0" role="main">
       <div class="container mt-3 rounded">
-<script type="text/javascript">
+
+<script>
 function toggleDisplay(elementId) {
  var elm = document.getElementById(elementId + '-error');
  if (elm == null) {
@@ -138,9 +139,11 @@ function toggleDisplay(elementId) {
    document.getElementById(elementId + '-on').style.display = "none";
   }
  }
- }</script><section>
-<h1>Surefire Report</h1></section><section><a id="Summary"></a>
-<h1>Summary</h1>
+ }
+</script>
+<section><a id="Surefire_Report"></a>
+<h1>Surefire Report</h1><section><a id="Summary"></a>
+<h2>Summary</h2>
 <p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><br />
 <table class="table table-striped">
 <tr class="a">
@@ -151,14 +154,14 @@ function toggleDisplay(elementId) {
 <th>Success Rate</th>
 <th>Time</th></tr>
 <tr class="b">
-<td style="text-align: left;">4</td>
+<td>23</td>
 <td>0</td>
 <td>0</td>
-<td>0</td>
-<td>100%</td>
-<td>0.046 s</td></tr></table><br />
+<td>1</td>
+<td>95.7%</td>
+<td>0.255 s</td></tr></table><br />
 <p>Note: failures are anticipated and checked for with assertions while errors are unanticipated.</p><br /></section><section><a id="Package_List"></a>
-<h1>Package List</h1>
+<h2>Package List</h2>
 <p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><br />
 <table class="table table-striped">
 <tr class="a">
@@ -170,15 +173,23 @@ function toggleDisplay(elementId) {
 <th>Success Rate</th>
 <th>Time</th></tr>
 <tr class="b">
-<td style="text-align: left;"><a href="#net.stoerr.ai.aigenpipeline.commandline">net.stoerr.ai.aigenpipeline.commandline</a></td>
-<td>4</td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.chat">net.stoerr.ai.aigenpipeline.framework.chat</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>50.0%</td>
+<td>0.006 s</td></tr>
+<tr class="a">
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task">net.stoerr.ai.aigenpipeline.framework.task</a></td>
+<td>21</td>
 <td>0</td>
 <td>0</td>
 <td>0</td>
 <td>100%</td>
-<td>0.046 s</td></tr></table><br />
-<p>Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.</p><section><a id="net.stoerr.ai.aigenpipeline.commandline"></a>
-<h2>net.stoerr.ai.aigenpipeline.commandline</h2>
+<td>0.249 s</td></tr></table><br />
+<p>Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.</p><section><a id="net.stoerr.ai.aigenpipeline.framework.chat"></a>
+<h3>net.stoerr.ai.aigenpipeline.framework.chat</h3>
 <table class="table table-striped">
 <tr class="a">
 <th>-</th>
@@ -190,45 +201,168 @@ function toggleDisplay(elementId) {
 <th>Success Rate</th>
 <th>Time</th></tr>
 <tr class="b">
-<td style="text-align: left;"><a href="#net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest"><img src="images/icon_success_sml.gif" /></a></td>
-<td><a href="#net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest">AIGenPipelineTest</a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest"><img src="images/icon_warning_sml.gif" /></a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest">OpenAIChatBuilderImplTest</a></td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
 <td>1</td>
+<td>50.0%</td>
+<td>0.006 s</td></tr></table></section><section><a id="net.stoerr.ai.aigenpipeline.framework.task"></a>
+<h3>net.stoerr.ai.aigenpipeline.framework.task</h3>
+<table class="table table-striped">
+<tr class="a">
+<th>-</th>
+<th>Class</th>
+<th>Tests</th>
+<th>Errors</th>
+<th>Failures</th>
+<th>Skipped</th>
+<th>Success Rate</th>
+<th>Time</th></tr>
+<tr class="b">
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest"><img src="images/icon_success_sml.gif" /></a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest">AIVersionMarkerTest</a></td>
+<td>7</td>
 <td>0</td>
 <td>0</td>
 <td>0</td>
 <td>100%</td>
-<td>0.042 s</td></tr>
+<td>0.006 s</td></tr>
 <tr class="a">
-<td style="text-align: left;"><a href="#net.stoerr.ai.aigenpipeline.commandline.TopoSortTest"><img src="images/icon_success_sml.gif" /></a></td>
-<td><a href="#net.stoerr.ai.aigenpipeline.commandline.TopoSortTest">TopoSortTest</a></td>
-<td>3</td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest"><img src="images/icon_success_sml.gif" /></a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest">SegmentedFileTest</a></td>
+<td>8</td>
 <td>0</td>
 <td>0</td>
 <td>0</td>
 <td>100%</td>
-<td>0.004 s</td></tr></table></section><br /></section><section><a id="Test_Cases"></a>
-<h1>Test Cases</h1>
-<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><section><a id="net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest"></a>
-<h2>AIGenPipelineTest</h2>
+<td>0.075 s</td></tr>
+<tr class="b">
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest"><img src="images/icon_success_sml.gif" /></a></td>
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest">AIGenerationTaskTest</a></td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>0.168 s</td></tr></table></section><br /></section><section><a id="Test_Cases"></a>
+<h2>Test Cases</h2>
+<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><section><a id="net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest"></a>
+<h3>AIVersionMarkerTest</h3>
 <table class="table table-striped">
 <tr class="a">
-<td style="text-align: left;"><img src="images/icon_success_sml.gif" /></td>
-<td><a id="TC_net.stoerr.ai.aigenpipeline.commandline.AIGenPipelineTest.readArguments"></a>readArguments</td>
-<td>0.042 s</td></tr></table></section><section><a id="net.stoerr.ai.aigenpipeline.commandline.TopoSortTest"></a>
-<h2>TopoSortTest</h2>
-<table class="table table-striped">
-<tr class="a">
-<td style="text-align: left;"><img src="images/icon_success_sml.gif" /></td>
-<td><a id="TC_net.stoerr.ai.aigenpipeline.commandline.TopoSortTest.testSortWithCycle"></a>testSortWithCycle</td>
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.returnsNullWhenContentIsNull"></a>returnsNullWhenContentIsNull</td>
 <td>0.002 s</td></tr>
 <tr class="b">
-<td style="text-align: left;"><img src="images/icon_success_sml.gif" /></td>
-<td><a id="TC_net.stoerr.ai.aigenpipeline.commandline.TopoSortTest.testSort"></a>testSort</td>
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.testFind"></a>testFind</td>
+<td>0 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.doesNotReplaceMarkerInContentWithoutMarker"></a>doesNotReplaceMarkerInContentWithoutMarker</td>
+<td>0.001 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.testHandlingNullInputs"></a>testHandlingNullInputs</td>
 <td>0.001 s</td></tr>
 <tr class="a">
-<td style="text-align: left;"><img src="images/icon_success_sml.gif" /></td>
-<td><a id="TC_net.stoerr.ai.aigenpipeline.commandline.TopoSortTest.testSortWithMultipleEdges"></a>testSortWithMultipleEdges</td>
-<td>0.001 s</td></tr></table></section><br /></section>
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.testCreate"></a>testCreate</td>
+<td>0.001 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.testEqualsAndHashCode"></a>testEqualsAndHashCode</td>
+<td>0.001 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarkerTest.replacesMarkerInContentWithSingleMarker"></a>replacesMarkerInContentWithSingleMarker</td>
+<td>0 s</td></tr></table></section><section><a id="net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest"></a>
+<h3>SegmentedFileTest</h3>
+<table class="table table-striped">
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.testInfilePrompt"></a>testInfilePrompt</td>
+<td>0.039 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.writesSegmentCorrectly"></a>writesSegmentCorrectly</td>
+<td>0.002 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.multilineSeparator"></a>multilineSeparator</td>
+<td>0.001 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.throwsExceptionWhenSeparatorMatchesSegment"></a>throwsExceptionWhenSeparatorMatchesSegment</td>
+<td>0.022 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.throwsExceptionWhenSeparatorNotFound"></a>throwsExceptionWhenSeparatorNotFound</td>
+<td>0.008 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.testInfilePromptNoEndMarker"></a>testInfilePromptNoEndMarker</td>
+<td>0.002 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.readsAndSplitsFileCorrectly"></a>readsAndSplitsFileCorrectly</td>
+<td>0.001 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.SegmentedFileTest.wholeLineRegex"></a>wholeLineRegex</td>
+<td>0 s</td></tr></table></section><section><a id="net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest"></a>
+<h3>AIGenerationTaskTest</h3>
+<table class="table table-striped">
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testCompleteAIGenerationProcess"></a>testCompleteAIGenerationProcess</td>
+<td>0.124 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testCopy"></a>testCopy</td>
+<td>0.026 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testUnclutter"></a>testUnclutter</td>
+<td>0.001 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testVersionExtraction"></a>testVersionExtraction</td>
+<td>0.007 s</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testReplacePart"></a>testReplacePart</td>
+<td>0.010 s</td></tr>
+<tr class="b">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.task.AIGenerationTaskTest.testUnclutterInfilePrompting"></a>testUnclutterInfilePrompting</td>
+<td>0 s</td></tr></table></section><section><a id="net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest"></a>
+<h3>OpenAIChatBuilderImplTest</h3>
+<table class="table table-striped">
+<tr class="a">
+<td><a href="#net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall"><img src="images/icon_warning_sml.gif" /></a></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall"></a><a href="#net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall">testRealCall</a>
+<div class="detailToggle" style="display:inline"><a href="javascript:toggleDisplay('net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall');"><span style="display:inline;" id="net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall-off"> + </span><span style="display:none;" id="net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall-on"> - </span>[ Detail ]</a></div></td>
+<td>0.006 s</td></tr>
+<tr class="b">
+<td>-</td>
+<td>Only run if OPEN_API_KEY is set in the environment and you want to try a real call.</td>
+<td>-</td></tr>
+<tr class="a">
+<td><img src="images/icon_success_sml.gif" /></td>
+<td><a id="TC_net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testToJson"></a>testToJson</td>
+<td>0 s</td></tr></table></section><br /></section><section><a id="Failure_Details"></a>
+<h2>Failure Details</h2>
+<p>[<a href="#Summary">Summary</a>] [<a href="#Package_List">Package List</a>] [<a href="#Test_Cases">Test Cases</a>]</p><br />
+<table class="table table-striped">
+<tr class="a">
+<td><img src="images/icon_warning_sml.gif" /></td>
+<td><a id="net.stoerr.ai.aigenpipeline.framework.chat.OpenAIChatBuilderImplTest.testRealCall"></a>testRealCall</td></tr>
+<tr class="b">
+<td>-</td>
+<td>skipped: Only run if OPEN_API_KEY is set in the environment and you want to try a real call.</td></tr></table><br /></section></section>
       </div>
     </main>
 

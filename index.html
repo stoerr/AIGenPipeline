@@ -110,7 +110,7 @@
                    <a href="project-reports.html" id="Project ReportsDropdownLink" title="Project Reports"  class="dropdown-item" >Project Reports</a>
                    <ul id="Project DocumentationMenuSubMenuDropdown" class="dropdown-menu submenu">
                      <li class="nav-item dropdown-item">
-                       <a href="surefire-report.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
+                       <a href="surefire.html" id="SurefireDropdownLink" title="Surefire"  class="dropdown-item" >Surefire</a>                     </li>
                      <li class="nav-item dropdown-item">
                        <a href="jacoco-aggregate/index.html" id="JaCoCo AggregateDropdownLink" title="JaCoCo Aggregate"  class="dropdown-item" >JaCoCo Aggregate</a>                     </li>
                      <li class="nav-item dropdown-item">
@@ -141,9 +141,9 @@
         <div id="projectBarContainer" class="container-fluid">
 
           <div id="projectBaDateVersionContainer" class="justify-content-start">
-            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-07-31</span>
+            <span id="projectLastPublished" class="px-1 navbar-text">Last Published: 2024-09-20</span>
             <span id="projectDateVersionSpacer" class="px-1 navbar-text">|</span>
-            <span id="projectVersion" class="px-1 navbar-text">Version: 2.0.1</span>
+            <span id="projectVersion" class="px-1 navbar-text">Version: 2.1.0</span>
           </div>
           <div id="breadcrumbSpacer" ></div>
         </div>
@@ -160,7 +160,7 @@
 <div style="float: right; margin-left: 2em; margin-bottom: 2em;">
 <img src="images/AIGenPipelineLogo-square.png" alt="AIGenPipeline Logo" width="320" height="320" />
 </div>
-<section>
+<section><a id="AI_based_code_generation_pipeline"></a>
 <h1>AI based code generation pipeline</h1>
 <p><strong>A command line tool and framework for systematic code generation using AI</strong></p>
 <blockquote>
@@ -172,7 +172,7 @@ Scripts bloom, knowledge leaves.</p>
 In the dance of creation,<br />
 Change blooms, watched and kept.<br />
 &#x2013; ChatGPT</p>
-</blockquote><section>
+</blockquote><section><a id="Basic_idea"></a>
 <h2>Basic idea</h2>
 <p>This is a command line tool to generate files using an AI - either ChatGPT or a model with a similar chat completion
 interface. It can be used to generate code, documentation, or other text files. Each run of the command line tool can
@@ -188,7 +188,7 @@ That ensures manual checks when they are regenerated, and minimizes regeneration
 can also ask the
 <a href="https://chatgpt.com/g/g-zheGoARkR-helper-for-the-ai-based-code-generation-pipeline" class="externalLink">Helper for the AI based Code Generation Pipeline</a>
 which is an OpenAI GPT that is fed with all the documentation, or - if you have set up the OpenAI API key for it -
-you can ask it questions about itself with <code>aigenpipeline --helpai &lt;question&gt;</code>.</p></section><section>
+you can ask it questions about itself with <code>aigenpipeline --helpai &lt;question&gt;</code>.</p></section><section><a id="Some_example_usages"></a>
 <h2>Some example usages</h2>
 <ol style="list-style-type: decimal;">
 
@@ -196,11 +196,10 @@ you can ask it questions about itself with <code>aigenpipeline --helpai &lt;ques
 <p><strong>Basic Generation</strong>: Generating an OpenAPI document interface, tests, and implementation class could be achieved by
 chaining runs of <code>AIGenPipeline</code>, each with the appropriate prompt and input files. For example:</p>
 
-<div class="verbatim">
 <pre><code class="language-shell">aigenpipeline -p openapi_prompt.txt -o generated_openapi.yaml
 aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java
 aigenpipeline -p test_prompt.txt -i generated_interface.java -o generated_test.java
-</code></pre></div>
+</code></pre>
 <p>By the way: if you want to change an existing output file, you can add the argument <code>-upd</code>.
 Then the current content of the output file will be given to the AI, and
 it will be instructed to check and update the file according to the new input files, minimizing the changes.</p></li>
@@ -208,18 +207,16 @@ it will be instructed to check and update the file according to the new input fi
 <p><strong>Explanation / Query</strong>: After generating an output, if there are questions or the need for clarification on how to
 improve it:</p>
 
-<div class="verbatim">
 <pre><code class="language-shell">aigenpipeline -p interface_prompt.txt -i generated_openapi.yaml -o generated_interface.java --explain \
      &quot;Why wasn't a @GET annotation used in method foo? How would I have to change the prompt to make sure it's 
 used?&quot;
-</code></pre></div></li>
+</code></pre></li>
 <li>
 <p><strong>Force Regeneration</strong>: Normally a versioning mechanism (see below) ensures the result is not regenerated unless the
 input changes. The <code>-f</code> flag disables this checking:</p>
 
-<div class="verbatim">
 <pre><code class="language-shell">aigenpipeline -f -o specs/openapi.yaml api_interface_prompt.txt src/main/java/foo/MyInterface.java
-</code></pre></div>
+</code></pre>
 <p>Alternatively, the output files could just be removed before running the tool, or the version comments in suitable
 input files or prompt file(s) could be changed.</p></li>
 <li>
@@ -228,12 +225,10 @@ the <code>-wp &lt;marker&gt;</code> option to replace a part of the output file.
 already existing output file - the lines between them are replaced by the AI generated text. The first line must
 also contain the version commment (see below).</p>
 
-<div class="verbatim">
 <pre><code class="language-shell">aigenpipeline -wp generatedtable -o outputfile.md -p maketablefromjson.txt input.json
-</code></pre></div>
+</code></pre>
 <p>could e.g. replace the part between the lines <code>&lt;!-- start generatedtable AIGenVersion(1.0) --&gt;</code> and <code>&lt;!-- end generatedtable --&gt;</code> in:</p>
 
-<div class="verbatim">
 <pre><code>This is the hand generated part
 &lt;!-- start generatedtable AIGenVersion(1.0) --&gt;
 | Column1 | Column2 |
@@ -241,8 +236,8 @@ also contain the version commment (see below).</p>
 | value1  | value2  |
 &lt;!-- end generatedtable --&gt;
 Here can be more handwritten stuff that is untouched.
-</code></pre></div></li>
-</ol></section><section>
+</code></pre></li>
+</ol></section><section><a id="Caching_and_versioning"></a>
 <h2>Caching and versioning</h2>
 <p>Since generation takes time, costs a little and the results often have to be manually checked, the tool takes precaution
 not to regenerate the output files unless the input changes.</p>
@@ -255,25 +250,24 @@ system with Git, and would also regenerate files in case of minor changes in the
 that declare the version of the input file, and only generate the output file if it is not present, or regenerate the
 output file if the versions have changed. A version comment in the output file will be generated, which declares a
 version for the output file (a hash of it's content) and the versions of the used input files. The version comment
-in input and prompt files can be manually changed to force regeneration of the output file.</p><section>
+in input and prompt files can be manually changed to force regeneration of the output file.</p><section><a id="Structure_of_version_comments"></a>
 <h3>Structure of version comments</h3>
 <p>A version comment can e.g. look like this:</p>
 
-<div class="verbatim">
 <pre><code>/* AIGenVersion(ourversion, inputfile1@version1, inputfile2@version2, ...) */
-</code></pre></div>
+</code></pre>
 <p>To declare a version for a manually created prompt / source file you can just put in a version comment like
 <code>AIGenVersion(1.0)</code> and change the version number each time you want to force regeneration.</p>
 <p>The comment syntax (in this case /* */) is ignored - we just look for the AIGenVersion via regular expression.
 A version comment will be written at the start or end of the output file; that and the used comment syntax is
 determined by the file extension.</p>
 <p>Hint files (given with the <code>--hint</code> option) are not used for version checking, but only to give temporary additional
-information to the AI, such as instructions to focus on specific things for an update. Use with care.</p></section></section><section>
+information to the AI, such as instructions to focus on specific things for an update. Use with care.</p></section></section><section><a id="Using_different_large_language_models"></a>
 <h2>Using different large language models</h2>
 <p>While the tool defaults to using the OpenAI chat completion service, it is possible to use other services / LLM as
 well. I tried with <a href="https://www.anthropic.com/claude" class="externalLink">Anthropic Claude</a>
 <a href="https://docs.anthropic.com/claude/docs/text-generation" class="externalLink">text generation</a> and some local models run with the nice
-<a href="https://lmstudio.ai/" class="externalLink">LM Studio</a>. See <a href="otherModels.html">using other models</a> for some examples.</p></section><section>
+<a href="https://lmstudio.ai/" class="externalLink">LM Studio</a>. See <a href="otherModels.html">using other models</a> for some examples.</p></section><section><a id="Configuration_files"></a>
 <h2>Configuration files</h2>
 <p>The tool can read configuration files with common configurations (e.g. which AI backend to use). These should simply
 contain command line options; we'll split it at whitespaces just like in bash. Also, there can be an environment
@@ -285,7 +279,26 @@ the scanning further upwards in the directory tree.</p>
 <p>The order these configurations are processed is: environment variable, <code>.aigenpipeline</code> files from top to bottom,
 command line arguments. Thus, the later override the earlier one. Explicitly given configuration files are
 processed at the point where the argument occurs when processing the command line arguments. The option <code>-cp</code> /
-<code>--configprint</code> gives an overview of the used files / sources of configuration.</p></section><section>
+<code>--configprint</code> gives an overview of the used files / sources of configuration.</p></section><section><a id="Command_files"></a>
+<h2>Command files</h2>
+<p>While the startup time of aigenpipeline is low in comparison to the actual LLM calls, it can still hurt if there
+are many files to process and most AI calls can be skipped because there were no changes in inputs or prompts.
+Thus, if you just give one file as argument, it'll be read s command file containing a number of command lines
+that are executed in sequence.
+Those contain a number of command lines that are executed in sequence. Empty lines separate individual command lines,
+and lines starting with a # are ignored (comments). For example:</p>
+
+<pre><code>#!/usr/bin/env ../../bin/aigenpipeline
+-m gpt-4o-mini -p 0dialogelements.prompt README.md -o dialogelements.txt
+
+# command lines are separated by empty lines, and comment lines starting with # are ignored
+-m gpt-4o-mini -p 1html.prompt README.md dialogelements.txt -o differentialReTranslation.html
+
+# Each command line can be split over several lines if convenient.
+-m gpt-4o-mini -p 2css.prompt 
+README.md differentialReTranslation.html 
+-o differentialReTranslation.css
+</code></pre></section><section><a id="Other_features"></a>
 <h2>Other features</h2>
 <p>If you are not satisfied with the result, the tool can also be used to ask the AI for clarification: ask a question
 about the result or have it make suggestions how to improve the prompt. This mode will not write the output file, but
@@ -294,7 +307,7 @@ chat continuation.</p>
 <p>It's also possible to ask the tool questions about itself - use the <code>-ha</code> / <code>--helpai</code> option with a question, and it
 tries to answer that from this documentation. There is also an
 <a href="https://chatgpt.com/g/g-zheGoARkR-ai-based-code-generation-pipeline-helper" class="externalLink">OpenAI GPT</a>
-that can be asked.</p></section><section>
+that can be asked.</p></section><section><a id="How_can_I_download_or_install_it.3F"></a>
 <h2>How can I download or install it?</h2>
 <p>The download and installation links are given on the
 <a href="https://github.com/stoerr/AIGenPipeline/releases/" class="externalLink">release pages</a> on Github.
@@ -308,18 +321,25 @@ You can either:</p>
 <li>or use the <a href="https://mvnrepository.com/artifact/net.stoerr.ai.aigenpipeline/aigenpipeline-framework" class="externalLink">framework jar</a>
 directly with the class
 <a href="https://aigenpipeline.stoerr.net/aigenpipeline-framework/apidocs/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.html" class="externalLink">AIGenerationTask</a> .</li>
-</ul></section><section>
+</ul></section><section><a id="Limitations_and_additional_ideas_.28not_implemented_yet.29"></a>
 <h2>Limitations and additional ideas (not implemented yet)</h2>
 <ul>
 
 <li>This means the resulting file is always completely regenerated or not at all. How to make differential changes? One
 idea would be to give the previous file to the AI and ask it to make minimal changes.</li>
-</ul></section><section>
+</ul></section><section><a id="Command_Usage"></a>
 <h2>Command Usage</h2>
 
-<div class="verbatim">
 <pre><code>Usage:
 aigenpipeline [options] [&lt;input_files&gt;...]
+or
+ai-gen-pipeline &lt;command_file&gt;
+
+The AIGenPipeline tool generates content using an AI based on a prompt and input files.
+It can also update or improve existing content, and it only calls the AI if the input or prompt files have changed.
+
+If it's called with a command file, it reads a number of command lines from that file. Empty lines separate individual command lines.
+Lines starting with a # are ignored (comments). This saves the startup time when calling the tool multiple times.
 
 Options:
 
@@ -355,6 +375,7 @@ Options:
     -go, --gen-older         Generate the output file if it does not exist or is older than any of the input files.
     -gv, --gen-versioncheck  Generate the output file if the version of the input files has changed. (Default.)
     -wv, --write-version     Write the output file with a version comment. (Default.)
+    -wvf, --write-versionfile Write the version comment to a separate file named like the output file with .version appended.
     -wo, --write-noversion   Write the output file without a version comment. Not compatible with default -gv .
     -wp, --write-part &lt;marker&gt; Replace the lines between the first occurrence of the marker and the second occurrence.
                              If a version marker is written, it has to be in the first of those lines and is changed there.
@@ -423,7 +444,7 @@ Configuration files:
 Note:
   It's recommended to manually review and edit generated files. Use version control to manage and track changes over time. 
   More detailed instructions and explanations can be found at https://aigenpipeline.stoerr.net/ .
-</code></pre></div></section></section>
+</code></pre></section></section>
       </div>
     </main>
 
