@@ -1,6 +1,8 @@
 package net.stoerr.ai.aigenpipeline.framework.task;
 
-import java.io.IOException;
+import static net.stoerr.ai.aigenpipeline.framework.task.AIVersionMarker.FILESUFFIX_VERSION;
+
+import java.io.File;
 
 import javax.annotation.Nonnull;
 
@@ -21,7 +23,7 @@ public interface WritingStrategy {
      */
     WritingStrategy WITHOUTVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
             output.write(content);
         }
 
@@ -42,7 +44,7 @@ public interface WritingStrategy {
      */
     WritingStrategy WITHVERSION = new WritingStrategy() {
         @Override
-        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment)  {
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
             output.write(embedComment(output, content, versionComment));
         }
 
@@ -54,10 +56,18 @@ public interface WritingStrategy {
             } catch (RuntimeException e) {
                 return null;
             }
-            if (content == null) {
-                return null;
-            }
             AIVersionMarker aiVersionMarker = AIVersionMarker.find(content);
+            if (aiVersionMarker == null) {
+                File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);
+                if (!versionFile.exists()) {
+                    return null;
+                }
+                content = AIInOut.of(versionFile).read();
+                aiVersionMarker = AIVersionMarker.find(content);
+                if (aiVersionMarker == null) { // here is really something wrong.
+                    throw new IllegalStateException("Could not find version marker in " + versionFile);
+                }
+            }
             /* if (aiVersionMarker == null) {
                 throw new IllegalStateException("Could not find version marker in " + output);
             } probably invalid heuristic. */
@@ -101,6 +111,28 @@ public interface WritingStrategy {
         @Override
         public String toString() {
             return "WritingStrategy.WITHVERSION";
+        }
+    };
+
+    /**
+     * Writes an additional file (.version) with the version.
+     */
+    WritingStrategy WITHVERSIONFILE = new WritingStrategy() {
+        @Override
+        public void write(@Nonnull AIInOut output, @Nonnull String content, @Nonnull String versionComment) {
+            output.write(content);
+            File versionFile = new File(output.getFile() + FILESUFFIX_VERSION);
+            AIInOut.of(versionFile).write(versionComment);
+        }
+
+        @Override
+        public AIVersionMarker getRecordedVersionMarker(@Nonnull AIInOut output) {
+            return WITHVERSION.getRecordedVersionMarker(output);
+        }
+
+        @Override
+        public String toString() {
+            return "WritingStrategy.WITHVERSIONFILE";
         }
     };
 

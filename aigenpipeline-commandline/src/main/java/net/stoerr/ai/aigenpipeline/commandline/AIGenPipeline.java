@@ -489,6 +489,10 @@ public class AIGenPipeline {
                 case "--write-version":
                     writingStrategy = WritingStrategy.WITHVERSION;
                     break;
+                case "-wvf":
+                case "--write-versionfile":
+                    writingStrategy = WritingStrategy.WITHVERSIONFILE;
+                    break;
                 case "-wo":
                 case "--write-noversion":
                     writingStrategy = WritingStrategy.WITHOUTVERSION;
