@@ -211,11 +211,6 @@ You can either:
   directly with the class 
   [AIGenerationTask](https://aigenpipeline.stoerr.net/aigenpipeline-framework/apidocs/net/stoerr/ai/aigenpipeline/framework/task/AIGenerationTask.html) .
 
-## Limitations and additional ideas (not implemented yet)
-
-- This means the resulting file is always completely regenerated or not at all. How to make differential changes? One
-  idea would be to give the previous file to the AI and ask it to make minimal changes.
-
 ## Command Usage
 
 ```

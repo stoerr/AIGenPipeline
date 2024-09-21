@@ -148,11 +148,6 @@ tries to answer that from this documentation. There is also an
 [OpenAI GPT](https://chatgpt.com/g/g-zheGoARkR-ai-based-code-generation-pipeline-helper)
 that can be asked.
 
-## Limitations and additional ideas (not implemented yet)
-
-- This means the resulting file is always completely regenerated or not at all. How to make differential changes? One
-  idea would be to give the previous file to the AI and ask it to make minimal changes.
-
 ## Command Usage
 
 ```

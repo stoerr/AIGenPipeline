@@ -9,7 +9,8 @@
     <artifactId>aigenpipeline-framework</artifactId>
     <packaging>jar</packaging>
     <name>AIGenPipeline Framework</name>
-    <description>A command line tool and framework for generating code and documentation with AI.</description>
+    <description>Framework module for for the AI based code generation pipeline -
+        for systematically generating code and documentation with AI.</description>
     <url>https://aigenpipeline.stoerr.net/</url>
     <scm>
         <url>https://github.com/ist-dresden/composum-AI.git</url>

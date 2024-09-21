@@ -9,7 +9,12 @@
     <artifactId>aigenpipeline-commandline</artifactId>
     <packaging>jar</packaging>
     <name>AIGenPipeline Command Line Tool</name>
-    <description>A command line tool and framework for generating code and documentation with AI.</description>
+    <description>
+        Command line tool for the AI based code generation pipeline. This is a versatile command line tool
+        to systematically generate code, documentation and other text with AI from
+        multiple input files and prompts. Files are only regenerated when necessary; pipelining several
+        steps is supported.
+    </description>
     <url>https://aigenpipeline.stoerr.net/</url>
     <scm>
         <url>https://github.com/ist-dresden/composum-AI.git</url>
