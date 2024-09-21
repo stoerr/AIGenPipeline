@@ -138,6 +138,7 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.7.0</version>
                 </plugin>
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -169,6 +170,7 @@
                 </configuration>
             </plugin>
             <!-- Maven Release Plugin -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-release-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -329,6 +331,7 @@
                         </configuration>
                     </plugin>
                     <!-- https://central.sonatype.org/publish/publish-portal-maven/ -->
+                    <!-- https://mvnrepository.com/artifact/org.sonatype.central/central-publishing-maven-plugin -->
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
@@ -336,7 +339,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
-                            <autoPublish>false</autoPublish>
+                            <autoPublish>true</autoPublish>
                             <detail>true</detail>
                             <tokenAuth>true</tokenAuth>
                             <checksums>all</checksums>
