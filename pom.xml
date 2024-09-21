@@ -17,9 +17,9 @@
     <url>https://aigenpipeline.stoerr.net/</url>
 
     <scm>
-        <url>https://github.com/ist-dresden/composum-AI.git</url>
-        <connection>scm:git:https://github.com/ist-dresden/composum-AI.git</connection>
-        <developerConnection>scm:git:https://github.com/ist-dresden/composum-AI.git</developerConnection>
+        <url>https://github.com/stoerr/AIGenPipeline.git</url>
+        <connection>scm:git:https://github.com/stoerr/AIGenPipeline.git</connection>
+        <developerConnection>scm:git:https://github.com/stoerr/AIGenPipeline.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
