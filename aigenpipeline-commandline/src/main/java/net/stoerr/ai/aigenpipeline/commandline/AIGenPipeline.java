@@ -61,7 +61,7 @@ public class AIGenPipeline {
      */
     protected final Pattern ENVVARIABLE_PATTERN = Pattern.compile("\\$[A-Za-z_][A-Za-z0-9_]*|\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}");
 
-    protected boolean help, verbose, dryRun, check, version;
+    protected boolean help, verbose, dryRun, check, version, systemMessageAsUserMessage;
     protected String helpAIquestion;
     protected String output;
     protected AIInOut taskOutput;
@@ -186,6 +186,9 @@ public class AIGenPipeline {
         }
         if (null != tokens) {
             chatBuilder.maxTokens(tokens);
+        }
+        if (systemMessageAsUserMessage) {
+            chatBuilder.systemMsgAsFirstUserMsg();
         }
         return chatBuilder;
     }
@@ -542,6 +545,10 @@ public class AIGenPipeline {
                 case "--configignoreenv":
                     // handled when reading config files, just ignore here
                     break;
+                case "-ns":
+                case "--nosysmsg":
+                    systemMessageAsUserMessage = true;
+                    break;
                 default:
                     if (args[i].startsWith("-")) {
                         throw new IllegalArgumentException("Unknown option: " + args[i]);
@@ -555,6 +562,10 @@ public class AIGenPipeline {
                         inputFiles.add(AIInOut.of(inputArg));
                     }
                     break;
+            }
+
+            if (model != null && model.matches("o[1-9](-.+)?")) {
+                systemMessageAsUserMessage = true;
             }
         }
     }

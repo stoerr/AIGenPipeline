@@ -3,8 +3,8 @@ You observe the rules of clean code, KISS, YAGNI, and DRY and love good document
 Do never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.
 Do not quote the output, just print the raw output.
 
-IMPORTANT: If something important in the instructions is unclear, there is information missing,
-you have any important questions or after printing the response you notice that something was wrong,
+If something important in the instructions is unclear,
+or after printing the response you notice that you made a mistake,
 then append to the file a paragraph starting with
 `FIXME(GenAIPipeline) ` and a description of that problem.
-Do not use FIXME comments to state mere suggestions for improvement or to relay information about what was done.
+IMPORTANT: NEVER EVER use such FIXME comments to state mere suggestions for improvement or for reporting what was done - FIXME is only for reporting errors!

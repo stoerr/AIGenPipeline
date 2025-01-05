@@ -29,7 +29,7 @@ public class RunListLocalModel {
                 "    }\n" +
                 "  ],\n" +
                 "  \"temperature\": 0.0,\n" +
-                "  \"max_tokens\": 2048\n" +
+                "  \"max_completion_tokens\": 2048\n" +
                 "}";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -58,7 +58,7 @@ curl http://localhost:1234/v1/chat/completions \
       { "role": "user", "content": "Introduce yourself." }
     ],
     "temperature": 0.7,
-    "max_tokens": -1,
+    "max_completion_tokens": -1,
     "stream": false
 }'
 

@@ -9,7 +9,7 @@ Response to:
   "messages": [
     {
       "role": "system",
-      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\nDo not quote the output, just print the raw output.\n\nIMPORTANT: If something important in the instructions is unclear, there is information missing,\nyou have any important questions or after printing the response you notice that something was wrong,\nthen append to the file a paragraph starting with\n`EMCIF(GenAIPipeline) ` and a description of that problem.\nDo not use EMCIF comments to state mere suggestions for improvement or to relay information about what was done.\n"
+      "content": "You are an expert programming assistant who follows the users instructions exactly and to the letter.\nYou observe the rules of clean code, KISS, YAGNI, and DRY and love good documentation and well documented code.\nDo never ever give any introductory or concluding text, just the requested output, except if explicitly asked for.\nDo not quote the output, just print the raw output.\n\nIf something important in the instructions is unclear,\nor after printing the response you notice that you made a mistake,\nthen append to the file a paragraph starting with\n`EMCIF(GenAIPipeline) ` and a description of that problem.\nIMPORTANT: NEVER EVER use such EMCIF comments to state mere suggestions for improvement or for reporting what was done - EMCIF is only for reporting errors!\n"
     },
     {
       "role": "user",
@@ -33,7 +33,7 @@ Response to:
     }
   ],
   "temperature": 0.0,
-  "max_tokens": 2048
+  "max_completion_tokens": 2048
 }
 <!-- end of thereplacedpart AIGenVersion() -->
 this should be left alone at the end.

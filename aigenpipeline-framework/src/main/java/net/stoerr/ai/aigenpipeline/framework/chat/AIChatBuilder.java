@@ -55,6 +55,12 @@ public interface AIChatBuilder {
     AIChatBuilder systemMsg(String text);
 
     /**
+     * Put the system message as a first user message instead.
+     * For models like OpenAI o1-preview a system message is supported by the API but not the model, so this is a workaround for those.
+     */
+    AIChatBuilder systemMsgAsFirstUserMsg();
+
+    /**
      * Adds a user message to the chat.
      *
      * @param text The text of the message.

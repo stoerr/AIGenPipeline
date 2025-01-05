@@ -53,6 +53,12 @@ public class CopyPseudoAIChatBuilderImpl implements AIChatBuilder {
     }
 
     @Override
+    public AIChatBuilder systemMsgAsFirstUserMsg() {
+        // not used
+        return this;
+    }
+
+    @Override
     public AIChatBuilder userMsg(String text) {
         // not used
         return this;

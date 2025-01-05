@@ -70,6 +70,8 @@ Options:
     -org, --organization <id> The optional organization id in case of the OpenAI server.
     -m, --model <model>      The model to use for the AI. Default is gpt-4o .
     -t <maxtokens>           The maximum number of tokens to generate.
+    -ns, --nosysmsg          For models that do not support system messages: give the system message as first user message.
+                             Is done automatically if the model name starts with o[1-9].
 
 Arguments:
   [<input_files>...]       Input files to be processed into the output file. 

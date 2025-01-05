@@ -27,7 +27,7 @@ public class OpenAIChatBuilderImplTest {
                 "    }\n" +
                 "  ],\n" +
                 "  \"temperature\": 0.0,\n" +
-                "  \"max_tokens\": 500\n" +
+                "  \"max_completion_tokens\": 500\n" +
                 "}", actualJson);
     }
 

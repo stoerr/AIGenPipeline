@@ -50,7 +50,7 @@ https://docs.anthropic.com/claude/reference/messages_post
 Example request
 {
     "model": "claude-3-opus-20240229",
-    "max_tokens": 1024,
+    "max_completion_tokens": 1024,
     "messages": [
         {"role": "user", "content": "Hello, world"}
     ]

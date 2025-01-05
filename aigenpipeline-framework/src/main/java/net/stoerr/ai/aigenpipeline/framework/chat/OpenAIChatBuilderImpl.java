@@ -64,6 +64,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     protected String organizationId;
     protected int maxTokens = DEFAULT_MAX_TOKENS;
     protected String url = AIModelConstants.OPENAI_URL;
+    protected boolean systemMsgAsFirstUserMsg;
 
     @Override
     public AIChatBuilder url(String url) {
@@ -100,6 +101,12 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
         if (text != null && !text.isEmpty()) {
             messages.add(0, new Message(ROLE_SYSTEM, text));
         }
+        return this;
+    }
+
+    @Override
+    public AIChatBuilder systemMsgAsFirstUserMsg() {
+        this.systemMsgAsFirstUserMsg = true;
         return this;
     }
 
@@ -203,12 +210,21 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
                     throw new IllegalArgumentException("Unknown role " + message.role);
                 }
             }
-            request = new ChatCompletionRequest(model, filteredMessages, 0, maxTokens);
+            request = new ChatCompletionRequest(model, filteredMessages, 0.0, maxTokens);
             if (systemMessage.length() > 0) {
                 request.system = systemMessage.toString();
             }
         } else { // OpenAI format
-            request = new ChatCompletionRequest(model, messages, 0, maxTokens);
+            if (systemMsgAsFirstUserMsg) {
+                for (Message message : messages) {
+                    if (ROLE_SYSTEM.equals(message.role)) {
+                        message.role = ROLE_USER;
+                        break;
+                    }
+                }
+            }
+            Double temperature = systemMsgAsFirstUserMsg ? null : 0.0; // hack for OpenAI o1 temperature
+            request = new ChatCompletionRequest(model, messages, temperature, maxTokens);
         }
         return gson.toJson(request);
     }
@@ -258,15 +274,15 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
     protected static class ChatCompletionRequest {
         String model;
         List<Message> messages;
-        double temperature;
-        int max_tokens;
+        Double temperature;
+        int max_completion_tokens;
         String system; // only for Anthropic Claude
 
-        ChatCompletionRequest(String model, List<Message> messages, double temperature, int maxTokens) {
+        ChatCompletionRequest(String model, List<Message> messages, Double temperature, int maxTokens) {
             this.model = model;
             this.messages = messages;
             this.temperature = temperature;
-            this.max_tokens = maxTokens;
+            this.max_completion_tokens = maxTokens;
         }
     }
 

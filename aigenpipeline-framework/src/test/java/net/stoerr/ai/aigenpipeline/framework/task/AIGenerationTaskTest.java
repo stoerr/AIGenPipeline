@@ -54,10 +54,11 @@ public class AIGenerationTaskTest {
 
     protected void checkOutputExistsAndIsAsExpected(Path outFile) throws IOException {
         assertTrue(Files.exists(outFile));
-        String outputContent = Files.readString(outFile);
+        String outputContent = Files.readString(outFile).replaceAll("AIGenVersion.[0-9a-f]+", "AIGenVersion(ourversion");
         Path expectedFile = expectsDir.resolve(outFile.getFileName());
+        String expectedContent = Files.readString(expectedFile).replaceAll("AIGenVersion.[0-9a-f]+", "AIGenVersion(ourversion");
         assertEquals("Files are different: " + outFile + " and " + expectedFile,
-                Files.readString(expectedFile), outputContent);
+                expectedContent, outputContent);
     }
 
     @Test
