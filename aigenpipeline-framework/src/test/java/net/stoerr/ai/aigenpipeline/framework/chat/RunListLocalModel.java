@@ -29,7 +29,7 @@ public class RunListLocalModel {
                 "    }\n" +
                 "  ],\n" +
                 "  \"temperature\": 0.0,\n" +
-                "  \"max_completion_tokens\": 2048\n" +
+                "  \"max_completion_tokens\": 10240\n" +
                 "}";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))

@@ -49,7 +49,7 @@ public class OpenAIChatBuilderImpl implements AIChatBuilder {
      */
     public static final String ANTHROPIC_DEFAULT_VERSION = "2023-06-01";
 
-    public static final int DEFAULT_MAX_TOKENS = 2048;
+    public static final int DEFAULT_MAX_TOKENS = 10240;
 
     protected static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final String ROLE_SYSTEM = "system";

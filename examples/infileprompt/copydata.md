@@ -39,5 +39,5 @@ AIGenPromptEnd(openaijson) -->
     }
   ],
   "temperature": 0.0,
-  "max_completion_tokens": 2048
+  "max_completion_tokens": 10240
 }

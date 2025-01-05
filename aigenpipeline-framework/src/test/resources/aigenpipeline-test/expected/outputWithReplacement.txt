@@ -33,7 +33,7 @@ Response to:
     }
   ],
   "temperature": 0.0,
-  "max_completion_tokens": 2048
+  "max_completion_tokens": 10240
 }
 <!-- end of thereplacedpart AIGenVersion() -->
 this should be left alone at the end.
