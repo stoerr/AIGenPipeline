@@ -408,7 +408,7 @@ public class AIGenPipeline {
                     break;
                 case "-ha":
                 case "--help-ai":
-                    helpAIquestion = args[++i];
+                    helpAIquestion = retrieveNextArgument(args, ++i);
                     break;
                 case "--version":
                     version = true;
@@ -418,10 +418,10 @@ public class AIGenPipeline {
                     if (output != null) {
                         throw new IllegalArgumentException("Output file already given: " + output);
                     }
-                    output = args[++i];
+                    output = retrieveNextArgument(args, ++i);
                     break;
                 case "--hint":
-                    String hintFileName = args[++i];
+                    String hintFileName = retrieveNextArgument(args, ++i);
                     if (hintFileName.equals("-")) {
                         hintFiles.add(AIInOut.of(System.in));
                     } else {
@@ -434,7 +434,7 @@ public class AIGenPipeline {
                     break;
                 case "-os":
                 case "--outputscan":
-                    outputScan = args[++i];
+                    outputScan = retrieveNextArgument(args, ++i);
                     break;
                 case "-dd":
                 case "--dependencydiagram":
@@ -442,21 +442,21 @@ public class AIGenPipeline {
                     break;
                 case "-p":
                 case "--prompt":
-                    AIInOut path = AIInOut.of(dir.toPath().resolve(Path.of(args[++i])));
+                    AIInOut path = AIInOut.of(dir.toPath().resolve(Path.of(retrieveNextArgument(args, ++i))));
                     promptFiles.add(path);
                     break;
                 case "-ifp":
                 case "--infileprompt":
-                    infilePromptMarker = args[++i];
-                    output = args[++i];
+                    infilePromptMarker = retrieveNextArgument(args, ++i);
+                    output = retrieveNextArgument(args, ++i);
                     break;
                 case "-k":
-                    String[] kv = args[++i].split("=", 2);
+                    String[] kv = retrieveNextArgument(args, ++i).split("=", 2);
                     keyValues.put(kv[0], kv[1]);
                     break;
                 case "-s":
                 case "--sysmsg":
-                    task.setSystemMessage(new File(args[++i]));
+                    task.setSystemMessage(new File(retrieveNextArgument(args, ++i)));
                     break;
                 case "-v":
                 case "--verbose":
@@ -502,35 +502,35 @@ public class AIGenPipeline {
                     break;
                 case "-wp":
                 case "--write-part":
-                    writePart = args[++i];
+                    writePart = retrieveNextArgument(args, ++i);
                     break;
                 case "-e":
                 case "--explain":
-                    explain = args[++i];
+                    explain = retrieveNextArgument(args, ++i);
                     break;
                 case "-u":
                 case "--url":
-                    url = args[++i];
+                    url = retrieveNextArgument(args, ++i);
                     break;
                 case "-a":
                 case "--api-key":
-                    apiKey = args[++i];
+                    apiKey = retrieveNextArgument(args, ++i);
                     break;
                 case "-org":
                 case "--organization":
-                    organizationId = args[++i];
+                    organizationId = retrieveNextArgument(args, ++i);
                     break;
                 case "-m":
                 case "--model":
-                    model = args[++i];
+                    model = retrieveNextArgument(args, ++i);
                     break;
                 case "-t":
                 case "--maxtokens":
-                    tokens = Integer.parseInt(args[++i]);
+                    tokens = Integer.parseInt(retrieveNextArgument(args, ++i));
                     break;
                 case "-cf":
                 case "--configfile":
-                    String filename = args[++i];
+                    String filename = retrieveNextArgument(args, ++i);
                     Path cfgFilePath = dir.toPath().resolve(filename);
                     AIGenArgumentList cfgFileArgs = new AIGenArgumentList(cfgFilePath.toFile());
                     parseArguments(cfgFileArgs.getArgs(), cfgFilePath.getParent().toFile());
@@ -568,6 +568,13 @@ public class AIGenPipeline {
                 systemMessageAsUserMessage = true;
             }
         }
+    }
+
+    protected String retrieveNextArgument(String[] args, int i) {
+        if (i >= args.length) {
+            throw new IllegalArgumentException("Missing argument for " + args[i - 1]);
+        }
+        return args[i];
     }
 
     /**
