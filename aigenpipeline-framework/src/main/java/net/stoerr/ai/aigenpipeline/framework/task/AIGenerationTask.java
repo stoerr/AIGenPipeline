@@ -384,8 +384,8 @@ public class AIGenerationTask implements Cloneable {
                 throw new IllegalStateException("Bug: Error reading default system message", e);
             }
         }
-        if (updateRequested) {
-            String outputContent = output.read();
+        if (updateRequested && output.exists()) {
+            String outputContent = output .read();
             if (outputContent != null) {
                 chat.userMsg("Retrieve the current content of the output file. " +
                         "Later you will take this file as basis for the output, check it and possibly modify it, " +
